@@ -271,9 +271,8 @@ void x_image_lowlevel(TOPLEVEL *w_current, const char* filename)
 
   /* de select everything first */
   o_select_run_hooks(w_current, NULL, 2); 
-  o_selection_remove_most(w_current,
-                          w_current->page_current->
-                          selection2_head);
+  o_selection_unselect_list(w_current,
+			    &(w_current->page_current->selection_list));
 		
 
 #ifdef HAS_LIBGD

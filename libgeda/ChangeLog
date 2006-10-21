@@ -1,5 +1,12 @@
 2006-10-21 Carlos Nieves Onega <cnieves@iespana.es>
 
+        * include/prototype.h, include/struct.h, src/o_basic.c, 
+	  src/o_complex_basic.c, src/o_list.c, src/o_net_basic.c, 
+	  src/o_selection.c, src/s_basic.c, src/s_page.c, 
+	  Convert the SELECTION list into a GList.
+	  Added new functions o_recalc_object_glist, 
+	  get_object_glist_bounds to handle glists.
+
         * include/prototype.h, src/o_basic.c:
 	  Rename o_recalc to o_recalc_object_list, and make it
 	  to call a new function o_recalc_single_object, for each object

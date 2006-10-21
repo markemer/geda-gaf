@@ -1,5 +1,16 @@
 2006-10-21 Carlos Nieves Onega <cnieves@iespana.es>
 
+        * include/prototype.h, src/g_hook.c, src/i_basic.c, 
+	  src/i_callbacks.c, src/o_attrib.c, src/o_basic.c, 
+	  src/o_buffer.c, src/o_bus.c, src/o_copy.c, src/o_delete.c, 
+	  src/o_find.c, src/o_grips.c, src/o_misc.c, src/o_move.c, 
+	  src/o_net.c, src/o_picture.c, src/o_select.c, src/o_slot.c, 
+	  src/o_text.c, src/o_undo.c, src/x_attribedit.c, 
+	  src/x_compselect.c, src/x_dialog.c, src/x_event.c, 
+	  src/x_multiattrib.c, src/x_print.c:
+	  Convert the SELECTION list to a GList.
+        
+	* src/a_zoom.c, src/o_arc.c, src/o_basic.c, src/o_box.c,
         * src/o_basic.c:
 	  Rename o_recalc to o_recalc_object_list.
 	

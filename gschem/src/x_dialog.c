@@ -473,7 +473,7 @@ void text_edit_dialog_ok(GtkWidget *w, TOPLEVEL *w_current)
   GtkTextBuffer *textbuffer;
   GtkTextIter start, end;
 
-  num_selected = o_selection_return_num(w_current->page_current->selection2_head);
+  num_selected = g_list_length(w_current->page_current->selection_list);
 
   /* text string entry will only show up if one object is selected */
   if (num_selected == 1) {
@@ -544,7 +544,7 @@ void text_edit_dialog (TOPLEVEL *w_current, char *string, int text_size,
   int num_selected;
   int select_index=0;
 
-  num_selected = o_selection_return_num(w_current->page_current->selection2_head);
+  num_selected = g_list_length(w_current->page_current->selection_list);
   
   if (!w_current->tewindow) {
     w_current->tewindow = x_create_dialog_box(&vbox, &action_area);
@@ -2672,18 +2672,17 @@ static GtkWidget *create_color_menu (TOPLEVEL * w_current, int * select_index)
   /* first lets see if we have a selected object, if so select its color */
   int select_col = -1;
   int item_index = 0;
-  SELECTION *s_current = NULL;
+  GList *s_current = NULL;
   OBJECT *object = NULL;
 
   menu = gtk_menu_new ();
   group = NULL;
 
-  /* skip over head */
-  s_current = w_current->page_current->selection2_head->next;
+  s_current = w_current->page_current->selection_list;
 
   if (s_current != NULL) {
 
-    object = s_current->selected_object;
+    object = (OBJECT *) s_current->data;
     if (object == NULL) {
       fprintf(stderr, "no object selected - WHEE!\n");
     }else{
@@ -2782,15 +2781,14 @@ void color_edit_dialog_close(GtkWidget *w, TOPLEVEL *w_current)
  */
 void color_edit_dialog_apply(GtkWidget *w, TOPLEVEL *w_current)
 {
-  SELECTION *s_current = NULL;
+  GList *s_current = NULL;
   OBJECT *object = NULL;
 
-  /* skip over head */
-  s_current = w_current->page_current->selection2_head->next;
+  s_current = w_current->page_current->selection_list;
 
   while(s_current != NULL) {
 
-    object = s_current->selected_object;
+    object = (OBJECT *) s_current->data;
     if (object == NULL) {
       fprintf(stderr, _("ERROR: NULL object in color_edit_dialog_apply!\n"));
       exit(-1);

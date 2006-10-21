@@ -586,10 +586,11 @@ void o_text_end(TOPLEVEL *w_current)
 
   w_current->page_current->CHANGED=1;
   o_select_run_hooks(w_current, NULL, 2); 
-  o_selection_remove_most(w_current,
-                          w_current->page_current->selection2_head);
-  o_selection_add(w_current->page_current->selection2_head, 
-                  w_current->page_current->object_tail);
+  o_selection_unselect_list(w_current,
+			    &(w_current->page_current->selection_list));
+  w_current->page_current->selection_list = 
+    o_selection_add(w_current->page_current->selection_list, 
+		    w_current->page_current->object_tail);
 	
 
   /* object_tail is the object that was just added */
@@ -641,15 +642,15 @@ void o_text_edit_end(TOPLEVEL *w_current, char *string, int len, int text_size,
 		     int text_alignment)
 {
   OBJECT *object;
-  SELECTION *s_current;
+  GList *s_current;
   int numselect;
 
   /* skip over head */
-  s_current = w_current->page_current->selection2_head->next;
-  numselect = o_selection_return_num(w_current->page_current->selection2_head);
+  s_current = w_current->page_current->selection_list;
+  numselect = g_list_length(w_current->page_current->selection_list);
   
   while(s_current != NULL) {
-    object = s_current->selected_object;
+    object = (OBJECT *) s_current->data;
 
     if (object) {
       if (object->type == OBJ_TEXT) {
