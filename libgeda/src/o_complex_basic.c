@@ -336,6 +336,8 @@ int o_complex_is_eligible_attribute (TOPLEVEL *w_current, OBJECT *object,
   int promotableAttribute = FALSE;
   char *ptr;
 
+  g_return_val_if_fail(object != NULL, FALSE);
+
   if (object->type != OBJ_TEXT || object->attribute || object->attached_to)
   {
     return FALSE; /* not a text item or is already attached */
@@ -392,6 +394,8 @@ int o_complex_is_eligible_attribute (TOPLEVEL *w_current, OBJECT *object,
  */
 int o_complex_is_embedded(OBJECT *o_current)
 {
+  g_return_val_if_fail(o_current != NULL, 0);
+
   if(o_current->complex == NULL)
   return 0;
 
@@ -821,6 +825,8 @@ char *o_complex_save(OBJECT *object)
   int selectable;
   char *buf = NULL;
 
+  g_return_val_if_fail (object != NULL, NULL);
+
   if (object->sel_func != NULL) 
   selectable = 1;
   else 
@@ -1047,6 +1053,8 @@ OBJECT *o_complex_copy(TOPLEVEL *w_current, OBJECT *list_tail,
   int color;
   int selectable;
 
+  g_return_val_if_fail(o_current != NULL, NULL);
+
   if (o_current->saved_color == -1) {
     color = o_current->color;
   } else {
@@ -1101,6 +1109,8 @@ OBJECT *o_complex_copy_embedded(TOPLEVEL *w_current, OBJECT *list_tail,
   int color;
   int selectable;
 
+  g_return_val_if_fail(o_current != NULL, NULL);
+
   if (o_current->saved_color == -1) {
     color = o_current->color;
   } else {
@@ -1154,6 +1164,8 @@ OBJECT *o_complex_copy_embedded(TOPLEVEL *w_current, OBJECT *list_tail,
  */
 void o_complex_delete(TOPLEVEL *w_current, OBJECT *delete)
 {
+  g_return_if_fail(delete != NULL);
+
   /* first remove complex pointer */
   if (delete->complex) {
     if (delete->complex->prim_objs) {
@@ -1215,6 +1227,8 @@ void o_complex_set_color(OBJECT *prim_objs, int color)
  */
 void o_complex_set_color_single(OBJECT *o_current, int color)
 {
+  g_return_if_fail(o_current != NULL);
+
   switch(o_current->type) {
     case(OBJ_LINE):
     case(OBJ_NET):
@@ -1338,6 +1352,8 @@ void o_complex_unset_color(OBJECT *complex)
  */
 void o_complex_unset_color_single(OBJECT *o_current)
 {
+  g_return_if_fail(o_current != NULL);
+
   switch(o_current->type) {
     case(OBJ_LINE):
     case(OBJ_NET):
@@ -1451,6 +1467,12 @@ void o_complex_rotate_lowlevel(TOPLEVEL *w_current, int world_centerx,
   printf("------- a %d ac %d\n", angle, angle_change);
 #endif
 
+  g_return_if_fail(object != NULL);
+  g_return_if_fail(((object->type != OBJ_COMPLEX) &&
+		    (object->type != OBJ_PLACEHOLDER)));
+  g_return_if_fail(object->complex != NULL);
+
+
   /* do individual complex objects */
   o_current = object->complex->prim_objs;
 
@@ -1512,6 +1534,11 @@ void o_complex_mirror_lowlevel(TOPLEVEL *w_current,
 			       OBJECT *object)
 {
   OBJECT *o_current=NULL;
+
+  g_return_if_fail(object != NULL);
+  g_return_if_fail(((object->type != OBJ_COMPLEX) &&
+		    (object->type != OBJ_PLACEHOLDER)));
+  g_return_if_fail(object->complex != NULL);
 
   /* do individual complex objects */
   o_current = object->complex->prim_objs;
@@ -1577,6 +1604,12 @@ OBJECT *o_complex_return_pin_object(OBJECT *object, char *pin)
   OBJECT *o_current=NULL;
   OBJECT *found;
 
+  g_return_val_if_fail(object != NULL, NULL);
+  g_return_val_if_fail(((object->type != OBJ_COMPLEX) &&
+			(object->type != OBJ_PLACEHOLDER)) , NULL);
+  g_return_val_if_fail(object->complex != NULL, NULL);
+
+
   /* go inside complex objects */
   o_current = object->complex->prim_objs;
 
@@ -1621,10 +1654,9 @@ o_complex_check_symversion(TOPLEVEL* w_current, OBJECT* object)
   double inside_major, inside_minor;
   double outside_major, outside_minor;
   
-  if (object->type != OBJ_COMPLEX && object->type != OBJ_PLACEHOLDER)
-  {
-    return;
-  }
+  g_return_if_fail (object != NULL);
+  g_return_if_fail ((object->type != OBJ_COMPLEX && 
+		     object->type != OBJ_PLACEHOLDER));
 
   /* first look on the inside for the symversion= attribute */
   inside = o_attrib_search_name(object->complex->prim_objs, "symversion", 0);

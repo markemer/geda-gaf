@@ -1,3 +1,7 @@
+2006-10-21 Carlos Nieves Onega <cnieves@iespana.es>
+
+	* src/o_complex_basic.c: Added some sanity checks.
+
 2006-10-20 Ales Hvezda   <ahvezda@geda.seul.org>
 
         * configure.ac: Bumped package version to 20061020.
