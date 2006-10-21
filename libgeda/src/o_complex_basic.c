@@ -1468,8 +1468,8 @@ void o_complex_rotate_lowlevel(TOPLEVEL *w_current, int world_centerx,
 #endif
 
   g_return_if_fail(object != NULL);
-  g_return_if_fail(((object->type != OBJ_COMPLEX) &&
-		    (object->type != OBJ_PLACEHOLDER)));
+  g_return_if_fail(((object->type == OBJ_COMPLEX) ||
+		    (object->type == OBJ_PLACEHOLDER)));
   g_return_if_fail(object->complex != NULL);
 
 
@@ -1536,8 +1536,8 @@ void o_complex_mirror_lowlevel(TOPLEVEL *w_current,
   OBJECT *o_current=NULL;
 
   g_return_if_fail(object != NULL);
-  g_return_if_fail(((object->type != OBJ_COMPLEX) &&
-		    (object->type != OBJ_PLACEHOLDER)));
+  g_return_if_fail(((object->type == OBJ_COMPLEX) ||
+		    (object->type == OBJ_PLACEHOLDER)));
   g_return_if_fail(object->complex != NULL);
 
   /* do individual complex objects */
@@ -1605,8 +1605,8 @@ OBJECT *o_complex_return_pin_object(OBJECT *object, char *pin)
   OBJECT *found;
 
   g_return_val_if_fail(object != NULL, NULL);
-  g_return_val_if_fail(((object->type != OBJ_COMPLEX) &&
-			(object->type != OBJ_PLACEHOLDER)) , NULL);
+  g_return_val_if_fail(((object->type == OBJ_COMPLEX) ||
+			(object->type == OBJ_PLACEHOLDER)) , NULL);
   g_return_val_if_fail(object->complex != NULL, NULL);
 
 
@@ -1655,8 +1655,9 @@ o_complex_check_symversion(TOPLEVEL* w_current, OBJECT* object)
   double outside_major, outside_minor;
   
   g_return_if_fail (object != NULL);
-  g_return_if_fail ((object->type != OBJ_COMPLEX && 
-		     object->type != OBJ_PLACEHOLDER));
+  g_return_if_fail ((object->type == OBJ_COMPLEX || 
+		     object->type == OBJ_PLACEHOLDER));
+  g_return_if_fail (object->complex != NULL);
 
   /* first look on the inside for the symversion= attribute */
   inside = o_attrib_search_name(object->complex->prim_objs, "symversion", 0);
