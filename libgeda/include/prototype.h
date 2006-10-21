@@ -195,7 +195,8 @@ void o_attrib_free_returned(OBJECT **found_objects);
 /* o_basic.c */
 int inside_region(int left, int top, int right, int bottom, int x, int y);
 void o_redraw_single(TOPLEVEL *w_current, OBJECT *o_current);
-void o_recalc(TOPLEVEL *w_current, OBJECT *object_list);
+void o_recalc_single_object(TOPLEVEL *w_current, OBJECT *o_current);
+void o_recalc_object_list(TOPLEVEL *w_current, OBJECT *object_list);
 void o_set_line_options(TOPLEVEL *w_current, OBJECT *o_current, OBJECT_END end, OBJECT_TYPE type, int width, int length, int space);
 void o_set_fill_options(TOPLEVEL *w_current, OBJECT *o_current, OBJECT_FILLING type, int width, int pitch1, int angle1, int pitch2, int angle2);
 void o_object_recalc(TOPLEVEL *w_current, OBJECT *o_current);

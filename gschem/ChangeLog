@@ -1,5 +1,8 @@
 2006-10-21 Carlos Nieves Onega <cnieves@iespana.es>
 
+        * src/o_basic.c:
+	  Rename o_recalc to o_recalc_object_list.
+	
         * src/o_basic.c, src/o_complex.c, src/o_move.c, src/o_text.c, 
 	  src/x_image.c:
 	  Rename get_complex_bounds to get_object_list_bounds.
