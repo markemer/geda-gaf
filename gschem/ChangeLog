@@ -1,5 +1,9 @@
 2006-10-21 Carlos Nieves Onega <cnieves@iespana.es>
 
+        * src/o_basic.c, src/o_complex.c, src/o_move.c, src/o_text.c, 
+	  src/x_image.c:
+	  Rename get_complex_bounds to get_object_list_bounds.
+	
         * src/a_zoom.c, src/o_arc.c, src/o_basic.c, src/o_box.c,
 	  src/o_buffer.c, /src/o_bus.c, src/o_circle.c, src/o_complex.c,
 	  src/o_cue.c, src/o_grips.c, /src/o_line.c, src/o_net.c,

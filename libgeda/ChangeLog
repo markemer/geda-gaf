@@ -1,5 +1,10 @@
 2006-10-21 Carlos Nieves Onega <cnieves@iespana.es>
 
+        * include/prototype.h, src/o_complex_basic.c, src/o_text_basic.c:
+	  Rename get_complex_bounds to get_object_list_bounds, and make it
+	  to call a new function get_single_object_bounds, for each object
+	  in the list.
+	
         * src/o_complex_basic.c: Fixed logic level of some checks.
 	* src/o_complex_basic.c: Added some sanity checks.
 

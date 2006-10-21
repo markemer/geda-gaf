@@ -264,8 +264,8 @@ void o_move_end(TOPLEVEL * w_current)
                             &other_objects, &connected_objects);
 
 
-        get_complex_bounds(w_current, object->complex->prim_objs,
-                           &left, &top, &right, &bottom);
+        get_object_list_bounds(w_current, object->complex->prim_objs,
+			       &left, &top, &right, &bottom);
 
         object->left = left;
         object->top = top;

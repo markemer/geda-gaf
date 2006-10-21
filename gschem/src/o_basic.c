@@ -316,11 +316,11 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, SELECTION *s_list,
     gdk_gc_set_foreground(w_current->bounding_xor_gc, color);
 
     if (o_list) {
-      get_complex_bounds(w_current, o_list,
-                         &rleft  ,
-                         &rtop   ,
-                         &rright ,
-                         &rbottom);
+      get_object_list_bounds(w_current, o_list,
+			     &rleft  ,
+			     &rtop   ,
+			     &rright ,
+			     &rbottom);
     } else if (s_list) {
       get_complex_bounds_selection(w_current, s_list,
 				   &rleft  ,
@@ -345,11 +345,11 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, SELECTION *s_list,
 #endif
 
         if (o_list) {
-          get_complex_bounds(w_current, o_list,
-                             &rleft  ,
-                             &rtop   ,
-                             &rright ,
-                             &rbottom);
+          get_object_list_bounds(w_current, o_list,
+				 &rleft  ,
+				 &rtop   ,
+				 &rright ,
+				 &rbottom);
         } else if (s_list) {
           get_complex_bounds_selection(w_current, s_list,
                                        &rleft  ,
@@ -416,11 +416,11 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, SELECTION *s_list,
       }
     } else {
       if (o_list) {
-        get_complex_bounds(w_current, o_list,
-                           &rleft  ,
-                           &rtop   ,
-                           &rright ,
-                           &rbottom);
+        get_object_list_bounds(w_current, o_list,
+			       &rleft  ,
+			       &rtop   ,
+			       &rright ,
+			       &rbottom);
       } else if (s_list) {
         get_complex_bounds_selection(w_current, s_list,
                                      &rleft  ,
@@ -464,11 +464,11 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, SELECTION *s_list,
       }
     } else {
       if (o_list) {
-        get_complex_bounds(w_current, o_list,
-                           &rleft  ,
-                           &rtop   ,
-                           &rright ,
-                           &rbottom);
+        get_object_list_bounds(w_current, o_list,
+			       &rleft  ,
+			       &rtop   ,
+			       &rright ,
+			       &rbottom);
       } else if (s_list) {
         get_complex_bounds_selection(w_current, s_list,
                                      &rleft  ,
@@ -528,11 +528,11 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, SELECTION *s_list,
           /*! \todo why are we doing this here...?
            * probably a reason */
           if (o_list) {
-            get_complex_bounds(w_current, o_list,
-                               &rleft  ,
-                               &rtop   ,
-                               &rright ,
-                               &rbottom);
+            get_object_list_bounds(w_current, o_list,
+				   &rleft  ,
+				   &rtop   ,
+				   &rright ,
+				   &rbottom);
           } else if (s_list) {
             get_complex_bounds_selection(w_current, s_list,
                                          &rleft  ,
@@ -561,11 +561,11 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, SELECTION *s_list,
 
     if (firsttime == TRUE) {
       if (o_list) {
-        get_complex_bounds(w_current, o_list,
-                           &rleft  ,
-                           &rtop   ,
-                           &rright ,
-                           &rbottom);
+        get_object_list_bounds(w_current, o_list,
+			       &rleft  ,
+			       &rtop   ,
+			       &rright ,
+			       &rbottom);
       } else if (s_list) {
         get_complex_bounds_selection(w_current, s_list,
                                      &rleft  ,
@@ -625,11 +625,11 @@ void o_erasebounding(TOPLEVEL *w_current, OBJECT *o_list, SELECTION *s_list)
   }
 
   if (o_list) {
-    get_complex_bounds(w_current, o_list,
-                       &rleft  ,
-                       &rtop   ,
-                       &rright ,
-                       &rbottom);
+    get_object_list_bounds(w_current, o_list,
+			   &rleft  ,
+			   &rtop   ,
+			   &rright ,
+			   &rbottom);
   } else if (s_list) {
     get_complex_bounds_selection(w_current, s_list,
                                  &rleft  ,

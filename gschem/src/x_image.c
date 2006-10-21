@@ -675,10 +675,10 @@ GdkPixbuf *x_image_get_pixbuf (TOPLEVEL *w_current)
   /* If there are no objects, can't use zoom_extents */
   if (object_found) {
     o_redraw_all (&toplevel); 
-    get_complex_bounds(&toplevel, 
-		       toplevel.page_current->object_head, 
-		       &origin_x, &origin_y, 
-		       &right, &bottom);
+    get_object_list_bounds(&toplevel, 
+			   toplevel.page_current->object_head, 
+			   &origin_x, &origin_y, 
+			   &right, &bottom);
   }
 #endif
   /* ------------------  End optional code ------------------------ */

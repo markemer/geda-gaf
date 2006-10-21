@@ -43,12 +43,88 @@
 #include <dmalloc.h>
 #endif
 
-/*! \brief
- *  \par Function Description
+/*! \brief Return the bounds of the given object.
+ *  \par Given an object, calcule the bounds coordinates.
+ *  \param [in] w_current The toplevel structure.
+ *  \param [in] o_current The object to look the bounds for.
+ *  \param [out] rleft   pointer to the left coordinate of the object.
+ *  \param [out] rtop    pointer to the top coordinate of the object.
+ *  \param [out] rright  pointer to the right coordinate of the object.
+ *  \param [out] rbottom pointer to the bottom coordinate of the object.
  *
  */
-void get_complex_bounds(TOPLEVEL *w_current, OBJECT *complex, 
-			int *left, int *top, int *right, int *bottom)
+void get_single_object_bounds(TOPLEVEL *w_current, OBJECT *o_current, 
+			      int *rleft, int *rtop, int *rright, int *rbottom)
+{
+  if (o_current != NULL) {
+    switch(o_current->type) {
+      case(OBJ_LINE):
+        get_line_bounds(w_current, o_current->line, rleft, rtop, rright, rbottom);
+        break;
+
+      case(OBJ_NET):
+        /* same as a line (diff name)*/
+        get_net_bounds(w_current, o_current->line, rleft, rtop, rright, rbottom);
+        break;
+
+      case(OBJ_BUS):
+        /* same as a line (diff name)*/
+        get_bus_bounds(w_current, o_current->line, rleft, rtop, rright, rbottom);
+        break;
+	
+      case(OBJ_BOX):
+        get_box_bounds(w_current, o_current->box, rleft, rtop, rright, rbottom);
+        break;
+
+      case(OBJ_PICTURE):
+        get_picture_bounds(w_current, o_current->picture, rleft, rtop, rright, rbottom);
+        break;
+
+      case(OBJ_CIRCLE):
+        get_circle_bounds(w_current, o_current->circle, rleft, rtop, rright, rbottom);
+        break;
+
+      case(OBJ_COMPLEX):
+      case(OBJ_PLACEHOLDER):
+        /* recursive objects ?*/
+        get_object_list_bounds(w_current, o_current->complex->prim_objs, rleft, rtop, rright, rbottom);
+        break;
+
+      case(OBJ_TEXT):
+        /* only do bounding boxes for visible or doing show_hidden_text*/
+        /* you might lose some attrs though */
+        if (o_current->visibility == VISIBLE ||
+            (o_current->visibility == INVISIBLE && w_current->show_hidden_text)) {
+          get_text_bounds(w_current, o_current, rleft, rtop, rright, rbottom);
+        }
+        break;
+
+      case(OBJ_PIN):
+        get_pin_bounds(w_current, o_current->line, rleft, rtop, rright, rbottom);
+        break;
+
+      case(OBJ_ARC):
+        get_arc_bounds(w_current, o_current, rleft, rtop, rright, rbottom);
+        break;
+
+      default:
+        break;
+    }
+  }
+}
+
+/*! \brief Return the bounds of the given list of objects.
+ *  \par Given a list of objects, calcule the bounds coordinates.
+ *  \param [in] w_current The toplevel structure.
+ *  \param [in] complex   The list of objects to look the bounds for.
+ *  \param [out] left   pointer to the left coordinate of the object.
+ *  \param [out] top    pointer to the top coordinate of the object.
+ *  \param [out] right  pointer to the right coordinate of the object.
+ *  \param [out] bottom pointer to the bottom coordinate of the object.
+ */
+void
+get_object_list_bounds(TOPLEVEL *w_current, OBJECT *complex, 
+		       int *left, int *top, int *right, int *bottom)
 {
   OBJECT *o_current=NULL;
   int rleft, rtop, rright, rbottom;
@@ -63,60 +139,8 @@ void get_complex_bounds(TOPLEVEL *w_current, OBJECT *complex,
   o_current = complex;
 	
   while ( o_current != NULL ) {
-    switch(o_current->type) {
-      case(OBJ_LINE):
-        get_line_bounds(w_current, o_current->line, &rleft, &rtop, &rright, &rbottom);
-        break;
-
-      case(OBJ_NET):
-        /* same as a line (diff name)*/
-        get_net_bounds(w_current, o_current->line, &rleft, &rtop, &rright, &rbottom);
-        break;
-
-      case(OBJ_BUS):
-        /* same as a line (diff name)*/
-        get_bus_bounds(w_current, o_current->line, &rleft, &rtop, &rright, &rbottom);
-        break;
-	
-      case(OBJ_BOX):
-        get_box_bounds(w_current, o_current->box, &rleft, &rtop, &rright, &rbottom);
-        break;
-
-      case(OBJ_PICTURE):
-        get_picture_bounds(w_current, o_current->picture, &rleft, &rtop, &rright, &rbottom);
-        break;
-
-      case(OBJ_CIRCLE):
-        get_circle_bounds(w_current, o_current->circle, &rleft, &rtop, &rright, &rbottom);
-        break;
-
-      case(OBJ_COMPLEX):
-      case(OBJ_PLACEHOLDER):
-        /* recursive objects ?*/
-        get_complex_bounds(w_current, o_current->complex->prim_objs, &rleft, &rtop, &rright, &rbottom);
-        break;
-
-      case(OBJ_TEXT):
-        /* only do bounding boxes for visible or doing show_hidden_text*/
-        /* you might lose some attrs though */
-        if (o_current->visibility == VISIBLE ||
-            (o_current->visibility == INVISIBLE && w_current->show_hidden_text)) {
-          get_text_bounds(w_current, o_current, &rleft, &rtop, &rright, &rbottom);
-        }
-        break;
-
-      case(OBJ_PIN):
-        get_pin_bounds(w_current, o_current->line, &rleft, &rtop, &rright, &rbottom);
-        break;
-
-      case(OBJ_ARC):
-        get_arc_bounds(w_current, o_current, &rleft, &rtop, &rright, &rbottom);
-        break;
-
-      default:
-        break;
-    }
-
+    get_single_object_bounds(w_current, o_current, &rleft, &rtop, 
+			     &rright, &rbottom);
     if (rleft < *left) *left = rleft;
     if (rtop < *top) *top = rtop;
     if (rright > *right) *right = rright;
@@ -185,7 +209,7 @@ void get_complex_bounds_selection(TOPLEVEL *w_current, SELECTION *head,
       case(OBJ_COMPLEX):
       case(OBJ_PLACEHOLDER):
         /* recursive objects ?*/
-        get_complex_bounds(w_current, o_current->complex->prim_objs, &rleft, &rtop, &rright, &rbottom);
+        get_object_list_bounds(w_current, o_current->complex->prim_objs, &rleft, &rtop, &rright, &rbottom);
         break;
 
       case(OBJ_TEXT):
@@ -720,7 +744,10 @@ void o_complex_recalc(TOPLEVEL *w_current, OBJECT *o_current)
   /* libhack */
   /* o_recalc(w_current, o_current->complex);*/
 
-  get_complex_bounds(w_current, o_current->complex->prim_objs, &left, &top, &right, &bottom);
+  if ((!o_current) || (o_current->type != OBJ_COMPLEX && o_current->type != OBJ_PLACEHOLDER))
+    return;
+
+  get_object_list_bounds(w_current, o_current->complex->prim_objs, &left, &top, &right, &bottom);
   o_current->left = left;
   o_current->top = top;
   o_current->right = right;
@@ -1032,8 +1059,8 @@ void o_complex_world_translate_toplevel(TOPLEVEL *w_current,
   o_complex_world_translate(w_current, x1, y1, 
                             object->complex->prim_objs);
 
-  get_complex_bounds(w_current, object->complex->prim_objs, 
-                     &left, &top, &right, &bottom);
+  get_object_list_bounds(w_current, object->complex->prim_objs, 
+			 &left, &top, &right, &bottom);
 	
   object->left = left;
   object->top = top;

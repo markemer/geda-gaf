@@ -46,8 +46,8 @@ void o_complex_draw(TOPLEVEL *w_current, OBJECT *o_current)
     o_redraw(w_current, o_current->complex->prim_objs, TRUE);
   }
 
-  get_complex_bounds(w_current, o_current->complex->prim_objs,
-                     &left, &top, &right, &bottom);
+  get_object_list_bounds(w_current, o_current->complex->prim_objs,
+			 &left, &top, &right, &bottom);
   o_current->left   = left;
   o_current->top    = top;
   o_current->right  = right;
@@ -307,11 +307,10 @@ void o_complex_end(TOPLEVEL *w_current, int screen_x, int screen_y)
 #if 0
       printf("inside draw bounding here\n");
 #endif
-      get_complex_bounds(
-                         w_current,
-                         w_current->page_current->
-                         complex_place_head->next,
-                         &rleft, &rtop, &rright, &rbottom);
+      get_object_list_bounds(w_current,
+			     w_current->page_current->
+			     complex_place_head->next,
+			     &rleft, &rtop, &rright, &rbottom);
       gdk_gc_set_foreground(
                             w_current->gc,
                             x_get_color(w_current->background_color));
@@ -411,11 +410,10 @@ void o_complex_end(TOPLEVEL *w_current, int screen_x, int screen_y)
 #if 0
     printf("inside draw bounding here\n");
 #endif
-    get_complex_bounds(
-                       w_current,
-                       w_current->page_current->complex_place_head->next,
-                       &rleft, &rtop,
-                       &rright, &rbottom);
+    get_object_list_bounds(w_current,
+			   w_current->page_current->complex_place_head->next,
+			   &rleft, &rtop,
+			   &rright, &rbottom);
     gdk_gc_set_foreground(
                           w_current->gc,
                           x_get_color(w_current->background_color));
@@ -629,11 +627,11 @@ void o_complex_translate_all(TOPLEVEL *w_current, int offset)
                  A_PAN_DONT_REDRAW);
   o_redraw_all(w_current);
 
-  get_complex_bounds(w_current, w_current->page_current->object_head,
-                     &rleft,
-                     &rtop,
-                     &rright,
-                     &rbottom);
+  get_object_list_bounds(w_current, w_current->page_current->object_head,
+			 &rleft,
+			 &rtop,
+			 &rright,
+			 &rbottom);
 
   /*! \todo do we want snap grid here? */
   SCREENtoWORLD(w_current,

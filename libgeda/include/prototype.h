@@ -276,7 +276,11 @@ void o_circle_print_hatch(TOPLEVEL *w_current, FILE *fp, int x, int y, int radiu
 void o_circle_image_write(TOPLEVEL *w_current, OBJECT *o_current, int origin_x, int origin_y, int color_mode);
 
 /* o_complex_basic.c */
-void get_complex_bounds(TOPLEVEL *w_current, OBJECT *complex, int *left, int *top, int *right, int *bottom);
+void get_single_object_bounds(TOPLEVEL *w_current, OBJECT *complex, 
+			      int *rleft, int *rtop, 
+			      int *rright, int *rbottom);
+void get_object_list_bounds(TOPLEVEL *w_current, OBJECT *complex, 
+			    int *left, int *top, int *right, int *bottom);
 void get_complex_bounds_selection(TOPLEVEL *w_current, SELECTION *head, int *left, int *top, int *right, int *bottom);
 void world_get_complex_bounds(TOPLEVEL *w_current, OBJECT *complex, int *left, int *top, int *right, int *bottom);
 OBJECT *add_head(void);
