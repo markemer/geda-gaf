@@ -1,5 +1,8 @@
 2006-10-22 Carlos Nieves Onega <cnieves@iespana.es>
 
+        * src/i_callbacks.c: Redraw the complex place list if panning
+	  inside an action.
+	
         * src/i_callbacks.c: don't save the undo state for view commands 
 	  if we are inside a command. Otherwise we can't go back to the 
 	  previous state if the action is cancelled.

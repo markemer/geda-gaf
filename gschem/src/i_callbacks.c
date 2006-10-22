@@ -1651,6 +1651,14 @@ DEFINE_I_CALLBACK(view_pan_hotkey)
 
   a_pan(w_current, mouse_x, mouse_y);
 
+  /* If inside an action, redraw the complex place list */
+  if (w_current->inside_action == 1) {
+    o_complex_rubbercomplex(w_current);
+    w_current->last_x = fix_x(w_current, mouse_x);
+    w_current->last_y = fix_y(w_current, mouse_y);
+    o_complex_rubbercomplex(w_current);
+  }
+  
   /* Jeff McNeal on Nov 19, 1998 - if we are drawing a net,
    * don't change the event state, because we want to continue
    * drawing a net. If we are just panning, then continue in
