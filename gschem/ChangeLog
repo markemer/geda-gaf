@@ -1,5 +1,11 @@
 2006-10-22 Carlos Nieves Onega <cnieves@iespana.es>
 
+        * src/i_callbacks.c: don't save the undo state for view commands 
+	  if we are inside a command. Otherwise we can't go back to the 
+	  previous state if the action is cancelled.
+	  Don't use the rotated_inside variable in the cancel callback, 
+	  since this variable is not used anymore. It will be removed later.
+
         * src/i_callbacks.c: objects can be mirrored while moving or copying,
 	  so make the edit_mirror_hotkey callback aware of this.
 	  Moved w_current->DONT_REDRAW = 0 inside the 'if' in the 
