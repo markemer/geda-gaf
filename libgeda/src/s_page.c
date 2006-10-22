@@ -218,7 +218,10 @@ void s_page_delete (TOPLEVEL *toplevel, PAGE *page)
   s_delete_list_fromstart (toplevel, page->object_head);
   
   toplevel->REMOVING_SEL = 1;
-  s_delete_object_glist (toplevel, page->complex_place_list);
+  /* The complex place list contain a reference to the objects in the page */
+  /* So don't free the objects there. */
+  g_list_free (page->complex_place_list);
+  page->complex_place_list = NULL;
   s_delete_list_fromstart (toplevel, page->attrib_place_head);
   toplevel->REMOVING_SEL = 0;  
 
