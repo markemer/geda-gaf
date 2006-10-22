@@ -1,5 +1,7 @@
 2006-10-22 Carlos Nieves Onega <cnieves@iespana.es>
 
+	* src/o_copy.c: Update the connections after copying.
+	
 	* src/o_copy.c: Save the undo state when starting the copy action.
 	
 	* src/i_callbacks.c: When cancelling the copy movement, the

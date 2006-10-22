@@ -340,6 +340,7 @@ o_copy_end(TOPLEVEL *w_current)
         o_net_translate_world(w_current,
                               diff_x, diff_y,
                               object);
+	s_conn_update_object(w_current, object);
         connected_objects = s_conn_return_others(connected_objects,
                                                  object);
 	break;
@@ -354,6 +355,7 @@ o_copy_end(TOPLEVEL *w_current)
         o_pin_translate_world(w_current,
                               diff_x, diff_y,
                               object);
+	s_conn_update_object(w_current, object);
         connected_objects = s_conn_return_others(connected_objects,
                                                  object);
         break;
@@ -368,6 +370,7 @@ o_copy_end(TOPLEVEL *w_current)
         o_bus_translate_world(w_current,
                               diff_x, diff_y,
                               object);
+	s_conn_update_object(w_current, object);
         connected_objects = s_conn_return_others(connected_objects,
                                                  object);
         break;
@@ -382,6 +385,7 @@ o_copy_end(TOPLEVEL *w_current)
                                            diff_x,
                                            diff_y,
                                            object);
+	s_conn_update_complex(w_current, object->complex->prim_objs);
         connected_objects = s_conn_return_complex_others(connected_objects,
                                                          object);
 	break;
