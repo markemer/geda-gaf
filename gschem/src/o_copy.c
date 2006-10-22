@@ -52,6 +52,8 @@ void o_copy_start(TOPLEVEL *w_current, int x, int y)
     return;
   }
 
+  o_undo_savestate(w_current, UNDO_ALL);
+
   w_current->last_drawb_mode = -1;
   
   object = o_select_return_first_object(w_current);
