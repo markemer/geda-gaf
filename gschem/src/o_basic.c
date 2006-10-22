@@ -58,16 +58,13 @@ void o_redraw_all(TOPLEVEL *w_current)
     switch(w_current->event_state) {
       case(MOVE):
       case(ENDMOVE):
-	o_erase_selected(w_current);	
-	/* continue */
+       o_erase_selected(w_current);    
+       o_drawbounding(w_current, NULL,
+		      w_current->page_current->complex_place_list,
+		      x_get_darkcolor(w_current->bb_color), FALSE);
+       break;
       case(ENDCOPY):
       case(ENDMCOPY):
-	o_drawbounding(w_current, NULL,
-                       w_current->page_current->selection_list,
-                       x_get_darkcolor(w_current->bb_color), FALSE);
-
-        break;
-
       case(DRAWCOMP):
       case(ENDCOMP):
 	/* Call the o_draw_list without redrawing, so the components */
@@ -114,9 +111,11 @@ void o_redraw_all_fast(TOPLEVEL *w_current)
   }
 
   o_recalc_object_list(w_current, w_current->page_current->object_head);
-  /* Uncomment this when using the complex_place_list for moving and copying */
-  /*  o_recalc_object_glist(w_current, w_current->page_current->complex_place_list); */
-
+  o_recalc_object_glist(w_current, 
+			w_current->page_current->selection_list);
+  o_recalc_object_glist(w_current, 
+			w_current->page_current->complex_place_list);
+  
   draw_selected = !(w_current->inside_action &&
 		    ((w_current->event_state == MOVE) ||
 		     (w_current->event_state == ENDMOVE)));

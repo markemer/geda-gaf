@@ -87,16 +87,12 @@ gint x_event_expose(GtkWidget *widget, GdkEventExpose *event,
       case(COPY): 
       case(ENDCOPY):
       case(ENDMCOPY):
-        o_drawbounding(w_current, NULL,
-                       w_current->page_current->selection_list,
-                       x_get_darkcolor(w_current->bb_color), FALSE);
-        break;
       case(DRAWCOMP):
       case(ENDCOMP):
       case(ENDPASTE):
-	o_drawbounding(w_current, NULL,
-		       w_current->page_current->complex_place_list,
-                       x_get_darkcolor(w_current->bb_color), FALSE); 
+ 	 o_drawbounding(w_current, NULL,
+			w_current->page_current->complex_place_list,
+			x_get_darkcolor(w_current->bb_color), FALSE); 
         break;
 
       case(BUSCONT):
@@ -151,7 +147,7 @@ gint x_event_button_pressed(GtkWidget *widget, GdkEventButton *event,
 			    TOPLEVEL *w_current)
 {
   int prev_state; 
-
+  
   exit_if_null(w_current);
   global_window_current = w_current;
 
@@ -1088,12 +1084,12 @@ gint x_event_motion(GtkWidget *widget, GdkEventMotion *event,
     case(MCOPY):
     if (w_current->inside_action) {
       o_drawbounding(w_current, NULL,
-                     w_current->page_current->selection_list,
+                     w_current->page_current->complex_place_list,
                      x_get_darkcolor(w_current->bb_color), FALSE);
       w_current->last_x = fix_x(w_current,  (int) event->x);
       w_current->last_y = fix_y(w_current,  (int) event->y);
       o_drawbounding(w_current, NULL,
-                     w_current->page_current->selection_list,
+                     w_current->page_current->complex_place_list,
                      x_get_darkcolor(w_current->bb_color), FALSE);
     }
     break;

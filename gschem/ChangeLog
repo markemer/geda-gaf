@@ -1,5 +1,8 @@
 2006-10-22 Carlos Nieves Onega <cnieves@iespana.es>
 
+        * src/o_basic.c, src/o_copy.c, src/x_event.c:
+	  Make the copy action use the complex_place_list.
+	
 	* src/o_delete.c: Changed a check to use glib debugging functions.
 	  Don't free objects at the end of o_delete, but free only the list.
 	
