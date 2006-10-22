@@ -879,8 +879,10 @@ void o_mirror(TOPLEVEL *w_current, GList *list, int centerx, int centery)
   }
 
 
-  w_current->page_current->CHANGED=1;
-  o_undo_savestate(w_current, UNDO_ALL);
+  if (!w_current->inside_action) {
+    w_current->page_current->CHANGED=1;
+    o_undo_savestate(w_current, UNDO_ALL);
+  }
 }
 
 /*! \todo Finish function documentation!!!

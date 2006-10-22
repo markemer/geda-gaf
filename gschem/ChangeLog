@@ -1,5 +1,8 @@
 2006-10-22 Carlos Nieves Onega <cnieves@iespana.es>
 
+	* src/o_misc.c (o_mirror): don't save the undo state if called 
+	  inside an action.
+
 	* src/o_basic.c, src/o_complex.c: Keep calling the redraw functions.
 	  Some of them seem to recalculate the object position.
 
