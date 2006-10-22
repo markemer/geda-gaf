@@ -1,5 +1,9 @@
 2006-10-22 Carlos Nieves Onega <cnieves@iespana.es>
 
+	* src/o_basic.c (o_redraw_single): Don't return if DONT_REDRAW = 1.
+	  Keep calling redraw functions (some of them recalculate the object
+	  position).
+
 	* src/s_page.c: Don't free objects in the complex place list. It is
 	  only a reference to the objects in the page.
 

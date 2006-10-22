@@ -46,9 +46,8 @@ void o_complex_draw(TOPLEVEL *w_current, OBJECT *o_current)
   g_return_if_fail (o_current->complex != NULL);
   g_return_if_fail (o_current->complex->prim_objs != NULL);
 
-  if (!w_current->DONT_REDRAW) {
-    o_redraw(w_current, o_current->complex->prim_objs, TRUE);
-  }
+  /* Call the redraw functions. Some of them recalculates the object position*/
+  o_redraw(w_current, o_current->complex->prim_objs, TRUE);
 
   get_object_list_bounds(w_current, o_current->complex->prim_objs,
 			 &left, &top, &right, &bottom);

@@ -51,6 +51,7 @@
  */
 void o_redraw_all(TOPLEVEL *w_current)
 {
+  int redraw_state;
   o_redraw_all_fast(w_current);
 
   if (w_current->inside_action) {
@@ -69,9 +70,15 @@ void o_redraw_all(TOPLEVEL *w_current)
 
       case(DRAWCOMP):
       case(ENDCOMP):
-        o_drawbounding(w_current, 
-                       NULL,
-		       w_current->page_current->complex_place_list,
+	/* Call the o_draw_list without redrawing, so the components */
+	/* coordinates get recalculated */
+	redraw_state = w_current->DONT_REDRAW;
+	w_current->DONT_REDRAW = 1;
+ 	o_draw_list(w_current, w_current->page_current->complex_place_list); 
+	w_current->DONT_REDRAW = redraw_state;
+	o_drawbounding(w_current,
+		       NULL,
+ 		       w_current->page_current->complex_place_list,
                        x_get_darkcolor(w_current->bb_color), FALSE);
         break;
 

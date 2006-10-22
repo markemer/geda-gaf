@@ -1,5 +1,8 @@
 2006-10-22 Carlos Nieves Onega <cnieves@iespana.es>
 
+	* src/o_basic.c, src/o_complex.c: Keep calling the redraw functions.
+	  Some of them seem to recalculate the object position.
+
         * src/i_callbacks.c: Redraw the complex place list if panning
 	  inside an action.
 	

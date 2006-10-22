@@ -77,9 +77,6 @@ void o_redraw_single(TOPLEVEL *w_current, OBJECT *o_current)
   if (o_current == NULL)
   return;
 	
-  if (w_current->DONT_REDRAW) /* highly experimental */
-  return;
-
   if (o_current->draw_func != NULL && o_current->type != OBJ_HEAD) {
     w_current->inside_redraw = 1;
     (*o_current->draw_func)(w_current, o_current);
