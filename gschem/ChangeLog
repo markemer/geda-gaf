@@ -1,5 +1,10 @@
 2006-10-22 Carlos Nieves Onega <cnieves@iespana.es>
 
+        * src/i_callbacks.c: objects can be mirrored while moving or copying,
+	  so make the edit_mirror_hotkey callback aware of this.
+	  Moved w_current->DONT_REDRAW = 0 inside the 'if' in the 
+	  edit_rotate_90_hotkey callback.
+	
         * src/i_callbacks.c: objects can be rotated while moving or copying,
 	  so make the edit_rotate_90 callback aware of this.
 	

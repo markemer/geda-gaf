@@ -900,10 +900,11 @@ DEFINE_I_CALLBACK(edit_rotate_90_hotkey)
   if (object_list) {
     i_update_middle_button(w_current,
                            i_callback_edit_rotate_90_hotkey, _("Rotate"));
-    /* Allow o_rotate_90 to redraw the objects */
-    w_current->DONT_REDRAW = 0;
-    if (w_current->inside_action == 0) 
+    if (w_current->inside_action == 0) {
+      /* Allow o_rotate_90 to redraw the objects */
+      w_current->DONT_REDRAW = 0;
       o_rotate_90(w_current, object_list, mouse_x, mouse_y);
+    }
     else {
       o_drawbounding(w_current, NULL, object_list,
 		     x_get_darkcolor(w_current->bb_color), TRUE);
@@ -953,24 +954,52 @@ DEFINE_I_CALLBACK(edit_mirror_hotkey)
 {
   TOPLEVEL *w_current = (TOPLEVEL *) data;
   GList *object_list;
+  int redraw_state; 
 
   exit_if_null(w_current);
 
-  o_redraw_cleanstates(w_current);	
+  if (w_current->inside_action == 0)
+    o_redraw_cleanstates(w_current);	
 
-  object_list = w_current->page_current->selection_list;    
+  if (w_current->inside_action) {
+    object_list = w_current->page_current->complex_place_list;
+  } else {
+    object_list = w_current->page_current->selection_list;    
+  }
 
   if (object_list) {
     i_update_middle_button(w_current,
                            i_callback_edit_mirror_hotkey, _("Mirror"));
 
-    o_mirror(w_current, 
-             object_list, 
-             mouse_x, mouse_y);
+    if (w_current->inside_action == 0) {
+      /* Allow o_mirror to redraw the objects */
+      w_current->DONT_REDRAW = 0;
+      o_mirror(w_current, 
+	       object_list, 
+	       mouse_x, mouse_y);
+    }
+    else {
+      o_drawbounding(w_current, NULL, object_list,
+		     x_get_darkcolor(w_current->bb_color), TRUE);
+      /* Don't allow o_rotate_90 to erase the selection, neither to
+	 redraw the objects after rotating */
+      /* skip over head node */
+      redraw_state = w_current->DONT_REDRAW;
+      w_current->DONT_REDRAW = 1;
+      o_mirror(w_current, object_list,
+	       fix_x(w_current, w_current->start_x),
+	       fix_y(w_current, w_current->start_y));
+      w_current->DONT_REDRAW = redraw_state;
+      
+      o_drawbounding(w_current, NULL, object_list,
+		     x_get_darkcolor(w_current->bb_color), TRUE);
+    }
   }
 
-  w_current->event_state = SELECT;
-  w_current->inside_action = 0;
+  if (w_current->inside_action == 0) {
+    w_current->event_state = SELECT;
+    w_current->inside_action = 0;
+  }
   i_update_toolbar(w_current);
 }
 
