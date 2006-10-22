@@ -1561,6 +1561,8 @@ void o_update_component(TOPLEVEL *w_current, OBJECT *o_current)
   gboolean is_embedded;
   gchar *basename, *clib;
 
+  g_return_if_fail (o_current != NULL);
+
   is_embedded = o_complex_is_embedded (o_current);
 
   /* identify symbol name */

@@ -1,5 +1,10 @@
 2006-10-22 Carlos Nieves Onega <cnieves@iespana.es>
 
+	* src/o_delete.c: Changed a check to use glib debugging functions.
+	  Don't free objects at the end of o_delete, but free only the list.
+	
+	* src/o_misc.c: Added a sanity check.
+	
 	* src/o_misc.c (o_mirror): don't save the undo state if called 
 	  inside an action.
 

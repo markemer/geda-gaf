@@ -250,11 +250,7 @@ void o_delete(TOPLEVEL *w_current)
   while(s_current != NULL) {
 
     object = (OBJECT *) s_current->data;
-    if (object == NULL) {
-      fprintf(stderr, 
-              _("ERROR: NULL object in o_delete_end!\n"));
-      exit(-1);
-    }
+    g_assert (object != NULL);
 
     switch(object->type) {
       case(OBJ_LINE):
@@ -303,8 +299,10 @@ void o_delete(TOPLEVEL *w_current)
 
   w_current->inside_action = 0;
 
-  o_selection_unselect_list (w_current,
-			     &(w_current->page_current->selection_list));
+  /* Objects have been deleted. Free the list, without freeing again 
+     the objects */
+  g_list_free(w_current->page_current->selection_list);
+  w_current->page_current->selection_list = NULL;
   w_current->page_current->CHANGED=1;
 
   /* no longer needed */
