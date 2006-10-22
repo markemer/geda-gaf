@@ -1,5 +1,8 @@
 2006-10-22 Carlos Nieves Onega <cnieves@iespana.es>
 
+	* src/i_callbacks.c: When cancelling the copy movement, the
+	  complex place list has to be freed before calling o_undo_callback.
+	
         * src/o_basic.c, src/o_copy.c, src/x_event.c:
 	  Make the copy action use the complex_place_list.
 	

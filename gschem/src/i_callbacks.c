@@ -3542,6 +3542,28 @@ DEFINE_I_CALLBACK(cancel)
 
   exit_if_null(w_current);
 
+  /* it is possible to cancel in the middle of a complex place
+   * so lets be sure to clean up the complex_place_head
+   * structure and also clean up the attrib_place_head.
+   * remember these don't remove the head structure */
+
+  /* If it is a move command, then free the complex place list WITHOUT
+     freeing the individual objects. */
+  if ( (w_current->inside_action) && 
+       ((w_current->event_state == ENDCOPY) ||
+	(w_current->event_state == ENDMCOPY)) ) {
+	  s_delete_object_glist(w_current,
+				w_current->page_current->complex_place_list);  
+	  w_current->page_current->complex_place_list = NULL;
+	}
+  else {
+    g_list_free(w_current->page_current->complex_place_list);
+  }
+  w_current->page_current->complex_place_list = NULL;
+
+  o_list_delete_rest(w_current,
+                     w_current->page_current->attrib_place_head);
+
   if (w_current->inside_action) {
     o_undo_callback(w_current, UNDO_ACTION);	 
     w_current->rotated_inside = 0;
@@ -3564,28 +3586,6 @@ DEFINE_I_CALLBACK(cancel)
   if (w_current->inside_action) { 
      o_redraw_all(w_current); 
   }
-
-  /* it is possible to cancel in the middle of a complex place
-   * so lets be sure to clean up the complex_place_head
-   * structure and also clean up the attrib_place_head.
-   * remember these don't remove the head structure */
-
-  /* If it is a move command, then free the complex place list WITHOUT
-     freeing the individual objects. */
-  if ( (w_current->inside_action) && 
-       ((w_current->event_state == ENDCOPY) ||
-	(w_current->event_state == ENDMCOPY)) ) {
-	  s_delete_object_glist(w_current,
-				w_current->page_current->complex_place_list);  
-	  w_current->page_current->complex_place_list = NULL;
-	}
-  else {
-    g_list_free(w_current->page_current->complex_place_list);
-  }
-  w_current->page_current->complex_place_list = NULL;
-
-  o_list_delete_rest(w_current,
-                     w_current->page_current->attrib_place_head);
 
   /* also free internal current_attribute */
   o_attrib_free_current(w_current);
