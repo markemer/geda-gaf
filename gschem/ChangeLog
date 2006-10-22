@@ -1,5 +1,8 @@
 2006-10-22 Carlos Nieves Onega <cnieves@iespana.es>
 
+        * src/i_callbacks.c: objects can be rotated while moving or copying,
+	  so make the edit_rotate_90 callback aware of this.
+	
 	* src/o_basic.c: Don't free objects in the complex place list. It is
 	  only a reference to the objects in the page.
 
