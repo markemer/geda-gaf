@@ -1,3 +1,8 @@
+2006-10-22 Carlos Nieves Onega <cnieves@iespana.es>
+
+	* src/o_basic.c: Don't free objects in the complex place list. It is
+	  only a reference to the objects in the page.
+
 2006-10-21 Carlos Nieves Onega <cnieves@iespana.es>
 
         * include/prototype.h, src/g_hook.c, src/i_basic.c, 

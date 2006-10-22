@@ -759,8 +759,11 @@ int o_redraw_cleanstates(TOPLEVEL *w_current)
        * so lets be sure to clean up the complex_place_head
        * structure and also clean up the attrib_place_head.
        * remember these don't remove the head structure */
-      s_delete_object_glist (w_current, 
-			     w_current->page_current->complex_place_list);
+      /* The complex place is a reference to the real objects, so don't
+	 free the objects here */
+      g_list_free (w_current->page_current->complex_place_list);
+      w_current->page_current->complex_place_list = NULL;
+
       o_list_delete_rest(w_current,
 			 w_current->page_current->attrib_place_head);
  
