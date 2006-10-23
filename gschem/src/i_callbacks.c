@@ -1442,7 +1442,8 @@ DEFINE_I_CALLBACK(view_zoom_extents)
 
   /* scroll bar stuff */
   a_zoom_extents(w_current, w_current->page_current->object_head, 0);
-  o_undo_savestate(w_current, UNDO_VIEWPORT_ONLY);
+  if (w_current->inside_action == 0)
+    o_undo_savestate(w_current, UNDO_VIEWPORT_ONLY);
 }
 
 /*! \todo Finish function documentation!!!
