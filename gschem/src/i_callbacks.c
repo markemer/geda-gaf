@@ -3564,11 +3564,15 @@ DEFINE_I_CALLBACK(cancel)
   o_list_delete_rest(w_current,
                      w_current->page_current->attrib_place_head);
 
-  if (w_current->inside_action) {
+  /* Perform the undo only if it was a move action */
+  /* They allow the objects to be rotated or mirrored, and they work over
+     the original objects, so we have to go back to the original state */
+  if (w_current->inside_action && 
+      w_current->event_state == ENDMOVE) {
     o_undo_callback(w_current, UNDO_ACTION);	 
     w_current->rotated_inside = 0;
   }
-
+  
   /* leave this on for now... but it might have to change */
   /* this is problematic since we don't know what the right mode */
   /* (when you cancel inside an action) should be */

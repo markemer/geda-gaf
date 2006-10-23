@@ -1,3 +1,14 @@
+2006-10-23 Carlos Nieves Onega <cnieves@iespana.es>
+
+	* src/i_callbacks.c, src/o_copy.c: Fixed some undo issues.
+	  Removed the o_undo_savestate in o_copy_start added yesterday
+	  (there is no need for that since the undo state is saved after
+	  each action performed).
+	  Do an undo when the user cancels the move action. Since the move
+	  action allow the objects to be rotated or mirrored, we have to go
+	  back to the previous state. Otherwise they keep rotated after the
+	  cancel.
+
 2006-10-22 Carlos Nieves Onega <cnieves@iespana.es>
 
 	* src/o_copy.c: Update the connections after copying.
