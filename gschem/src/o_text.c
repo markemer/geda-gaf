@@ -228,13 +228,15 @@ void o_text_draw(TOPLEVEL *w_current, OBJECT *o_current)
     /* Indicate on the schematic that the text is invisible by */
     /* drawing a little I on the screen at the origin */
     if (o_current->visibility == INVISIBLE && w_current->show_hidden_text) {
-      if (w_current->override_color != -1 ) {
-        gdk_gc_set_foreground(w_current->gc, 
-                              x_get_color(w_current->override_color));
-      } else {
-
-        gdk_gc_set_foreground(w_current->gc, 
-                              x_get_color(w_current->lock_color));
+      if (w_current->DONT_REDRAW == 0) {
+	if (w_current->override_color != -1 ) {
+	  gdk_gc_set_foreground(w_current->gc, 
+				x_get_color(w_current->override_color));
+	} else {
+	  
+	  gdk_gc_set_foreground(w_current->gc, 
+				x_get_color(w_current->lock_color));
+	}
       }
 
       offset = SCREENabs(w_current, 10);
@@ -302,16 +304,16 @@ void o_text_draw(TOPLEVEL *w_current, OBJECT *o_current)
     return;
   }
 
-  if (w_current->override_color != -1 ) {
-    gdk_gc_set_foreground(w_current->gc, 
-                          x_get_color(w_current->override_color));
-  } else {
-
-    gdk_gc_set_foreground(w_current->gc, 
-                          x_get_color(w_current->lock_color));
-  }
-
   if (w_current->DONT_REDRAW == 0) {
+    if (w_current->override_color != -1 ) {
+      gdk_gc_set_foreground(w_current->gc, 
+			    x_get_color(w_current->override_color));
+    } else {
+      
+      gdk_gc_set_foreground(w_current->gc, 
+			    x_get_color(w_current->lock_color));
+    }
+
     gdk_draw_line(w_current->window, w_current->gc, 
 		  screen_x1-small_dist, 
 		  screen_y1+small_dist, 
