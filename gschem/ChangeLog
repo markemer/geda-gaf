@@ -1,3 +1,11 @@
+2006-11-23 Werner Hoch  <werner.ho@gmx.de>
+
+	* src/o_misc.c, src/x_dialog.c, src/x_autonumber.c: moved all 
+	  autonumber related code to x_autonumber.c
+	  applied patch (#1589430) from Tomaz Solz
+
+	* bitmap/: added bitmaps for the autonumber dialog
+	
 2006-10-23 Carlos Nieves Onega <cnieves@iespana.es>
 
 	* src/o_text.c: Changed polarity of one of the sanity checks 
