@@ -10,7 +10,6 @@ bitmapdata_DATA = gschem-bus.xpm gschem-comp.xpm gschem-net.xpm \
 		  gschem-top2bottom.png gschem-diagonal.png \
 		  gschem-right2left.png
 
-
 EXTRA_DIST = $(bitmapdata_DATA) README
 
 MOSTLYCLEANFILES = *.log *~
