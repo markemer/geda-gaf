@@ -118,6 +118,9 @@ struct free_slot_t {
 };
 
 
+
+/* ***** BACK-END CODE ***************************************************** */
+
 /********** compare functions for g_list_sort, ... ***********************/
 /*! \brief GCompareFunc function to sort a list with g_list_sort().
  *  \par Function Description
@@ -560,9 +563,6 @@ void autonumber_apply_new_text(AUTONUMBER_TEXT * autotext, OBJECT *o_current,
     }
     else {
       /* create a new attribute and attach it */
-      /*! \bug FIXME :o_slot_end(), called from o_attrib_add_attrib, calls o_undo_savestate().
-       *  this will flood the savestates and you have to undo every single slot addition. (Werner)
-       */
       o_attrib_add_attrib(autotext->toplevel, 
 			  g_strdup_printf("slot=%d",slot),
 			  VISIBLE, SHOW_NAME_VALUE,
@@ -790,6 +790,8 @@ void autonumber_text_autonumber(AUTONUMBER_TEXT *autotext)
   o_undo_savestate(w_current, UNDO_ALL);
 }
 
+/* ***** UTILITY GUI FUNCTIONS (move to a separate file in the future?) **** */
+
 /** @brief Finds a widget by its name given a pointer to its parent.
  *
  * @param widget Pointer to the parent widget.
@@ -805,106 +807,68 @@ GtkWidget* lookup_widget(GtkWidget *widget, const gchar *widget_name)
 	return found_widget;
 }
 
-/** @brief Get the settings from the autonumber text dialog
+/** @brief Creates a new GtkImage displaying from an icon file.
  *
- * Get the settings from the autonumber text dialog and store it in the
- * <B>AUTONUMBER_TEXT</B> structure.
- *
- * @param autotext Pointer to the state struct.
+ * @param stock Name of the icon.
+ * @return Pointer to the new GtkImage object.
  */
-void autonumber_get_state(AUTONUMBER_TEXT *autotext)
+static GtkWidget *autonumber_create_pixmap(const char *file, 
+							TOPLEVEL *w_current)
 {
-	GtkWidget *widget;
-	gchar *text;
+	GtkWidget *wpixmap;
+	gchar *path;
 
-	/* Scope */
+	path=g_strconcat(w_current->bitmap_directory, 
+			G_DIR_SEPARATOR_S, file, NULL);
 
-	/* Search text history */
-  	widget = lookup_widget(autotext->dialog, "scope_text");
-	text=gtk_combo_box_get_active_text( GTK_COMBO_BOX(widget) );
+	wpixmap = gtk_image_new_from_file (path);
 
-  	autotext->scope_text=g_list_prepend(autotext->scope_text, text);
-	while(g_list_length(autotext->scope_text)>HISTORY_LENGTH) {
-		GList *last = g_list_last(autotext->scope_text);
+	g_free(path);
 
-		autotext->scope_text = g_list_remove_link(
-						autotext->scope_text,
-						last);
+	return wpixmap;
+}
+
+/* ***** STATE STRUCT HANDLING (interface between GUI and backend code) **** */
+
+/** @brief Adds a line to the search text history list
+ *
+ * Function makes sure that: 1) There are no duplicates in the list and 2) the
+ * last search text is always at the top of the list.
+ */
+GList *autonumber_history_add(GList *history, gchar *text)
+{
+	/* Search for this text in history and delete it (so we don't have
+	 * duplicate entries) */
+
+	GList *cur;
+
+	cur=history;
+	while(cur!=NULL) {
+		if(!strcmp(text, cur->data)) {
+			history=g_list_remove_link(history, cur);
+
+			g_free(cur->data);
+			g_list_free(cur);
+			break;
+		}
+		cur=g_list_next(cur);
+	}
+
+	/* Add the new text at the beginning of the list */
+
+  	history=g_list_prepend(history, text);
+
+	/* Truncate history */
+	while(g_list_length(history) > HISTORY_LENGTH) {
+		GList *last = g_list_last(history);
+
+		history = g_list_remove_link(history, last);
 
 		g_free(last->data);
 		g_list_free(last);
 	}
 
-	widget = lookup_widget(autotext->dialog, "scope_skip");
-	autotext->scope_skip = gtk_combo_box_get_active( 
-						GTK_COMBO_BOX(widget) );
-
-	widget = lookup_widget(autotext->dialog, "scope_number");
-	autotext->scope_number = gtk_combo_box_get_active( 
-						GTK_COMBO_BOX(widget) );
-
-	widget = lookup_widget(autotext->dialog, "scope_overwrite");
-	autotext->scope_overwrite = gtk_toggle_button_get_active( 
-						GTK_TOGGLE_BUTTON(widget) );
-
-	/* Sort order */
-	autotext->order=-1;
-
-	if(autotext->order==-1) {
-		widget = lookup_widget(autotext->dialog, "order_file");
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-			autotext->order=AUTONUMBER_SORT_FILE;
-		}
-	}
-
-	if(autotext->order==-1) {
-		widget = lookup_widget(autotext->dialog, "order_left2right");
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-			autotext->order=AUTONUMBER_SORT_XY;
-		}
-	}
-
-	if(autotext->order==-1) {
-		widget = lookup_widget(autotext->dialog, "order_right2left");
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-			autotext->order=AUTONUMBER_SORT_XY_REV;
-		}
-	}
-
-	if(autotext->order==-1) {
-		widget = lookup_widget(autotext->dialog, "order_top2bottom");
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-			autotext->order=AUTONUMBER_SORT_YX;
-		}
-	}
-
-	if(autotext->order==-1) {
-		widget = lookup_widget(autotext->dialog, "order_bottom2top");
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-			autotext->order=AUTONUMBER_SORT_YX_REV;
-		}
-	}
-
-	if(autotext->order==-1) {
-		widget = lookup_widget(autotext->dialog, "order_diagonal");
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-			autotext->order=AUTONUMBER_SORT_DIAGONAL;
-		}
-	}
-
-	/* Options */
-
-	widget = lookup_widget(autotext->dialog, "opt_startnum");
-	autotext->startnum=gtk_spin_button_get_value_as_int(
-						GTK_SPIN_BUTTON(widget));
-
-	widget = lookup_widget(autotext->dialog, "opt_removenum");
-	autotext->removenum = gtk_toggle_button_get_active(
-						GTK_TOGGLE_BUTTON(widget) );
-
-	widget = lookup_widget(autotext->dialog, "opt_slotting");
-	autotext->slotting = gtk_toggle_button_get_active(
-						GTK_TOGGLE_BUTTON(widget) );
+	return history;
 }
 
 /** @brief Allocate and initialize the state structure
@@ -974,6 +938,15 @@ void autonumber_set_state(AUTONUMBER_TEXT *autotext)
 
 	/* Search text history */
   	widget = lookup_widget(autotext->dialog, "scope_text");
+
+	/* Simple way to clear the ComboBox. Owen from #gtk+ says: 
+	 *
+	 * Yeah, it's just slightly "shady" ... if you want to stick to fully 
+	 * advertised API, you need to remember how many rows you added and 
+	 * use gtk_combo_box_remove_text() */
+
+	GtkTreeModel *model = gtk_combo_box_get_model(GTK_COMBO_BOX(widget));
+	gtk_list_store_clear(GTK_LIST_STORE(model));
 
 	GList *el = autotext->scope_text;
 
@@ -1048,26 +1021,116 @@ void autonumber_set_state(AUTONUMBER_TEXT *autotext)
 							autotext->slotting);
 }
 
+/** @brief Get the settings from the autonumber text dialog
+ *
+ * Get the settings from the autonumber text dialog and store it in the
+ * <B>AUTONUMBER_TEXT</B> structure.
+ *
+ * @param autotext Pointer to the state struct.
+ */
+void autonumber_get_state(AUTONUMBER_TEXT *autotext)
+{
+	GtkWidget *widget;
+	gchar *text;
+
+	/* Scope */
+
+	/* Search text history */
+  	widget = lookup_widget(autotext->dialog, "scope_text");
+	text=gtk_combo_box_get_active_text( GTK_COMBO_BOX(widget) );
+
+	autotext->scope_text=autonumber_history_add(autotext->scope_text, text);
+
+	widget = lookup_widget(autotext->dialog, "scope_skip");
+	autotext->scope_skip = gtk_combo_box_get_active( 
+						GTK_COMBO_BOX(widget) );
+
+	widget = lookup_widget(autotext->dialog, "scope_number");
+	autotext->scope_number = gtk_combo_box_get_active( 
+						GTK_COMBO_BOX(widget) );
+
+	widget = lookup_widget(autotext->dialog, "scope_overwrite");
+	autotext->scope_overwrite = gtk_toggle_button_get_active( 
+						GTK_TOGGLE_BUTTON(widget) );
+
+	/* Sort order */
+	autotext->order=-1;
+
+	if(autotext->order==-1) {
+		widget = lookup_widget(autotext->dialog, "order_file");
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
+			autotext->order=AUTONUMBER_SORT_FILE;
+		}
+	}
+
+	if(autotext->order==-1) {
+		widget = lookup_widget(autotext->dialog, "order_left2right");
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
+			autotext->order=AUTONUMBER_SORT_XY;
+		}
+	}
+
+	if(autotext->order==-1) {
+		widget = lookup_widget(autotext->dialog, "order_right2left");
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
+			autotext->order=AUTONUMBER_SORT_XY_REV;
+		}
+	}
+
+	if(autotext->order==-1) {
+		widget = lookup_widget(autotext->dialog, "order_top2bottom");
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
+			autotext->order=AUTONUMBER_SORT_YX;
+		}
+	}
+
+	if(autotext->order==-1) {
+		widget = lookup_widget(autotext->dialog, "order_bottom2top");
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
+			autotext->order=AUTONUMBER_SORT_YX_REV;
+		}
+	}
+
+	if(autotext->order==-1) {
+		widget = lookup_widget(autotext->dialog, "order_diagonal");
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
+			autotext->order=AUTONUMBER_SORT_DIAGONAL;
+		}
+	}
+
+	/* Options */
+
+	widget = lookup_widget(autotext->dialog, "opt_startnum");
+	autotext->startnum=gtk_spin_button_get_value_as_int(
+						GTK_SPIN_BUTTON(widget));
+
+	widget = lookup_widget(autotext->dialog, "opt_removenum");
+	autotext->removenum = gtk_toggle_button_get_active(
+						GTK_TOGGLE_BUTTON(widget) );
+
+	widget = lookup_widget(autotext->dialog, "opt_slotting");
+	autotext->slotting = gtk_toggle_button_get_active(
+						GTK_TOGGLE_BUTTON(widget) );
+}
+
+/* ***** CALLBACKS (functions that get called directly from the GTK) ******* */
+
 /*! \brief OK Button callback of the autonumber text dialog
  *  \par Function Description
  *  This function applies the dialog settings to the schematics.
  */
 void autonumber_text_ok(GtkWidget * w, AUTONUMBER_TEXT *autotext)
 {
-	GtkWidget *combobox;
-
   	autonumber_get_state(autotext);
 
   	autonumber_text_autonumber(autotext);
 
-	combobox=lookup_widget(autotext->dialog, "scope_text");
-	gtk_combo_box_prepend_text(GTK_COMBO_BOX(combobox), 
-					autotext->scope_text->data);
+	autonumber_set_state(autotext);
 }
 
 /*! \brief Destroy callback function of the autonumber text dialog
  */
-void autonumber_text_done(GtkWidget * w, AUTONUMBER_TEXT *autotext)
+void autonumber_text_destroy(GtkWidget * w, AUTONUMBER_TEXT *autotext)
 {
 	/* The usual behaviour is that dialog contents are not stored if
 	 * the user pressed "cancel" */
@@ -1075,6 +1138,31 @@ void autonumber_text_done(GtkWidget * w, AUTONUMBER_TEXT *autotext)
 	/* autonumber_text_getdata(autotext); */
 
 	autotext->dialog = NULL;
+}
+
+/** @brief Callback that activates or deactivates "overwrite existing numbers" 
+ * check box.
+ *
+ * This gets called each time "remove numbers" check box gets clicked.
+ */
+void autonumber_removenum_toggled(GtkWidget * w, AUTONUMBER_TEXT *autotext)
+{
+	GtkWidget *scope_overwrite;
+	GtkWidget *opt_removenum;
+
+	scope_overwrite=lookup_widget(autotext->dialog, "scope_overwrite");
+	opt_removenum=w;
+
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(opt_removenum))) {
+		/* it does not make sense to have "remove numbers" enabled and
+		 * "overwrite numbers" disabled */
+		gtk_toggle_button_set_active(
+					GTK_TOGGLE_BUTTON(scope_overwrite),
+					1);
+		gtk_widget_set_sensitive(scope_overwrite, 0);
+	} else {
+		gtk_widget_set_sensitive(scope_overwrite, 1);
+	}
 }
 
 /** @brief Close button callback function of the autonumber text dialog
@@ -1086,30 +1174,11 @@ void autonumber_text_close(GtkWidget * w, AUTONUMBER_TEXT *autotext)
 {
   gtk_widget_destroy(autotext->dialog);
 
-  /* the settings are stored by autonumber_text_done, 
+  /* the settings are stored by autonumber_text_destroy, 
      called by the destroy event */
 }
 
-/** @brief Creates a new GtkImage displaying from an icon file.
- *
- * @param stock Name of the icon.
- * @return Pointer to the new GtkImage object.
- */
-static GtkWidget *autonumber_create_pixmap(const char *file, 
-							TOPLEVEL *w_current)
-{
-	GtkWidget *wpixmap;
-	gchar *path;
-
-	path=g_strconcat(w_current->bitmap_directory, 
-			G_DIR_SEPARATOR_S, file, NULL);
-
-	wpixmap = gtk_image_new_from_file (path);
-
-	g_free(path);
-
-	return wpixmap;
-}
+/* ***** DIALOG SET-UP ***************************************************** */
 
 /** @brief Creates the autonumber text dialog.
  *
@@ -1213,7 +1282,7 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
 
   label6 = gtk_label_new_with_mnemonic ("_Skip numbers found in:");
   gtk_widget_show (label6);
-  gtk_table_attach (GTK_TABLE (table1), label6, 0, 1, 1, 2,
+  gtk_table_attach (GTK_TABLE (table1), label6, 0, 1, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (label6), 0, 0.5);
@@ -1226,7 +1295,7 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
 
   scope_skip = gtk_combo_box_new_text ();
   gtk_widget_show (scope_skip);
-  gtk_table_attach (GTK_TABLE (table1), scope_skip, 1, 2, 1, 2,
+  gtk_table_attach (GTK_TABLE (table1), scope_skip, 1, 2, 2, 3,
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
   gtk_widget_add_accelerator (scope_skip, "grab_focus", accel_group,
@@ -1238,14 +1307,14 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
 
   label8 = gtk_label_new_with_mnemonic ("_Autonumber text in:");
   gtk_widget_show (label8);
-  gtk_table_attach (GTK_TABLE (table1), label8, 0, 1, 2, 3,
+  gtk_table_attach (GTK_TABLE (table1), label8, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (label8), 0, 0.5);
 
   scope_number = gtk_combo_box_new_text ();
   gtk_widget_show (scope_number);
-  gtk_table_attach (GTK_TABLE (table1), scope_number, 1, 2, 2, 3,
+  gtk_table_attach (GTK_TABLE (table1), scope_number, 1, 2, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
   gtk_widget_add_accelerator (scope_number, "grab_focus", accel_group,
@@ -1467,6 +1536,7 @@ void autonumber_text_dialog(TOPLEVEL *w_current)
 
 	GtkWidget *button_ok = NULL;
 	GtkWidget *button_close = NULL;
+	GtkWidget *opt_removenum = NULL;
 
 	if(autotext == NULL) {
 		/* first call of this function, init dialog structure */
@@ -1483,10 +1553,11 @@ void autonumber_text_dialog(TOPLEVEL *w_current)
 
 		button_ok = lookup_widget(autotext->dialog, "button_ok");
 		button_close = lookup_widget(autotext->dialog, "button_close");
+		opt_removenum = lookup_widget(autotext->dialog, "opt_removenum");
 
 		gtk_signal_connect(GTK_OBJECT(autotext->dialog),
 				"destroy",
-				(GtkSignalFunc) autonumber_text_done,
+				(GtkSignalFunc) autonumber_text_destroy,
 				autotext);
 
 		gtk_signal_connect(GTK_OBJECT(button_ok), 
@@ -1497,6 +1568,11 @@ void autonumber_text_dialog(TOPLEVEL *w_current)
 		gtk_signal_connect(GTK_OBJECT(button_close), 
 				"clicked",
 				GTK_SIGNAL_FUNC(autonumber_text_close), 
+				autotext);
+
+		gtk_signal_connect(GTK_OBJECT(opt_removenum),
+				"clicked",
+				GTK_SIGNAL_FUNC(autonumber_removenum_toggled),
 				autotext);
 
 		autonumber_set_state(autotext);

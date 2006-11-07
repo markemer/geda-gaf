@@ -1,4 +1,14 @@
-2006-11-23 Werner Hoch  <werner.ho@gmx.de>
+2006-11-07 Werner Hoch  <werner.ho@gmx.de>
+
+	* src/o_slot.c, x_dialog.c: removed redundant o_undo_savestate() in 
+	  o_slot_end(). But it is required in the slot_edit_dialog_ok() 
+	  function. This repairs to many undo states when using the 
+	  autoslotting feature of the autonumber dialog.
+	
+	* src/x_autonumber.c:  Added improved autonumber dialog from 
+	  Tomaz Solz (#1589430)
+
+2006-11-06 Werner Hoch  <werner.ho@gmx.de>
 
 	* src/o_misc.c, src/x_dialog.c, src/x_autonumber.c: moved all 
 	  autonumber related code to x_autonumber.c

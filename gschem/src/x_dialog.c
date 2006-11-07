@@ -2187,6 +2187,7 @@ void slot_edit_dialog_ok(GtkWidget *w, TOPLEVEL *w_current)
 
     if (len < 80) {
       o_slot_end(w_current, string, len);
+      o_undo_savestate(w_current, UNDO_ALL);
     } else {
       /*! \todo you should NOT have limits */
       fprintf(stderr, _("String too long... hack!\n"));
