@@ -487,7 +487,7 @@ o_copy_end(TOPLEVEL *w_current)
   s_basic_link_object(new_objects_head, w_current->page_current->object_tail);
 
   /* Run the copy component hook */
-  object = new_objects_head->next;
+  object = new_objects_head;
   while (object != NULL) {
     if ((object->type == OBJ_COMPLEX) &&
 	(scm_hook_empty_p(copy_component_hook) == SCM_BOOL_F)) {
