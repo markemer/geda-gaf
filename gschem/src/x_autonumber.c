@@ -307,7 +307,6 @@ gint autonumber_match(AUTONUMBER_TEXT *autotext, OBJECT *o_current, gint *number
 {
   gint i, len, isnumbered=1; 
 
-  
   len = strlen(autotext->current_searchtext);
   /* first find out whether we can ignore that object */
   if (o_current->type != OBJ_TEXT  /* text object */
@@ -336,7 +335,9 @@ gint autonumber_match(AUTONUMBER_TEXT *autotext, OBJECT *o_current, gint *number
       && (!isnumbered || (autotext->scope_overwrite)))
     return AUTONUMBER_RENUMBER;
   
-  if (isnumbered) {
+  if (isnumbered
+      && !(autotext->scope_skip == SCOPE_SELECTED 
+	   && !(o_current->selected)  && autotext->root_page)) {
     sscanf(&(o_current->text->string[len])," %d", number);
     return AUTONUMBER_RESPECT; /* numbered objects which we don't renumber */
   }
@@ -705,8 +706,8 @@ void autonumber_text_autonumber(AUTONUMBER_TEXT *autotext)
     for (page_item = pages; page_item != NULL; page_item = g_list_next(page_item)) {
       s_page_goto(w_current, page_item->data);
       autotext->root_page = (pages->data == page_item->data);
-      /* build a page database if we're numbering pagebypage */
-      if (autotext->scope_skip == SCOPE_PAGE) {
+      /* build a page database if we're numbering pagebypage or selection only*/
+      if (autotext->scope_skip == SCOPE_PAGE || autotext->scope_skip == SCOPE_SELECTED) {
 	autonumber_get_used(w_current, autotext);
       }
       

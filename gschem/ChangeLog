@@ -1,3 +1,8 @@
+2006-11-09 Werner Hoch  <werner.ho@gmx.de>
+
+	* src/x_autonumber.c:  (scope_skip == SCOPE_SELECTED) didn't work as 
+	  expected, fixed it.
+
 2006-11-07 Werner Hoch  <werner.ho@gmx.de>
 
 	* src/o_slot.c, x_dialog.c: removed redundant o_undo_savestate() in 
