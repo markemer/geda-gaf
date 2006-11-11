@@ -72,46 +72,47 @@ typedef struct autonumber_text_t AUTONUMBER_TEXT;
 
 /** @brief Stored state of the autonumber text dialog */
 struct autonumber_text_t {
-	/** @brief Search text history */
-  	GList *scope_text;
+  /** @brief Search text history */
+  GList *scope_text;
 
-	/** @brief Scope for searching existing numbers */
-  	gint scope_skip;
+  /** @brief Scope for searching existing numbers */
+  gint scope_skip;
 
-	/** @brief Scope for autonumbering text */
-	gint scope_number;
+  /** @brief Scope for autonumbering text */
+  gint scope_number;
 
-	/** @brief Overwrite existing numbers in scope */
-	gboolean scope_overwrite;
+  /** @brief Overwrite existing numbers in scope */
+  gboolean scope_overwrite;
 
-	/** @brief Sort order */
-  	gint order;
+  /** @brief Sort order */
+  gint order;
 
-	/** @brief Starting number for automatic numbering */
-	gint startnum;
+  /** @brief Starting number for automatic numbering */
+  gint startnum;
 
-	/** @brief Remove numbers instead of automatic numbering */
-	gboolean removenum;
+  /** @brief Remove numbers instead of automatic numbering */
+  gboolean removenum;
 
-	/** @brief Automatic assignments of slots */
-  	gboolean slotting;
+  /** @brief Automatic assignments of slots */
+  gboolean slotting;
 
-  	/** @brief Pointer to the dialog */ 
-  	GtkWidget *dialog;
+  /** @brief Pointer to the dialog */ 
+  GtkWidget *dialog;
 
-	/** @brief Pointer to the toplevel struct */
-	TOPLEVEL *toplevel;
+  /** @brief Pointer to the toplevel struct */
+  TOPLEVEL *toplevel;
 
-  	/* variables used while autonumbering */
-	gchar * current_searchtext;
-	gint root_page;      /* flag whether its the root page or not */
-	GList *used_numbers; /* list of used numbers */ 
-	GList *free_slots;   /* list of FREE_SLOT objects */
+  /* variables used while autonumbering */
+  gchar * current_searchtext;
+  gint root_page;      /* flag whether its the root page or not */
+  GList *used_numbers; /* list of used numbers */ 
+  GList *free_slots;   /* list of FREE_SLOT objects */
+  GList *used_slots;   /* list of USED_SLOT objects */
 };
 
-typedef struct free_slot_t FREE_SLOT;
+typedef struct autonumber_slot_t AUTONUMBER_SLOT;
 
-struct free_slot_t {
+struct autonumber_slot_t {
   gchar *symbolname;     /* or should I use the device name? (Werner) */
   gint number;           /* usually this is the refdes number */
   gint slotnr;      /* just the number of the free slot */
@@ -242,19 +243,19 @@ int autonumber_sort_diagonal(gconstpointer a, gconstpointer b) {
   return 0;
 }
 
-/*! \brief GCompareFunc function to acces <B>FREE_SLOT</B> object in a GList
+/*! \brief GCompareFunc function to acces <B>AUTONUMBER_SLOT</B> object in a GList
  *  \par Function Description
- *  This Funcion takes two <B>FREE_SLOT*</B> arguments and compares them.
- *  Sorting criteria is are the FREE_SLOT members: first the symbolname, than the 
+ *  This Funcion takes two <B>AUTONUMBER_SLOT*</B> arguments and compares them.
+ *  Sorting criteria is are the AUTONUMBER_SLOT members: first the symbolname, than the 
  *  number and last the slotnr.
  *  If the number or the slotnr is set to zero it acts as a wildcard. 
  *  The function is used as GCompareFunc by GList functions.
  */
 gint freeslot_compare(gconstpointer a, gconstpointer b) 
 {
-  FREE_SLOT *aa, *bb;
+  AUTONUMBER_SLOT *aa, *bb;
   gint res;
-  aa = (FREE_SLOT *) a;  bb = (FREE_SLOT *) b;
+  aa = (AUTONUMBER_SLOT *) a;  bb = (AUTONUMBER_SLOT *) b;
   
   if ((res = strcmp(aa->symbolname, bb->symbolname)) != 0)
     return res;
@@ -278,19 +279,43 @@ gint freeslot_compare(gconstpointer a, gconstpointer b)
   return 0;
 }
 
-/*! \brief Prints a <B>GList</B> of <B>FREE_SLOT</B> elements
+/*! \brief Prints a <B>GList</B> of <B>AUTONUMBER_SLOT</B> elements
  *  \par Function Description
- *  This funcion prints the elements of a GList that contains <B>FREE_SLOT</B> elements
+ *  This funcion prints the elements of a GList that contains <B>AUTONUMBER_SLOT</B> elements
  *  It is only used for debugging purposes.
  */
 void freeslot_print(GList *list) {
   GList *item;
-  FREE_SLOT *fs;
+  AUTONUMBER_SLOT *fs;
   
   printf("freeslot_print(): symname, number, slot\n");
   for (item = list; item != NULL; item = g_list_next(item)) {
     fs = item ->data;
     printf("  %s, %d, %d\n",fs->symbolname, fs->number, fs->slotnr);
+  }
+}
+
+
+/*! \brief Function to clear the databases of used parts
+ *  \par Function Descriptions
+ *  Just remove the list of used numbers, used slots and free slots.
+ */
+void autonumber_clear_database (AUTONUMBER_TEXT *autotext)
+{
+  /* cleanup everything for the next searchtext */
+  if (autotext->used_numbers != NULL) {
+    g_list_free(autotext->used_numbers);
+    autotext->used_numbers = NULL;
+  }
+  if (autotext->free_slots != NULL) {
+    g_list_foreach(autotext->free_slots, (GFunc) g_free, NULL);
+    g_list_free(autotext->free_slots);
+    autotext->free_slots = NULL;
+  }
+  if (autotext->used_slots != NULL) {
+    g_list_foreach(autotext->used_slots, (GFunc) g_free, NULL);
+    g_list_free(autotext->used_slots);
+    autotext->used_slots = NULL;
   }
 }
 
@@ -357,11 +382,11 @@ gint autonumber_match(AUTONUMBER_TEXT *autotext, OBJECT *o_current, gint *number
  */
 void autonumber_get_used(TOPLEVEL *w_current, AUTONUMBER_TEXT *autotext)
 {
-  gint number, numslots, slot, i;
+  gint number, numslots, slotnr, i;
   OBJECT *o_current, *o_parent, *o_numslots;
   ATTRIB *a_current;
-  FREE_SLOT *freeslot;
-  GList *freeslot_item;
+  AUTONUMBER_SLOT *slot;
+  GList *slot_item;
   char *numslot_str, *slot_str;
   
   for (o_current = w_current->page_current->object_head; o_current != NULL;
@@ -374,8 +399,8 @@ void autonumber_get_used(TOPLEVEL *w_current, AUTONUMBER_TEXT *autotext)
 	/* check for slotted symbol */
 	if ((numslot_str = o_attrib_search_numslots(o_parent, &o_numslots)) != NULL) {
 	  sscanf(numslot_str," %d",&numslots);
-	  //printf("autonumber_get_used(): numslots %d\n", numslots);
 	  free(numslot_str);
+
 	  if (numslots > 0) { 
 	    slot_str=o_attrib_search_attrib_name(o_parent->attribs,"slot",0);
 	    if (slot_str == NULL) {
@@ -383,42 +408,55 @@ void autonumber_get_used(TOPLEVEL *w_current, AUTONUMBER_TEXT *autotext)
 			      "problems when autonumbering slots\n"));
 	    }
 	    else {
-	      sscanf(slot_str, " %d", &slot);
-	      freeslot = g_new(FREE_SLOT,1);
-	      freeslot->number = number;
-	      freeslot->slotnr = slot;
-	      freeslot->symbolname = o_parent->complex_basename;
+	      sscanf(slot_str, " %d", &slotnr);
+	      slot = g_new(AUTONUMBER_SLOT,1);
+	      slot->number = number;
+	      slot->slotnr = slotnr;
+	      slot->symbolname = o_parent->complex_basename;
 	
-	      freeslot_item = g_list_find_custom(autotext->free_slots,
-						 freeslot,
+
+	      slot_item = g_list_find_custom(autotext->used_slots,
+						 slot,
 						 (GCompareFunc) freeslot_compare);
-	      if (freeslot_item == NULL) {
-		/* insert all slots to the list, except of the current one */
-		for (i=1; i <= numslots; i++) {
-		  if (i != slot) {
-		    freeslot->slotnr = i;
-		    autotext->free_slots = g_list_insert_sorted(autotext->free_slots,
-								freeslot,
-								(GCompareFunc) freeslot_compare);
-		    freeslot = g_memdup(freeslot, sizeof(FREE_SLOT));
-		  }
-		}
+	      if (slot_item != NULL) { /* duplicate slot in used_slots */
+		s_log_message(_("duplicate slot may cause problems: "
+				"[symbolname=%s, number=%d, slot=%d]\n"),
+				slot->symbolname, slot->number, slot->slotnr);
+		g_free(slot);
 	      }
 	      else {
-		g_free(freeslot_item->data);
-		autotext->free_slots = g_list_delete_link(autotext->free_slots,freeslot_item);
-		g_free(freeslot);
+		autotext->used_slots = g_list_insert_sorted(autotext->used_slots,
+							    slot,
+							    (GCompareFunc) freeslot_compare);
+		
+		slot_item = g_list_find_custom(autotext->free_slots,
+						   slot,
+						   (GCompareFunc) freeslot_compare);
+		if (slot_item == NULL) {
+		  /* insert all slots to the list, except of the current one */
+		  for (i=1; i <= numslots; i++) {
+		    if (i != slot) {
+		      slot = g_memdup(slot, sizeof(AUTONUMBER_SLOT));
+		      slot->slotnr = i;
+		      autotext->free_slots = g_list_insert_sorted(autotext->free_slots,
+								  slot,
+								  (GCompareFunc) freeslot_compare);
+		    }
+		  }
+		}
+		else {
+		  g_free(slot_item->data);
+		  autotext->free_slots = g_list_delete_link(autotext->free_slots, slot_item);
+		}
 	      }
 	    }
 	  }
 	}
-	//freeslot_print(autotext->free_slots);
       }
       /* put number into the used list */
       autotext->used_numbers = g_list_insert_sorted(autotext->used_numbers,
 						    GINT_TO_POINTER(number),
 						    (GCompareFunc) autonumber_sort_numbers);
-      //printf("autonumber_get_used(): number=%d\n", number);
     }
   }
 }
@@ -438,7 +476,7 @@ void autonumber_get_new_numbers(AUTONUMBER_TEXT *autotext, OBJECT *o_current,
 {
   GList *item;
   gint new_number, numslots, i;
-  FREE_SLOT *freeslot;
+  AUTONUMBER_SLOT *freeslot;
   OBJECT *o_parent = NULL, *o_numslots;
   ATTRIB *a_current = NULL;
   GList *freeslot_item;
@@ -450,7 +488,7 @@ void autonumber_get_new_numbers(AUTONUMBER_TEXT *autotext, OBJECT *o_current,
   /* 1. are there any unused slots in the database? */
   if ((autotext->slotting) && (a_current = o_current->attached_to) != NULL) {
     o_parent = o_attrib_return_parent(a_current);
-    freeslot = g_new(FREE_SLOT,1);
+    freeslot = g_new(AUTONUMBER_SLOT,1);
     freeslot->symbolname = o_parent->complex_basename;
     freeslot->number = 0;
     freeslot->slotnr = 0;
@@ -464,9 +502,8 @@ void autonumber_get_new_numbers(AUTONUMBER_TEXT *autotext, OBJECT *o_current,
       *number = freeslot->number;
       *slot = freeslot->slotnr;
       g_free(freeslot);
-      autotext->free_slots = g_list_delete_link(autotext->free_slots,freeslot_item);
+      autotext->free_slots = g_list_delete_link(autotext->free_slots, freeslot_item);
       
-      //freeslot_print(autotext->free_slots);
       return;
     }
   }
@@ -499,7 +536,7 @@ void autonumber_get_new_numbers(AUTONUMBER_TEXT *autotext, OBJECT *o_current,
 	/* Yes! -> new number and slot=1; add the other slots to the database */
 	*slot = 1;
 	for (i=2; i <=numslots; i++) {
-	  freeslot = g_new(FREE_SLOT,1);
+	  freeslot = g_new(AUTONUMBER_SLOT,1);
 	  freeslot->symbolname = o_parent->complex_basename;
 	  freeslot->number = new_number;
 	  freeslot->slotnr = i;
@@ -507,7 +544,6 @@ void autonumber_get_new_numbers(AUTONUMBER_TEXT *autotext, OBJECT *o_current,
 						      freeslot,
 						      (GCompareFunc) freeslot_compare);
 	}
-	//freeslot_print(autotext->free_slots);
       }
     }
   }
@@ -566,7 +602,7 @@ void autonumber_apply_new_text(AUTONUMBER_TEXT * autotext, OBJECT *o_current,
       /* create a new attribute and attach it */
       o_attrib_add_attrib(autotext->toplevel, 
 			  g_strdup_printf("slot=%d",slot),
-			  VISIBLE, SHOW_NAME_VALUE,
+			  INVISIBLE, SHOW_NAME_VALUE,
 			  o_parent);
     }
     o_attrib_slot_update(autotext->toplevel, o_parent);
@@ -611,6 +647,7 @@ void autonumber_text_autonumber(AUTONUMBER_TEXT *autotext)
   autotext->root_page = 1;
   autotext->used_numbers = NULL;
   autotext->free_slots = NULL;
+  autotext->used_slots = NULL;
 
   scope_text = g_list_first(autotext->scope_text)->data;
 
@@ -743,7 +780,6 @@ void autonumber_text_autonumber(AUTONUMBER_TEXT *autotext)
       }
 	 
       /* 3. renumber/reslot the objects */
-
       for(obj_item=o_list; obj_item != NULL; obj_item=g_list_next(obj_item)) {
 	o_current= obj_item->data;
       	if(autotext->removenum) {
@@ -759,27 +795,15 @@ void autonumber_text_autonumber(AUTONUMBER_TEXT *autotext)
       o_list = NULL;
 
       /* destroy the page database */
-      if (autotext->scope_skip == SCOPE_PAGE) {
-	g_list_free(autotext->used_numbers);
-	autotext->used_numbers = NULL;
-	g_list_foreach(autotext->free_slots, (GFunc) g_free, NULL);
-	g_list_free(autotext->free_slots);
-	autotext->free_slots = NULL;
-      }
-      if (autotext->scope_number == SCOPE_SELECTED || autotext->scope_number == SCOPE_PAGE)
+      if (autotext->scope_skip == SCOPE_PAGE 
+	  || autotext->scope_skip == SCOPE_SELECTED) 
+	autonumber_clear_database(autotext);
+
+      if (autotext->scope_number == SCOPE_SELECTED 
+	  || autotext->scope_number == SCOPE_PAGE)
 	break; /* only renumber the parent page (the first page) */
     }
-
-    /* cleanup everything for the next searchtext */
-    if (autotext->used_numbers != NULL) {
-      g_list_free(autotext->used_numbers);
-      autotext->used_numbers = NULL;
-    }
-    if (autotext->free_slots != NULL) {
-      g_list_foreach(autotext->free_slots, (GFunc) g_free, NULL);
-      g_list_free(autotext->free_slots);
-      autotext->free_slots = NULL;
-    }
+    autonumber_clear_database(autotext);   /* cleanup */
   }
 
   /* cleanup and redraw all*/
@@ -1240,9 +1264,6 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   GtkWidget *hbuttonbox1;
   GtkWidget *button_cancel;
   GtkWidget *button_ok;
-  GtkAccelGroup *accel_group;
-
-  accel_group = gtk_accel_group_new ();
 
   autonumber_text = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (autonumber_text), "Autonumber text");
@@ -1274,14 +1295,14 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_table_set_row_spacings (GTK_TABLE (table1), 3);
   gtk_table_set_col_spacings (GTK_TABLE (table1), 12);
 
-  label4 = gtk_label_new_with_mnemonic ("Search _for:");
+  label4 = gtk_label_new ("Search for:");
   gtk_widget_show (label4);
   gtk_table_attach (GTK_TABLE (table1), label4, 0, 1, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (label4), 0, 0.5);
 
-  label6 = gtk_label_new_with_mnemonic ("_Skip numbers found in:");
+  label6 = gtk_label_new ("Skip numbers found in:");
   gtk_widget_show (label6);
   gtk_table_attach (GTK_TABLE (table1), label6, 0, 1, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
@@ -1299,14 +1320,11 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_table_attach (GTK_TABLE (table1), scope_skip, 1, 2, 2, 3,
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
-  gtk_widget_add_accelerator (scope_skip, "grab_focus", accel_group,
-                              GDK_s, (GdkModifierType) 0,
-                              GTK_ACCEL_VISIBLE);
   gtk_combo_box_append_text (GTK_COMBO_BOX (scope_skip), "Selected objects");
   gtk_combo_box_append_text (GTK_COMBO_BOX (scope_skip), "Current page");
   gtk_combo_box_append_text (GTK_COMBO_BOX (scope_skip), "Whole hierarchy");
 
-  label8 = gtk_label_new_with_mnemonic ("_Autonumber text in:");
+  label8 = gtk_label_new ("Autonumber text in:");
   gtk_widget_show (label8);
   gtk_table_attach (GTK_TABLE (table1), label8, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
@@ -1318,19 +1336,13 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_table_attach (GTK_TABLE (table1), scope_number, 1, 2, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
-  gtk_widget_add_accelerator (scope_number, "grab_focus", accel_group,
-                              GDK_s, (GdkModifierType) 0,
-                              GTK_ACCEL_VISIBLE);
   gtk_combo_box_append_text (GTK_COMBO_BOX (scope_number), "Selected objects");
   gtk_combo_box_append_text (GTK_COMBO_BOX (scope_number), "Current page");
   gtk_combo_box_append_text (GTK_COMBO_BOX (scope_number), "Whole hierarchy");
 
-  scope_overwrite = gtk_check_button_new_with_mnemonic ("_Overwrite existing numbers");
+  scope_overwrite = gtk_check_button_new_with_label ("Overwrite existing numbers");
   gtk_widget_show (scope_overwrite);
   gtk_box_pack_start (GTK_BOX (vbox3), scope_overwrite, FALSE, FALSE, 6);
-  gtk_widget_add_accelerator (scope_overwrite, "clicked", accel_group,
-                              GDK_o, (GdkModifierType) 0,
-                              GTK_ACCEL_VISIBLE);
 
   label1 = gtk_label_new ("<b>Scope</b>");
   gtk_widget_show (label1);
@@ -1353,7 +1365,7 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_table_set_row_spacings (GTK_TABLE (table2), 3);
   gtk_table_set_col_spacings (GTK_TABLE (table2), 12);
 
-  order_file = gtk_radio_button_new_with_mnemonic (NULL, "File order");
+  order_file = gtk_radio_button_new_with_label (NULL, "File order");
   gtk_widget_show (order_file);
   gtk_table_attach (GTK_TABLE (table2), order_file, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
@@ -1361,7 +1373,7 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (order_file), order_file_group);
   order_file_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (order_file));
 
-  order_top2bottom = gtk_radio_button_new_with_mnemonic (NULL, "Top to bottom");
+  order_top2bottom = gtk_radio_button_new_with_label (NULL, "Top to bottom");
   gtk_widget_show (order_top2bottom);
   gtk_table_attach (GTK_TABLE (table2), order_top2bottom, 1, 2, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
@@ -1369,7 +1381,7 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (order_top2bottom), order_file_group);
   order_file_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (order_top2bottom));
 
-  order_left2right = gtk_radio_button_new_with_mnemonic (NULL, "Left to right");
+  order_left2right = gtk_radio_button_new_with_label (NULL, "Left to right");
   gtk_widget_show (order_left2right);
   gtk_table_attach (GTK_TABLE (table2), order_left2right, 2, 3, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
@@ -1377,7 +1389,7 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (order_left2right), order_file_group);
   order_file_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (order_left2right));
 
-  order_diagonal = gtk_radio_button_new_with_mnemonic (NULL, "Diagonal");
+  order_diagonal = gtk_radio_button_new_with_label (NULL, "Diagonal");
   gtk_widget_show (order_diagonal);
   gtk_table_attach (GTK_TABLE (table2), order_diagonal, 3, 4, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
@@ -1415,7 +1427,7 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-  order_bottom2top = gtk_radio_button_new_with_mnemonic (NULL, "Bottom to top");
+  order_bottom2top = gtk_radio_button_new_with_label (NULL, "Bottom to top");
   gtk_widget_show (order_bottom2top);
   gtk_table_attach (GTK_TABLE (table2), order_bottom2top, 1, 2, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
@@ -1423,7 +1435,7 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_radio_button_set_group (GTK_RADIO_BUTTON (order_bottom2top), order_file_group);
   order_file_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (order_bottom2top));
 
-  order_right2left = gtk_radio_button_new_with_mnemonic (NULL, "Right to left");
+  order_right2left = gtk_radio_button_new_with_label (NULL, "Right to left");
   gtk_widget_show (order_right2left);
   gtk_table_attach (GTK_TABLE (table2), order_right2left, 2, 3, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
@@ -1454,7 +1466,7 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_widget_show (hbox1);
   gtk_box_pack_start (GTK_BOX (vbox4), hbox1, TRUE, TRUE, 0);
 
-  label12 = gtk_label_new_with_mnemonic ("Starting _number:");
+  label12 = gtk_label_new ("Starting number:");
   gtk_widget_show (label12);
   gtk_box_pack_start (GTK_BOX (hbox1), label12, FALSE, FALSE, 0);
 
@@ -1463,19 +1475,13 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_widget_show (opt_startnum);
   gtk_box_pack_start (GTK_BOX (hbox1), opt_startnum, FALSE, FALSE, 0);
 
-  opt_removenum = gtk_check_button_new_with_mnemonic ("_Remove numbers");
+  opt_removenum = gtk_check_button_new_with_label ("Remove numbers");
   gtk_widget_show (opt_removenum);
   gtk_box_pack_start (GTK_BOX (vbox4), opt_removenum, FALSE, FALSE, 0);
-  gtk_widget_add_accelerator (opt_removenum, "clicked", accel_group,
-                              GDK_r, (GdkModifierType) 0,
-                              GTK_ACCEL_VISIBLE);
 
-  opt_slotting = gtk_check_button_new_with_mnemonic ("Automatic slo_tting");
+  opt_slotting = gtk_check_button_new_with_label ("Automatic slotting");
   gtk_widget_show (opt_slotting);
   gtk_box_pack_start (GTK_BOX (vbox4), opt_slotting, FALSE, FALSE, 0);
-  gtk_widget_add_accelerator (opt_slotting, "clicked", accel_group,
-                              GDK_t, (GdkModifierType) 0,
-                              GTK_ACCEL_VISIBLE);
 
   label3 = gtk_label_new ("<b>Options</b>");
   gtk_widget_show (label3);
@@ -1497,9 +1503,6 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_widget_show (button_ok);
   gtk_container_add (GTK_CONTAINER (hbuttonbox1), button_ok);
   GTK_WIDGET_SET_FLAGS (button_ok, GTK_CAN_DEFAULT);
-  gtk_widget_add_accelerator (button_ok, "clicked", accel_group,
-                              GDK_Return, (GdkModifierType) 0,
-                              GTK_ACCEL_VISIBLE);
 
   gtk_label_set_mnemonic_widget (GTK_LABEL (label12), opt_startnum);
 
@@ -1518,8 +1521,6 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   GLADE_HOOKUP_OBJECT (autonumber_text, opt_slotting, "opt_slotting");
   GLADE_HOOKUP_OBJECT (autonumber_text, button_cancel, "button_close");
   GLADE_HOOKUP_OBJECT (autonumber_text, button_ok, "button_ok");
-
-  gtk_window_add_accel_group (GTK_WINDOW (autonumber_text), accel_group);
 
   return autonumber_text;
 }
