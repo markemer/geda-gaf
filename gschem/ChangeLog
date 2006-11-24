@@ -1,3 +1,13 @@
+2006-11-24 Werner Hoch  <werner.ho@gmx.de>
+
+	* src/x_autonumber.c: repaired keypress events, added gettext macros
+	  replaced the sortorder ratio buttons with a combo box. That shrinks
+	  the dialog a lot.
+
+	* po/POTFILES.in: added x_autonumber.c
+
+	* bitmap/gschem-fileorder.png: added an ugly dummy bitmap
+
 2006-11-11 Werner Hoch  <werner.ho@gmx.de>
 
 	* src/x_autonumber.c: added used_slot database. This fixes a 

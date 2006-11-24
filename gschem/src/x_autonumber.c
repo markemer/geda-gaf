@@ -48,24 +48,24 @@
 
 /* autonumber text structs and enums */
 enum {
-	AUTONUMBER_SORT_FILE, 
-	AUTONUMBER_SORT_YX, 
-	AUTONUMBER_SORT_YX_REV, 
-      	AUTONUMBER_SORT_XY, 
-	AUTONUMBER_SORT_XY_REV, 
-	AUTONUMBER_SORT_DIAGONAL
+  AUTONUMBER_SORT_DIAGONAL,
+  AUTONUMBER_SORT_YX, 
+  AUTONUMBER_SORT_YX_REV, 
+  AUTONUMBER_SORT_XY, 
+  AUTONUMBER_SORT_XY_REV, 
+  AUTONUMBER_SORT_FILE 
 };
 
 enum {
-	AUTONUMBER_IGNORE, 
-	AUTONUMBER_RENUMBER, 
-	AUTONUMBER_RESPECT
+  AUTONUMBER_IGNORE, 
+  AUTONUMBER_RENUMBER, 
+  AUTONUMBER_RESPECT
 };
 
 enum {
-	SCOPE_SELECTED, 
-	SCOPE_PAGE, 
-	SCOPE_HIERARCHY 
+  SCOPE_SELECTED, 
+  SCOPE_PAGE, 
+  SCOPE_HIERARCHY 
 };
 
 typedef struct autonumber_text_t AUTONUMBER_TEXT;
@@ -174,9 +174,9 @@ gint autonumber_sort_xy_rev(gconstpointer a, gconstpointer b) {
   if (aa->text->x > bb->text->x)
     return -1;
   /* x == x */
-  if (aa->text->y > bb->text->y)
-    return 1;
   if (aa->text->y < bb->text->y)
+    return 1;
+  if (aa->text->y > bb->text->y)
     return -1;
   return 0;
 }
@@ -219,9 +219,9 @@ int autonumber_sort_yx_rev(gconstpointer a, gconstpointer b) {
   if (aa->text->y < bb->text->y)
     return -1;
   /* y == y */
-  if (aa->text->x < bb->text->x)
-    return 1;
   if (aa->text->x > bb->text->x)
+    return 1;
+  if (aa->text->x < bb->text->x)
     return -1;
   return 0;
 }
@@ -435,7 +435,7 @@ void autonumber_get_used(TOPLEVEL *w_current, AUTONUMBER_TEXT *autotext)
 		if (slot_item == NULL) {
 		  /* insert all slots to the list, except of the current one */
 		  for (i=1; i <= numslots; i++) {
-		    if (i != slot) {
+		    if (i != slotnr) {
 		      slot = g_memdup(slot, sizeof(AUTONUMBER_SLOT));
 		      slot->slotnr = i;
 		      autotext->free_slots = g_list_insert_sorted(autotext->free_slots,
@@ -824,33 +824,61 @@ void autonumber_text_autonumber(AUTONUMBER_TEXT *autotext)
  * @return Pointer to the widget or NULL if not found. */
 GtkWidget* lookup_widget(GtkWidget *widget, const gchar *widget_name)
 {
-	GtkWidget *found_widget;
+  GtkWidget *found_widget;
 
-	found_widget = (GtkWidget*) g_object_get_data(G_OBJECT(widget), 
-								widget_name);
+  found_widget = (GtkWidget*) g_object_get_data(G_OBJECT(widget), 
+						widget_name);
 
-	return found_widget;
+  return found_widget;
 }
 
-/** @brief Creates a new GtkImage displaying from an icon file.
- *
- * @param stock Name of the icon.
- * @return Pointer to the new GtkImage object.
- */
-static GtkWidget *autonumber_create_pixmap(const char *file, 
-							TOPLEVEL *w_current)
+
+void autonumber_sortorder_create(TOPLEVEL *w_current, GtkWidget *sort_order)
 {
-	GtkWidget *wpixmap;
-	gchar *path;
+  GtkListStore *store;
+  GtkTreeIter iter;
+  GtkCellRenderer *renderer;
+  GdkPixbuf *pixbuf;
+  gchar *path;
+  GError *error=NULL;
 
-	path=g_strconcat(w_current->bitmap_directory, 
-			G_DIR_SEPARATOR_S, file, NULL);
+  gchar *filenames[] = {"gschem-diagonal.png", 
+			"gschem-top2bottom.png", "gschem-bottom2top.png",
+			"gschem-left2right.png", "gschem-right2left.png",
+			"gschem-fileorder.png",
+			NULL};
+  gchar *names[] = {N_("Diagonal"),
+		    N_("Top to bottom"), N_("Bottom to top"),
+		    N_("Left to right"), N_("Right to left"),
+		    N_("File order"),
+		    NULL};
+  gint i;
 
-	wpixmap = gtk_image_new_from_file (path);
+  store = gtk_list_store_new(2, GDK_TYPE_PIXBUF, G_TYPE_STRING); 
 
-	g_free(path);
+  for (i=0; filenames[i] != NULL; i++) {
+    path=g_strconcat(w_current->bitmap_directory, 
+		     G_DIR_SEPARATOR_S, filenames[i], NULL);
+    pixbuf = gdk_pixbuf_new_from_file(path, &error);
+    g_free(path);
+    gtk_list_store_append(store, &iter);
+    gtk_list_store_set(store, &iter, 
+		       0, pixbuf,
+		       1, names[i],
+		       -1);
+  }
 
-	return wpixmap;
+  gtk_combo_box_set_model(GTK_COMBO_BOX(sort_order), GTK_TREE_MODEL(store));
+  renderer = gtk_cell_renderer_pixbuf_new();
+  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (sort_order),
+			      renderer, FALSE);
+  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (sort_order),
+				  renderer, "pixbuf", 0, NULL);
+  renderer = gtk_cell_renderer_text_new ();
+  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (sort_order),
+			      renderer, FALSE);
+  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (sort_order),
+				  renderer, "text", 1, NULL);
 }
 
 /* ***** STATE STRUCT HANDLING (interface between GUI and backend code) **** */
@@ -862,38 +890,38 @@ static GtkWidget *autonumber_create_pixmap(const char *file,
  */
 GList *autonumber_history_add(GList *history, gchar *text)
 {
-	/* Search for this text in history and delete it (so we don't have
-	 * duplicate entries) */
+  /* Search for this text in history and delete it (so we don't have
+   * duplicate entries) */
 
-	GList *cur;
+  GList *cur;
 
-	cur=history;
-	while(cur!=NULL) {
-		if(!strcmp(text, cur->data)) {
-			history=g_list_remove_link(history, cur);
+  cur=history;
+  while(cur!=NULL) {
+    if(!strcmp(text, cur->data)) {
+      history=g_list_remove_link(history, cur);
 
-			g_free(cur->data);
-			g_list_free(cur);
-			break;
-		}
-		cur=g_list_next(cur);
-	}
+      g_free(cur->data);
+      g_list_free(cur);
+      break;
+    }
+    cur=g_list_next(cur);
+  }
 
-	/* Add the new text at the beginning of the list */
+  /* Add the new text at the beginning of the list */
 
-  	history=g_list_prepend(history, text);
+  history=g_list_prepend(history, text);
 
-	/* Truncate history */
-	while(g_list_length(history) > HISTORY_LENGTH) {
-		GList *last = g_list_last(history);
+  /* Truncate history */
+  while(g_list_length(history) > HISTORY_LENGTH) {
+    GList *last = g_list_last(history);
 
-		history = g_list_remove_link(history, last);
+    history = g_list_remove_link(history, last);
 
-		g_free(last->data);
-		g_list_free(last);
-	}
+    g_free(last->data);
+    g_list_free(last);
+  }
 
-	return history;
+  return history;
 }
 
 /** @brief Allocate and initialize the state structure
@@ -902,53 +930,53 @@ GList *autonumber_history_add(GList *history, gchar *text)
  */
 AUTONUMBER_TEXT *autonumber_init_state()
 {
-	AUTONUMBER_TEXT *autotext;
+  AUTONUMBER_TEXT *autotext;
 
-	/* Default contents of the combo box history */
-  	gchar *default_text[] = {
-				"refdes=*", 
-				"refdes=C?", 
-				"refdes=D?", 
-				"refdes=I?",
-				"refdes=L?", 
-				"refdes=Q?", 
-				"refdes=R?", 
-				"refdes=T?",
-				"refdes=U?", 
-				"refdes=X?", 
-				"netname=*", 
-				"netname=A?",
-				"netname=D?", 
-				NULL
-				};
-	gchar **t;
+  /* Default contents of the combo box history */
+  gchar *default_text[] = {
+    "refdes=*", 
+    "refdes=C?", 
+    "refdes=D?", 
+    "refdes=I?",
+    "refdes=L?", 
+    "refdes=Q?", 
+    "refdes=R?", 
+    "refdes=T?",
+    "refdes=U?", 
+    "refdes=X?", 
+    "netname=*", 
+    "netname=A?",
+    "netname=D?", 
+    NULL
+  };
+  gchar **t;
 
-	autotext = g_new(AUTONUMBER_TEXT, 1);
+  autotext = g_new(AUTONUMBER_TEXT, 1);
 
-	if(autotext==NULL) return NULL;
+  if(autotext==NULL) return NULL;
 
-	autotext->scope_text = NULL;
-	t=default_text;
-	while(*t!=NULL) {
-		autotext->scope_text=g_list_append(autotext->scope_text, 
-							g_strdup(*t));
-		t++;
-	}
+  autotext->scope_text = NULL;
+  t=default_text;
+  while(*t!=NULL) {
+    autotext->scope_text=g_list_append(autotext->scope_text, 
+				       g_strdup(*t));
+    t++;
+  }
 
-	autotext->scope_skip = SCOPE_SELECTED;
-	autotext->scope_number = SCOPE_SELECTED;
+  autotext->scope_skip = SCOPE_SELECTED;
+  autotext->scope_number = SCOPE_SELECTED;
 
-	autotext->scope_overwrite = 0;
-	autotext->order = AUTONUMBER_SORT_FILE;
+  autotext->scope_overwrite = 0;
+  autotext->order = AUTONUMBER_SORT_DIAGONAL;
 
-	autotext->startnum=1;
+  autotext->startnum=1;
 
-	autotext->removenum=0;
-	autotext->slotting=0;
+  autotext->removenum=0;
+  autotext->slotting=0;
 
-	autotext->dialog = NULL;
+  autotext->dialog = NULL;
 
-	return autotext;
+  return autotext;
 }
 
 /** @brief Restore the settings for the autonumber text dialog
@@ -957,93 +985,54 @@ AUTONUMBER_TEXT *autonumber_init_state()
  */
 void autonumber_set_state(AUTONUMBER_TEXT *autotext)
 {
-	GtkWidget *widget;
+  GtkWidget *widget;
+  GtkTreeModel *model;
+  GList *el;
+  /* Scope */
 
-	/* Scope */
+  /* Search text history */
+  widget = lookup_widget(autotext->dialog, "scope_text");
 
-	/* Search text history */
-  	widget = lookup_widget(autotext->dialog, "scope_text");
+  /* Simple way to clear the ComboBox. Owen from #gtk+ says: 
+   *
+   * Yeah, it's just slightly "shady" ... if you want to stick to fully 
+   * advertised API, you need to remember how many rows you added and 
+   * use gtk_combo_box_remove_text() */
 
-	/* Simple way to clear the ComboBox. Owen from #gtk+ says: 
-	 *
-	 * Yeah, it's just slightly "shady" ... if you want to stick to fully 
-	 * advertised API, you need to remember how many rows you added and 
-	 * use gtk_combo_box_remove_text() */
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(widget));
+  gtk_list_store_clear(GTK_LIST_STORE(model));
 
-	GtkTreeModel *model = gtk_combo_box_get_model(GTK_COMBO_BOX(widget));
-	gtk_list_store_clear(GTK_LIST_STORE(model));
+  for (el= autotext->scope_text; el != NULL; el=g_list_next(el)) {
+    gtk_combo_box_append_text(GTK_COMBO_BOX(widget), el->data);
+  }
 
-	GList *el = autotext->scope_text;
+  widget = lookup_widget(autotext->dialog, "scope_skip");
+  gtk_combo_box_set_active(GTK_COMBO_BOX(widget),
+			   autotext->scope_skip);
 
-	while(el!=NULL) {
-		gtk_combo_box_append_text(GTK_COMBO_BOX(widget), el->data);
-		el=g_list_next(el);
-	}
+  widget = lookup_widget(autotext->dialog, "scope_number");
+  gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 
+			   autotext->scope_number);
 
-	widget = lookup_widget(autotext->dialog, "scope_skip");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 
-						autotext->scope_skip);
+  widget = lookup_widget(autotext->dialog, "scope_overwrite");
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), 
+			       autotext->scope_overwrite);
 
-	widget = lookup_widget(autotext->dialog, "scope_number");
-	gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 
-						autotext->scope_number);
+  /* Options */
+  widget = lookup_widget(autotext->dialog, "opt_startnum");
+  gtk_spin_button_set_value(GTK_SPIN_BUTTON(widget), 
+			    autotext->startnum);
 
-	widget = lookup_widget(autotext->dialog, "scope_overwrite");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), 
-						autotext->scope_overwrite);
+  widget = lookup_widget(autotext->dialog, "sort_order");
+  gtk_combo_box_set_active(GTK_COMBO_BOX(widget), autotext->order);
 
-	/* Sort order */
-	switch(autotext->order) {
-		case AUTONUMBER_SORT_FILE:
+  widget = lookup_widget(autotext->dialog, "opt_removenum");
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), 
+			       autotext->removenum);
 
-		widget = lookup_widget(autotext->dialog, "order_file");
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), 1);
-		break;
-
-		case AUTONUMBER_SORT_XY:
-
-		widget = lookup_widget(autotext->dialog, "order_left2right");
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), 1);
-		break;
-
-		case AUTONUMBER_SORT_XY_REV:
-
-		widget = lookup_widget(autotext->dialog, "order_right2left");
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), 1);
-		break;
-
-		case AUTONUMBER_SORT_YX:
-
-		widget = lookup_widget(autotext->dialog, "order_top2bottom");
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), 1);
-		break;
-
-		case AUTONUMBER_SORT_YX_REV:
-
-		widget = lookup_widget(autotext->dialog, "order_bottom2top");
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), 1);
-		break;
-
-		case AUTONUMBER_SORT_DIAGONAL:
-
-		widget = lookup_widget(autotext->dialog, "order_diagonal");
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), 1);
-		break;
-	}
-
-	/* Options */
-
-	widget = lookup_widget(autotext->dialog, "opt_startnum");
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(widget), 
-							autotext->startnum);
-
-	widget = lookup_widget(autotext->dialog, "opt_removenum");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), 
-							autotext->removenum);
-
-	widget = lookup_widget(autotext->dialog, "opt_slotting");
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget),
-							autotext->slotting);
+  widget = lookup_widget(autotext->dialog, "opt_slotting");
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget),
+			       autotext->slotting);
 }
 
 /** @brief Get the settings from the autonumber text dialog
@@ -1055,87 +1044,39 @@ void autonumber_set_state(AUTONUMBER_TEXT *autotext)
  */
 void autonumber_get_state(AUTONUMBER_TEXT *autotext)
 {
-	GtkWidget *widget;
-	gchar *text;
+  GtkWidget *widget;
+  gchar *text;
 
-	/* Scope */
+  /* Scope */
 
-	/* Search text history */
-  	widget = lookup_widget(autotext->dialog, "scope_text");
-	text=gtk_combo_box_get_active_text( GTK_COMBO_BOX(widget) );
+  /* Search text history */
+  widget = lookup_widget(autotext->dialog, "scope_text");
+  text=gtk_combo_box_get_active_text( GTK_COMBO_BOX(widget) );
 
-	autotext->scope_text=autonumber_history_add(autotext->scope_text, text);
+  autotext->scope_text=autonumber_history_add(autotext->scope_text, text);
 
-	widget = lookup_widget(autotext->dialog, "scope_skip");
-	autotext->scope_skip = gtk_combo_box_get_active( 
-						GTK_COMBO_BOX(widget) );
+  widget = lookup_widget(autotext->dialog, "scope_skip");
+  autotext->scope_skip = gtk_combo_box_get_active( GTK_COMBO_BOX(widget) );
 
-	widget = lookup_widget(autotext->dialog, "scope_number");
-	autotext->scope_number = gtk_combo_box_get_active( 
-						GTK_COMBO_BOX(widget) );
+  widget = lookup_widget(autotext->dialog, "scope_number");
+  autotext->scope_number = gtk_combo_box_get_active(GTK_COMBO_BOX(widget) );
 
-	widget = lookup_widget(autotext->dialog, "scope_overwrite");
-	autotext->scope_overwrite = gtk_toggle_button_get_active( 
-						GTK_TOGGLE_BUTTON(widget) );
+  widget = lookup_widget(autotext->dialog, "scope_overwrite");
+  autotext->scope_overwrite = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
 
-	/* Sort order */
-	autotext->order=-1;
+  /* Sort order */
+  widget = lookup_widget(autotext->dialog, "sort_order");
+  autotext->order= gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 
-	if(autotext->order==-1) {
-		widget = lookup_widget(autotext->dialog, "order_file");
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-			autotext->order=AUTONUMBER_SORT_FILE;
-		}
-	}
+  /* Options */
+  widget = lookup_widget(autotext->dialog, "opt_startnum");
+  autotext->startnum=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(widget));
 
-	if(autotext->order==-1) {
-		widget = lookup_widget(autotext->dialog, "order_left2right");
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-			autotext->order=AUTONUMBER_SORT_XY;
-		}
-	}
+  widget = lookup_widget(autotext->dialog, "opt_removenum");
+  autotext->removenum = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
 
-	if(autotext->order==-1) {
-		widget = lookup_widget(autotext->dialog, "order_right2left");
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-			autotext->order=AUTONUMBER_SORT_XY_REV;
-		}
-	}
-
-	if(autotext->order==-1) {
-		widget = lookup_widget(autotext->dialog, "order_top2bottom");
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-			autotext->order=AUTONUMBER_SORT_YX;
-		}
-	}
-
-	if(autotext->order==-1) {
-		widget = lookup_widget(autotext->dialog, "order_bottom2top");
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-			autotext->order=AUTONUMBER_SORT_YX_REV;
-		}
-	}
-
-	if(autotext->order==-1) {
-		widget = lookup_widget(autotext->dialog, "order_diagonal");
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))) {
-			autotext->order=AUTONUMBER_SORT_DIAGONAL;
-		}
-	}
-
-	/* Options */
-
-	widget = lookup_widget(autotext->dialog, "opt_startnum");
-	autotext->startnum=gtk_spin_button_get_value_as_int(
-						GTK_SPIN_BUTTON(widget));
-
-	widget = lookup_widget(autotext->dialog, "opt_removenum");
-	autotext->removenum = gtk_toggle_button_get_active(
-						GTK_TOGGLE_BUTTON(widget) );
-
-	widget = lookup_widget(autotext->dialog, "opt_slotting");
-	autotext->slotting = gtk_toggle_button_get_active(
-						GTK_TOGGLE_BUTTON(widget) );
+  widget = lookup_widget(autotext->dialog, "opt_slotting");
+  autotext->slotting = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
 }
 
 /* ***** CALLBACKS (functions that get called directly from the GTK) ******* */
@@ -1146,23 +1087,41 @@ void autonumber_get_state(AUTONUMBER_TEXT *autotext)
  */
 void autonumber_text_ok(GtkWidget * w, AUTONUMBER_TEXT *autotext)
 {
-  	autonumber_get_state(autotext);
+  autonumber_get_state(autotext);
 
-  	autonumber_text_autonumber(autotext);
-
-	autonumber_set_state(autotext);
+  autonumber_text_autonumber(autotext);
 }
 
 /*! \brief Destroy callback function of the autonumber text dialog
  */
 void autonumber_text_destroy(GtkWidget * w, AUTONUMBER_TEXT *autotext)
 {
-	/* The usual behaviour is that dialog contents are not stored if
-	 * the user pressed "cancel" */
+  /* The usual behaviour is that dialog contents are not stored if
+   * the user pressed "cancel" */
 
-	/* autonumber_text_getdata(autotext); */
+  /* autonumber_text_getdata(autotext); */
 
-	autotext->dialog = NULL;
+  autotext->dialog = NULL;
+}
+
+/*! \brief Keypress callback for the autonumber text dialog
+ *  \par Function Description
+ *  The function just closes the dialog if one presses the Escape key.
+ *  The Return key applies the dialogs ok button function.
+ */
+int autonumber_text_keypress(GtkWidget * widget, GdkEventKey * event, 
+			     AUTONUMBER_TEXT *autotext)
+{
+   if (strcmp(gdk_keyval_name(event->keyval), "Escape") == 0) {
+     autonumber_text_close(NULL, autotext);
+     autonumber_text_destroy(NULL, autotext);	
+     return TRUE;
+   }
+   if (strcmp(gdk_keyval_name(event->keyval), "Return") == 0) {
+     autonumber_text_ok(NULL, autotext);	
+     return TRUE;
+   }
+   return FALSE;
 }
 
 /** @brief Callback that activates or deactivates "overwrite existing numbers" 
@@ -1172,22 +1131,22 @@ void autonumber_text_destroy(GtkWidget * w, AUTONUMBER_TEXT *autotext)
  */
 void autonumber_removenum_toggled(GtkWidget * w, AUTONUMBER_TEXT *autotext)
 {
-	GtkWidget *scope_overwrite;
-	GtkWidget *opt_removenum;
+  GtkWidget *scope_overwrite;
+  GtkWidget *opt_removenum;
 
-	scope_overwrite=lookup_widget(autotext->dialog, "scope_overwrite");
-	opt_removenum=w;
+  scope_overwrite=lookup_widget(autotext->dialog, "scope_overwrite");
+  opt_removenum=w;
 
-	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(opt_removenum))) {
-		/* it does not make sense to have "remove numbers" enabled and
-		 * "overwrite numbers" disabled */
-		gtk_toggle_button_set_active(
-					GTK_TOGGLE_BUTTON(scope_overwrite),
-					1);
-		gtk_widget_set_sensitive(scope_overwrite, 0);
-	} else {
-		gtk_widget_set_sensitive(scope_overwrite, 1);
-	}
+  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(opt_removenum))) {
+    /* it does not make sense to have "remove numbers" enabled and
+     * "overwrite numbers" disabled */
+    gtk_toggle_button_set_active(
+				 GTK_TOGGLE_BUTTON(scope_overwrite),
+				 1);
+    gtk_widget_set_sensitive(scope_overwrite, 0);
+  } else {
+    gtk_widget_set_sensitive(scope_overwrite, 1);
+  }
 }
 
 /** @brief Close button callback function of the autonumber text dialog
@@ -1228,47 +1187,32 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   GtkWidget *vbox3;
   GtkWidget *table1;
   GtkWidget *label4;
-  GtkWidget *label6;
   GtkWidget *scope_text;
-  GtkWidget *scope_skip;
   GtkWidget *label8;
+  GtkWidget *label6;
   GtkWidget *scope_number;
+  GtkWidget *scope_skip;
   GtkWidget *scope_overwrite;
   GtkWidget *label1;
-  GtkWidget *frame2;
-  GtkWidget *alignment2;
-  GtkWidget *table2;
-  GtkWidget *order_file;
-  GSList *order_file_group = NULL;
-  GtkWidget *order_top2bottom;
-  GtkWidget *order_left2right;
-  GtkWidget *order_diagonal;
-  GtkWidget *image2;
-  GtkWidget *image3;
-  GtkWidget *image1;
-  GtkWidget *image4;
-  GtkWidget *image5;
-  GtkWidget *order_bottom2top;
-  GtkWidget *order_right2left;
-  GtkWidget *label2;
   GtkWidget *frame3;
   GtkWidget *alignment3;
   GtkWidget *vbox4;
-  GtkWidget *hbox1;
+  GtkWidget *table3;
   GtkWidget *label12;
+  GtkWidget *label13;
   GtkObject *opt_startnum_adj;
   GtkWidget *opt_startnum;
+  GtkWidget *sort_order;
   GtkWidget *opt_removenum;
   GtkWidget *opt_slotting;
   GtkWidget *label3;
   GtkWidget *hbuttonbox1;
-  GtkWidget *button_cancel;
+  GtkWidget *button_close;
   GtkWidget *button_ok;
 
   autonumber_text = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (autonumber_text), "Autonumber text");
+  gtk_window_set_title (GTK_WINDOW (autonumber_text), _("Autonumber text"));
   gtk_window_set_resizable (GTK_WINDOW (autonumber_text), FALSE);
-  // gtk_window_set_type_hint (GTK_WINDOW (autonumber_text), GDK_WINDOW_TYPE_HINT_DIALOG);
 
   vbox1 = gtk_vbox_new (FALSE, 24);
   gtk_widget_show (vbox1);
@@ -1295,19 +1239,12 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_table_set_row_spacings (GTK_TABLE (table1), 3);
   gtk_table_set_col_spacings (GTK_TABLE (table1), 12);
 
-  label4 = gtk_label_new ("Search for:");
+  label4 = gtk_label_new (_("Search for:"));
   gtk_widget_show (label4);
   gtk_table_attach (GTK_TABLE (table1), label4, 0, 1, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (label4), 0, 0.5);
-
-  label6 = gtk_label_new ("Skip numbers found in:");
-  gtk_widget_show (label6);
-  gtk_table_attach (GTK_TABLE (table1), label6, 0, 1, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (label6), 0, 0.5);
 
   scope_text = gtk_combo_box_entry_new_text ();
   gtk_widget_show (scope_text);
@@ -1315,138 +1252,46 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-  scope_skip = gtk_combo_box_new_text ();
-  gtk_widget_show (scope_skip);
-  gtk_table_attach (GTK_TABLE (table1), scope_skip, 1, 2, 2, 3,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-  gtk_combo_box_append_text (GTK_COMBO_BOX (scope_skip), "Selected objects");
-  gtk_combo_box_append_text (GTK_COMBO_BOX (scope_skip), "Current page");
-  gtk_combo_box_append_text (GTK_COMBO_BOX (scope_skip), "Whole hierarchy");
-
-  label8 = gtk_label_new ("Autonumber text in:");
+  label8 = gtk_label_new (_("Autonumber text in:"));
   gtk_widget_show (label8);
   gtk_table_attach (GTK_TABLE (table1), label8, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (label8), 0, 0.5);
 
+  label6 = gtk_label_new (_("Skip numbers found in:"));
+  gtk_widget_show (label6);
+  gtk_table_attach (GTK_TABLE (table1), label6, 0, 1, 2, 3,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (label6), 0, 0.5);
+
   scope_number = gtk_combo_box_new_text ();
   gtk_widget_show (scope_number);
   gtk_table_attach (GTK_TABLE (table1), scope_number, 1, 2, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
-  gtk_combo_box_append_text (GTK_COMBO_BOX (scope_number), "Selected objects");
-  gtk_combo_box_append_text (GTK_COMBO_BOX (scope_number), "Current page");
-  gtk_combo_box_append_text (GTK_COMBO_BOX (scope_number), "Whole hierarchy");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (scope_number), _("Selected objects"));
+  gtk_combo_box_append_text (GTK_COMBO_BOX (scope_number), _("Current page"));
+  gtk_combo_box_append_text (GTK_COMBO_BOX (scope_number), _("Whole hierarchy"));
 
-  scope_overwrite = gtk_check_button_new_with_label ("Overwrite existing numbers");
+  scope_skip = gtk_combo_box_new_text ();
+  gtk_widget_show (scope_skip);
+  gtk_table_attach (GTK_TABLE (table1), scope_skip, 1, 2, 2, 3,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+  gtk_combo_box_append_text (GTK_COMBO_BOX (scope_skip), _("Selected objects"));
+  gtk_combo_box_append_text (GTK_COMBO_BOX (scope_skip), _("Current page"));
+  gtk_combo_box_append_text (GTK_COMBO_BOX (scope_skip), _("Whole hierarchy"));
+
+  scope_overwrite = gtk_check_button_new_with_mnemonic (_("Overwrite existing numbers"));
   gtk_widget_show (scope_overwrite);
   gtk_box_pack_start (GTK_BOX (vbox3), scope_overwrite, FALSE, FALSE, 6);
 
-  label1 = gtk_label_new ("<b>Scope</b>");
+  label1 = gtk_label_new (_("<b>Scope</b>"));
   gtk_widget_show (label1);
   gtk_frame_set_label_widget (GTK_FRAME (frame1), label1);
   gtk_label_set_use_markup (GTK_LABEL (label1), TRUE);
-
-  frame2 = gtk_frame_new (NULL);
-  gtk_widget_show (frame2);
-  gtk_box_pack_start (GTK_BOX (vbox1), frame2, TRUE, TRUE, 0);
-  gtk_frame_set_shadow_type (GTK_FRAME (frame2), GTK_SHADOW_NONE);
-
-  alignment2 = gtk_alignment_new (0.5, 0.5, 1, 1);
-  gtk_widget_show (alignment2);
-  gtk_container_add (GTK_CONTAINER (frame2), alignment2);
-  gtk_alignment_set_padding (GTK_ALIGNMENT (alignment2), 0, 0, 24, 0);
-
-  table2 = gtk_table_new (4, 4, FALSE);
-  gtk_widget_show (table2);
-  gtk_container_add (GTK_CONTAINER (alignment2), table2);
-  gtk_table_set_row_spacings (GTK_TABLE (table2), 3);
-  gtk_table_set_col_spacings (GTK_TABLE (table2), 12);
-
-  order_file = gtk_radio_button_new_with_label (NULL, "File order");
-  gtk_widget_show (order_file);
-  gtk_table_attach (GTK_TABLE (table2), order_file, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_radio_button_set_group (GTK_RADIO_BUTTON (order_file), order_file_group);
-  order_file_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (order_file));
-
-  order_top2bottom = gtk_radio_button_new_with_label (NULL, "Top to bottom");
-  gtk_widget_show (order_top2bottom);
-  gtk_table_attach (GTK_TABLE (table2), order_top2bottom, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_radio_button_set_group (GTK_RADIO_BUTTON (order_top2bottom), order_file_group);
-  order_file_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (order_top2bottom));
-
-  order_left2right = gtk_radio_button_new_with_label (NULL, "Left to right");
-  gtk_widget_show (order_left2right);
-  gtk_table_attach (GTK_TABLE (table2), order_left2right, 2, 3, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_radio_button_set_group (GTK_RADIO_BUTTON (order_left2right), order_file_group);
-  order_file_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (order_left2right));
-
-  order_diagonal = gtk_radio_button_new_with_label (NULL, "Diagonal");
-  gtk_widget_show (order_diagonal);
-  gtk_table_attach (GTK_TABLE (table2), order_diagonal, 3, 4, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_radio_button_set_group (GTK_RADIO_BUTTON (order_diagonal), order_file_group);
-  order_file_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (order_diagonal));
-
-  image2 = autonumber_create_pixmap("gschem-left2right.png", w_current);
-  gtk_widget_show (image2);
-  gtk_table_attach (GTK_TABLE (table2), image2, 2, 3, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-  image3 = autonumber_create_pixmap("gschem-diagonal.png", w_current);
-  gtk_widget_show (image3);
-  gtk_table_attach (GTK_TABLE (table2), image3, 3, 4, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-  image1 = autonumber_create_pixmap("gschem-top2bottom.png", w_current);
-  gtk_widget_show (image1);
-  gtk_table_attach (GTK_TABLE (table2), image1, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-  image4 = autonumber_create_pixmap("gschem-bottom2top.png", w_current);
-  gtk_widget_show (image4);
-  gtk_table_attach (GTK_TABLE (table2), image4, 1, 2, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-  image5 = autonumber_create_pixmap("gschem-right2left.png", w_current);
-  gtk_widget_show (image5);
-  gtk_table_attach (GTK_TABLE (table2), image5, 2, 3, 2, 3,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-  order_bottom2top = gtk_radio_button_new_with_label (NULL, "Bottom to top");
-  gtk_widget_show (order_bottom2top);
-  gtk_table_attach (GTK_TABLE (table2), order_bottom2top, 1, 2, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_radio_button_set_group (GTK_RADIO_BUTTON (order_bottom2top), order_file_group);
-  order_file_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (order_bottom2top));
-
-  order_right2left = gtk_radio_button_new_with_label (NULL, "Right to left");
-  gtk_widget_show (order_right2left);
-  gtk_table_attach (GTK_TABLE (table2), order_right2left, 2, 3, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
-  gtk_radio_button_set_group (GTK_RADIO_BUTTON (order_right2left), order_file_group);
-  order_file_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (order_right2left));
-
-  label2 = gtk_label_new ("<b>Sort order</b>");
-  gtk_widget_show (label2);
-  gtk_frame_set_label_widget (GTK_FRAME (frame2), label2);
-  gtk_label_set_use_markup (GTK_LABEL (label2), TRUE);
 
   frame3 = gtk_frame_new (NULL);
   gtk_widget_show (frame3);
@@ -1462,28 +1307,48 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_widget_show (vbox4);
   gtk_container_add (GTK_CONTAINER (alignment3), vbox4);
 
-  hbox1 = gtk_hbox_new (FALSE, 12);
-  gtk_widget_show (hbox1);
-  gtk_box_pack_start (GTK_BOX (vbox4), hbox1, TRUE, TRUE, 0);
+  table3 = gtk_table_new (2, 2, FALSE);
+  gtk_widget_show (table3);
+  gtk_box_pack_start (GTK_BOX (vbox4), table3, TRUE, TRUE, 0);
+  gtk_table_set_row_spacings (GTK_TABLE (table3), 3);
+  gtk_table_set_col_spacings (GTK_TABLE (table3), 12);
 
-  label12 = gtk_label_new ("Starting number:");
+  label12 = gtk_label_new (_("Starting number:"));
   gtk_widget_show (label12);
-  gtk_box_pack_start (GTK_BOX (hbox1), label12, FALSE, FALSE, 0);
+  gtk_table_attach (GTK_TABLE (table3), label12, 0, 1, 0, 1,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (label12), 0, 0.5);
+
+  label13 = gtk_label_new (_("Sort order:"));
+  gtk_widget_show (label13);
+  gtk_table_attach (GTK_TABLE (table3), label13, 0, 1, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (label13), 0, 0.5);
 
   opt_startnum_adj = gtk_adjustment_new (1, 0, 10000, 1, 10, 10);
   opt_startnum = gtk_spin_button_new (GTK_ADJUSTMENT (opt_startnum_adj), 1, 0);
   gtk_widget_show (opt_startnum);
-  gtk_box_pack_start (GTK_BOX (hbox1), opt_startnum, FALSE, FALSE, 0);
+  gtk_table_attach (GTK_TABLE (table3), opt_startnum, 1, 2, 0, 1,
+                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+                    (GtkAttachOptions) (0), 0, 0);
 
-  opt_removenum = gtk_check_button_new_with_label ("Remove numbers");
+  sort_order = gtk_combo_box_new();
+  gtk_widget_show (sort_order);
+  gtk_table_attach (GTK_TABLE (table3), sort_order, 1, 2, 1, 2,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+
+  opt_removenum = gtk_check_button_new_with_mnemonic (_("Remove numbers"));
   gtk_widget_show (opt_removenum);
   gtk_box_pack_start (GTK_BOX (vbox4), opt_removenum, FALSE, FALSE, 0);
 
-  opt_slotting = gtk_check_button_new_with_label ("Automatic slotting");
+  opt_slotting = gtk_check_button_new_with_mnemonic (_("Automatic slotting"));
   gtk_widget_show (opt_slotting);
   gtk_box_pack_start (GTK_BOX (vbox4), opt_slotting, FALSE, FALSE, 0);
 
-  label3 = gtk_label_new ("<b>Options</b>");
+  label3 = gtk_label_new (_("<b>Options</b>"));
   gtk_widget_show (label3);
   gtk_frame_set_label_widget (GTK_FRAME (frame3), label3);
   gtk_label_set_use_markup (GTK_LABEL (label3), TRUE);
@@ -1494,32 +1359,27 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
   gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox1), GTK_BUTTONBOX_END);
   gtk_box_set_spacing (GTK_BOX (hbuttonbox1), 12);
 
-  button_cancel = gtk_button_new_from_stock ("gtk-close");
-  gtk_widget_show (button_cancel);
-  gtk_container_add (GTK_CONTAINER (hbuttonbox1), button_cancel);
-  GTK_WIDGET_SET_FLAGS (button_cancel, GTK_CAN_DEFAULT);
+  button_close = gtk_button_new_from_stock ("gtk-close");
+  gtk_widget_show (button_close);
+  gtk_container_add (GTK_CONTAINER (hbuttonbox1), button_close);
+  GTK_WIDGET_SET_FLAGS (button_close, GTK_CAN_DEFAULT);
 
   button_ok = gtk_button_new_from_stock ("gtk-apply");
   gtk_widget_show (button_ok);
   gtk_container_add (GTK_CONTAINER (hbuttonbox1), button_ok);
   GTK_WIDGET_SET_FLAGS (button_ok, GTK_CAN_DEFAULT);
 
-  gtk_label_set_mnemonic_widget (GTK_LABEL (label12), opt_startnum);
-
+  /* Store pointers to all widgets, for use by lookup_widget(). */
+  GLADE_HOOKUP_OBJECT (autonumber_text, alignment1, "alignment1");
   GLADE_HOOKUP_OBJECT (autonumber_text, scope_text, "scope_text");
-  GLADE_HOOKUP_OBJECT (autonumber_text, scope_skip, "scope_skip");
   GLADE_HOOKUP_OBJECT (autonumber_text, scope_number, "scope_number");
+  GLADE_HOOKUP_OBJECT (autonumber_text, scope_skip, "scope_skip");
   GLADE_HOOKUP_OBJECT (autonumber_text, scope_overwrite, "scope_overwrite");
-  GLADE_HOOKUP_OBJECT (autonumber_text, order_file, "order_file");
-  GLADE_HOOKUP_OBJECT (autonumber_text, order_top2bottom, "order_top2bottom");
-  GLADE_HOOKUP_OBJECT (autonumber_text, order_left2right, "order_left2right");
-  GLADE_HOOKUP_OBJECT (autonumber_text, order_diagonal, "order_diagonal");
-  GLADE_HOOKUP_OBJECT (autonumber_text, order_bottom2top, "order_bottom2top");
-  GLADE_HOOKUP_OBJECT (autonumber_text, order_right2left, "order_right2left");
   GLADE_HOOKUP_OBJECT (autonumber_text, opt_startnum, "opt_startnum");
+  GLADE_HOOKUP_OBJECT (autonumber_text, sort_order, "sort_order");
   GLADE_HOOKUP_OBJECT (autonumber_text, opt_removenum, "opt_removenum");
   GLADE_HOOKUP_OBJECT (autonumber_text, opt_slotting, "opt_slotting");
-  GLADE_HOOKUP_OBJECT (autonumber_text, button_cancel, "button_close");
+  GLADE_HOOKUP_OBJECT (autonumber_text, button_close, "button_close");
   GLADE_HOOKUP_OBJECT (autonumber_text, button_ok, "button_ok");
 
   return autonumber_text;
@@ -1534,54 +1394,63 @@ GtkWidget* autonumber_create_dialog(TOPLEVEL *w_current)
  */
 void autonumber_text_dialog(TOPLEVEL *w_current)
 {
-	static AUTONUMBER_TEXT *autotext = NULL;
+  static AUTONUMBER_TEXT *autotext = NULL;
 
-	GtkWidget *button_ok = NULL;
-	GtkWidget *button_close = NULL;
-	GtkWidget *opt_removenum = NULL;
+  GtkWidget *button_ok = NULL;
+  GtkWidget *button_close = NULL;
+  GtkWidget *opt_removenum = NULL;
+  GtkWidget *sort_order = NULL;
 
-	if(autotext == NULL) {
-		/* first call of this function, init dialog structure */
-		autotext=autonumber_init_state();
-	}
+  if(autotext == NULL) {
+    /* first call of this function, init dialog structure */
+    autotext=autonumber_init_state();
+  }
 
-	/* set the toplevel always. Can it be changed between the calls??? */
-	autotext->toplevel = w_current;
+  /* set the toplevel always. Can it be changed between the calls??? */
+  autotext->toplevel = w_current;
 
-	if(autotext->dialog == NULL) {
-		/* Dialog is not currently displayed - create it */
+  if(autotext->dialog == NULL) {
+    /* Dialog is not currently displayed - create it */
 
-		autotext->dialog = autonumber_create_dialog(w_current);
+    autotext->dialog = autonumber_create_dialog(w_current);
 
-		button_ok = lookup_widget(autotext->dialog, "button_ok");
-		button_close = lookup_widget(autotext->dialog, "button_close");
-		opt_removenum = lookup_widget(autotext->dialog, "opt_removenum");
+    button_ok = lookup_widget(autotext->dialog, "button_ok");
+    button_close = lookup_widget(autotext->dialog, "button_close");
+    opt_removenum = lookup_widget(autotext->dialog, "opt_removenum");
+    sort_order = lookup_widget(autotext->dialog, "sort_order");
 
-		gtk_signal_connect(GTK_OBJECT(autotext->dialog),
-				"destroy",
-				(GtkSignalFunc) autonumber_text_destroy,
-				autotext);
+    autonumber_sortorder_create(w_current, sort_order);
 
-		gtk_signal_connect(GTK_OBJECT(button_ok), 
-				"clicked",
-				GTK_SIGNAL_FUNC(autonumber_text_ok), 
-				autotext);
+    gtk_signal_connect(GTK_OBJECT(autotext->dialog),
+		       "destroy",
+		       GTK_SIGNAL_FUNC(autonumber_text_destroy),
+		       autotext);
 
-		gtk_signal_connect(GTK_OBJECT(button_close), 
-				"clicked",
-				GTK_SIGNAL_FUNC(autonumber_text_close), 
-				autotext);
+    gtk_signal_connect(GTK_OBJECT(button_ok), 
+		       "clicked",
+		       GTK_SIGNAL_FUNC(autonumber_text_ok), 
+		       autotext);
 
-		gtk_signal_connect(GTK_OBJECT(opt_removenum),
-				"clicked",
-				GTK_SIGNAL_FUNC(autonumber_removenum_toggled),
-				autotext);
+    gtk_signal_connect(GTK_OBJECT(button_close), 
+		       "clicked",
+		       GTK_SIGNAL_FUNC(autonumber_text_close), 
+		       autotext);
 
-		autonumber_set_state(autotext);
+    gtk_signal_connect(GTK_OBJECT(opt_removenum),
+		       "clicked",
+		       GTK_SIGNAL_FUNC(autonumber_removenum_toggled),
+		       autotext);
 
-		gtk_widget_show_all(autotext->dialog);
-	}
+    gtk_signal_connect(GTK_OBJECT(autotext->dialog),
+                       "key_press_event",
+                       GTK_SIGNAL_FUNC(autonumber_text_keypress), 
+		       autotext);
 
-	/* if the dialog is in the background or minimized: show it */
-	gtk_window_present(GTK_WINDOW(autotext->dialog));
+    autonumber_set_state(autotext);
+
+    gtk_widget_show_all(autotext->dialog);
+  }
+
+  /* if the dialog is in the background or minimized: show it */
+  gtk_window_present(GTK_WINDOW(autotext->dialog));
 }
