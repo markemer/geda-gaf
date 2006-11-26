@@ -559,15 +559,36 @@ void autonumber_get_new_numbers(AUTONUMBER_TEXT *autotext, OBJECT *o_current,
  */
 void autonumber_remove_number(AUTONUMBER_TEXT * autotext, OBJECT *o_current)
 {
+  ATTRIB *a_current;
+  OBJECT *o_parent, *o_slot;
+  gchar *slot_str;
+
   /* replace old text */
   g_free(o_current->text->string);
   o_current->text->string = g_strdup_printf("%s?", 
-					autotext->current_searchtext);
+					    autotext->current_searchtext);
 
   /* redraw the text */
   o_text_erase(autotext->toplevel, o_current);
   o_text_recreate(autotext->toplevel, o_current);
   o_text_draw(autotext->toplevel, o_current);
+
+  /* remove the slot attribute if slotting is active */
+  if (autotext->slotting) {
+    /* get the slot attribute */
+    if ((a_current = o_current->attached_to) != NULL) {
+      o_parent = o_attrib_return_parent(a_current);
+      slot_str = o_attrib_search_slot(o_parent, &o_slot);
+      if (slot_str != NULL && o_slot != NULL) {
+	g_free(slot_str);
+	/* delete the slot attribute */
+	o_selection_remove (autotext->toplevel->page_current->selection2_head, o_slot);
+	o_delete_text (autotext->toplevel, o_slot);
+	/* redraw the slotted object. So that the pinnumbers appear as with slot=1 */
+	/* --> No: should be done by o_delete_text as several dialog use it. */
+      }
+    }
+  }
   autotext->toplevel->page_current->CHANGED = 1;
 }
 
@@ -832,7 +853,11 @@ GtkWidget* lookup_widget(GtkWidget *widget, const gchar *widget_name)
   return found_widget;
 }
 
-
+/*! \brief Put the icons and the text into the sortorder combobox
+ *  \par Function Description
+ *  Load all bitmaps for the combobox and store them together with the label
+ *  in a GtkListStore.
+ */
 void autonumber_sortorder_create(TOPLEVEL *w_current, GtkWidget *sort_order)
 {
   GtkListStore *store;
@@ -1104,6 +1129,19 @@ void autonumber_text_destroy(GtkWidget * w, AUTONUMBER_TEXT *autotext)
   autotext->dialog = NULL;
 }
 
+/** @brief Close button callback function of the autonumber text dialog
+ *
+ *  Just destroys the dialog. The triggered destroy event will save the 
+ *  dialog contents.
+ */
+void autonumber_text_close(GtkWidget * w, AUTONUMBER_TEXT *autotext)
+{
+  gtk_widget_destroy(autotext->dialog);
+
+  /* the settings are stored by autonumber_text_destroy, 
+     called by the destroy event */
+}
+
 /*! \brief Keypress callback for the autonumber text dialog
  *  \par Function Description
  *  The function just closes the dialog if one presses the Escape key.
@@ -1149,18 +1187,6 @@ void autonumber_removenum_toggled(GtkWidget * w, AUTONUMBER_TEXT *autotext)
   }
 }
 
-/** @brief Close button callback function of the autonumber text dialog
- *
- *  Just destroys the dialog. The triggered destroy event will save the 
- *  dialog contents.
- */
-void autonumber_text_close(GtkWidget * w, AUTONUMBER_TEXT *autotext)
-{
-  gtk_widget_destroy(autotext->dialog);
-
-  /* the settings are stored by autonumber_text_destroy, 
-     called by the destroy event */
-}
 
 /* ***** DIALOG SET-UP ***************************************************** */
 
