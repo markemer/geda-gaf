@@ -1,3 +1,10 @@
+2006-11-28 Carlos Nieves Onega <cnieves@iespana.es>
+
+	* src/o_copy.c (o_copy_start): Fixed color of copied text.
+	  After copying an object and deselecting everything, the refdes 
+	  attribute kept the selection color.
+	  Thanks to Werner Hoch for reporting the bug.
+	
 2006-11-09 Carlos Nieves Onega <cnieves@iespana.es>
 
 	* src/o_copy.c (o_copy_end): Fixed starting point of the list when

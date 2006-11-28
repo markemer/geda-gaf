@@ -239,7 +239,6 @@ void o_copy_start(TOPLEVEL *w_current, int x, int y)
                                             return_tail(new_objects_head),
                                             object);
         w_current->ADDING_SEL=0; 
-        new_object->color = object->color;
 
 	/* this is also okay NEWSEL new_obj is single */
         if (object->attached_to) {
@@ -262,12 +261,12 @@ void o_copy_start(TOPLEVEL *w_current, int x, int y)
 				/* old object was attr */
         if (!new_object->attribute && 
             object->attribute) {		 	  
-          o_complex_set_color(new_object, new_object->color);
+	  /*	  new_object->color = w_current-> detachedattr_color; */
+	  o_complex_set_color(new_object, new_object->color);
           new_object->visibility = VISIBLE;
           color = new_object->color;
         } else {
-	  /*          color = object->saved_color;*/
-	  color = object->color;
+	  color = object->saved_color;
         }
 
         new_objects = o_selection_add(new_objects, new_object);
