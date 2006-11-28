@@ -1,7 +1,12 @@
+2006-11.28 Werner Hoch  <werner.ho@gmx.de>
+
+	* src/x_autonumber.c: visual improvements of the sortorder 
+	  combobox. Patch by Tomaz Solc, slightly changed.
+
 2006-11-26 Werner Hoch  <werner.ho@gmx.de>
 
-	 * src/x_autonumber.c: remove the slot attribute if remove numbers
-	   and slotting is active.
+	* src/x_autonumber.c: remove the slot attribute if remove numbers
+	  and slotting is active.
 	
 2006-11-24 Werner Hoch  <werner.ho@gmx.de>
 

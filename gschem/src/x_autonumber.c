@@ -879,7 +879,7 @@ void autonumber_sortorder_create(TOPLEVEL *w_current, GtkWidget *sort_order)
 		    NULL};
   gint i;
 
-  store = gtk_list_store_new(2, GDK_TYPE_PIXBUF, G_TYPE_STRING); 
+  store = gtk_list_store_new(2, G_TYPE_STRING, GDK_TYPE_PIXBUF); 
 
   for (i=0; filenames[i] != NULL; i++) {
     path=g_strconcat(w_current->bitmap_directory, 
@@ -888,22 +888,25 @@ void autonumber_sortorder_create(TOPLEVEL *w_current, GtkWidget *sort_order)
     g_free(path);
     gtk_list_store_append(store, &iter);
     gtk_list_store_set(store, &iter, 
-		       0, pixbuf,
-		       1, names[i],
+		       0, names[i],
+		       1, pixbuf,
 		       -1);
   }
 
   gtk_combo_box_set_model(GTK_COMBO_BOX(sort_order), GTK_TREE_MODEL(store));
-  renderer = gtk_cell_renderer_pixbuf_new();
-  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (sort_order),
-			      renderer, FALSE);
-  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (sort_order),
-				  renderer, "pixbuf", 0, NULL);
   renderer = gtk_cell_renderer_text_new ();
+
+  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (sort_order),
+			      renderer, TRUE);
+  gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (sort_order),
+				  renderer, "text", 0, NULL);
+  renderer = gtk_cell_renderer_pixbuf_new();
+  g_object_set(G_OBJECT(renderer), "xpad", 10, "ypad", 10, NULL);
+
   gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (sort_order),
 			      renderer, FALSE);
   gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (sort_order),
-				  renderer, "text", 1, NULL);
+				  renderer, "pixbuf", 1, NULL);
 }
 
 /* ***** STATE STRUCT HANDLING (interface between GUI and backend code) **** */
