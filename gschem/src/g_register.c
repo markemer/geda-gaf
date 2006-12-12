@@ -80,6 +80,7 @@ static struct gsubr_t gschem_funcs[] = {
   { "net-style",                 1, 0, 0, g_rc_net_style },
   { "bus-style",                 1, 0, 0, g_rc_bus_style },
   { "pin-style",                 1, 0, 0, g_rc_pin_style },
+  { "line-style",                1, 0, 0, g_rc_line_style },
   { "zoom-with-pan",             1, 0, 0, g_rc_zoom_with_pan },
   { "action-feedback-mode",      1, 0, 0, g_rc_action_feedback_mode },
   { "text-feedback",             1, 0, 0, g_rc_text_feedback },
@@ -334,7 +335,7 @@ void g_register_funcs (void)
   /* Hook stuff */
   scm_c_define_gsubr ("add-attribute-to-object", 5, 0, 0, g_add_attrib);
   scm_c_define_gsubr ("get-object-attributes", 1, 0, 0, g_get_object_attributes);
-  scm_c_define_gsubr ("get-object-bounds", 2, 0, 0, g_get_object_bounds);
+  scm_c_define_gsubr ("get-object-bounds", 3, 0, 0, g_get_object_bounds);
   scm_c_define_gsubr ("get-object-pins", 1, 0, 0, g_get_object_pins);
   scm_c_define_gsubr ("get-pin-ends", 1, 0, 0, g_get_pin_ends);
   scm_c_define_gsubr ("set-attribute-text-properties!", 7, 0, 0, g_set_attrib_text_properties);

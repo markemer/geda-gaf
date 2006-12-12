@@ -39,7 +39,7 @@ SCM
 g_set_attrib_text_properties(SCM attrib_smob, SCM scm_colorname, SCM scm_size, 
 			     SCM scm_alignment, SCM scm_rotation, SCM scm_x,
 			     SCM scm_y);
-SCM g_get_object_bounds (SCM object_smob, SCM scm_inc_attribs);
+SCM g_get_object_bounds (SCM object_smob, SCM scm_exclude_attribs, SCM scm_exclude_object_type);
 SCM g_get_object_pins (SCM object_smob);
 SCM g_add_component(SCM page_smob, SCM scm_comp_name, SCM scm_x, SCM scm_y, 
 		    SCM scm_angle, SCM scm_selectable, SCM scm_mirror);
@@ -211,6 +211,7 @@ SCM g_rc_net_midpoint_mode(SCM mode);
 SCM g_rc_net_style(SCM mode);
 SCM g_rc_bus_style(SCM mode);
 SCM g_rc_pin_style(SCM mode);
+SCM g_rc_line_style(SCM mode);
 SCM g_rc_action_feedback_mode(SCM mode);
 SCM g_rc_zoom_with_pan(SCM mode);
 SCM g_rc_text_feedback(SCM mode);
@@ -294,12 +295,13 @@ void i_show_state(TOPLEVEL *w_current, const char *message);
 void i_set_state(TOPLEVEL *w_current, enum x_states newstate);
 void i_set_state_msg(TOPLEVEL *w_current, enum x_states newstate, const char *message);
 void i_update_left_button(const char *string);
-void i_update_middle_button(TOPLEVEL *w_current, void *func_ptr, const char *string);
+void i_update_middle_button(TOPLEVEL *w_current, void (*func_ptr)(gpointer, guint, GtkWidget*), const char *string);
 void i_update_right_button(const char *string);
 void i_update_toolbar(TOPLEVEL *w_current);
 void i_update_menus(TOPLEVEL *w_current);
 void i_update_cursor(TOPLEVEL *w_current);
-void i_set_filename(TOPLEVEL *w_current, const char *string);
+void i_set_filename(TOPLEVEL *w_current, const gchar *string);
+void i_set_grid(TOPLEVEL *w_current, int visible_grid);
 /* i_callbacks.c */
 void i_callback_file_new(gpointer data, guint callback_action, GtkWidget *widget);
 void i_callback_toolbar_file_new(GtkWidget *widget, gpointer data);

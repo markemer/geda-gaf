@@ -146,10 +146,8 @@ OBJECT *o_bus_add(TOPLEVEL *w_current, OBJECT *object_list,
   new_node->right = right;
   new_node->bottom = bottom;	
 
-  /*! \todo questionable cast */
-  new_node->draw_func = (void *) bus_draw_func;  
-  /*! \todo questionable cast */
-  new_node->sel_func = (void *) select_func;  
+  new_node->draw_func = bus_draw_func;  
+  new_node->sel_func = select_func;  
 
   object_list = (OBJECT *) s_basic_link_object(new_node, object_list);
 
@@ -836,6 +834,8 @@ void o_bus_modify(TOPLEVEL *w_current, OBJECT *object,
   object->top = top;
   object->right = right;
   object->bottom = bottom;	
+
+  s_tile_update_object(w_current, object);
 }
 
 

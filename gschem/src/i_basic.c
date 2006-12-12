@@ -266,7 +266,7 @@ void i_update_left_button(const char *string)
  *
  */
 void i_update_middle_button(TOPLEVEL *w_current,
-			    void *func_ptr, const char *string)
+			    void (*func_ptr)(gpointer, guint, GtkWidget*), const char *string)
 {
   char *temp_string;
 
@@ -428,9 +428,12 @@ void i_update_menus(TOPLEVEL *w_current)
   if (o_selection_return_num(w_current->page_current->selection2_head)) {
     /* since one or more things are selected, we set these TRUE */
     /* These strings should NOT be internationalized */
+    x_menus_sensitivity(w_current, "Edit/Cut Buffer", TRUE);
+    x_menus_sensitivity(w_current, "Edit/Copy Buffer", TRUE);
     x_menus_sensitivity(w_current, "Edit/Edit...", TRUE);
     x_menus_sensitivity(w_current, "Edit/Edit Text...", TRUE);
     x_menus_sensitivity(w_current, "Edit/Copy Mode", TRUE);
+    x_menus_sensitivity(w_current, "Edit/Multiple Copy Mode", TRUE);
     x_menus_sensitivity(w_current, "Edit/Move Mode", TRUE);
     x_menus_sensitivity(w_current, "Edit/Delete", TRUE);
     x_menus_sensitivity(w_current, "Edit/Rotate 90 Mode", TRUE);
@@ -472,9 +475,12 @@ void i_update_menus(TOPLEVEL *w_current)
   } else {
     /* Nothing is slected.  grey these out */
     /* These strings should NOT be internationalized */
+    x_menus_sensitivity(w_current, "Edit/Cut Buffer", FALSE);
+    x_menus_sensitivity(w_current, "Edit/Copy Buffer", FALSE);
     x_menus_sensitivity(w_current, "Edit/Edit...", FALSE);
     x_menus_sensitivity(w_current, "Edit/Edit Text...", FALSE);
     x_menus_sensitivity(w_current, "Edit/Copy Mode", FALSE);
+    x_menus_sensitivity(w_current, "Edit/Multiple Copy Mode", FALSE);
     x_menus_sensitivity(w_current, "Edit/Move Mode", FALSE);
     x_menus_sensitivity(w_current, "Edit/Delete", FALSE);
     x_menus_sensitivity(w_current, "Edit/Rotate 90 Mode", FALSE);
@@ -513,6 +519,40 @@ void i_update_menus(TOPLEVEL *w_current)
     x_menus_popup_sensitivity(w_current, "/Down Symbol", FALSE);
     /* x_menus_popup_sensitivity(w_current, "/Up", FALSE);	*/
   }
+
+  if ((object_buffer[0] != NULL) && (object_buffer[0]->next != NULL)) {
+    x_menus_sensitivity(w_current, "Edit/Paste Buffer", TRUE);
+    x_menus_sensitivity(w_current, "Buffer/Paste from 1", TRUE);
+  } else {
+    x_menus_sensitivity(w_current, "Edit/Paste Buffer", FALSE);
+    x_menus_sensitivity(w_current, "Buffer/Paste from 1", FALSE);
+  }
+
+  if ((object_buffer[1] != NULL) && (object_buffer[1]->next != NULL)) {
+    x_menus_sensitivity(w_current, "Buffer/Paste from 2", TRUE);
+  } else {
+    x_menus_sensitivity(w_current, "Buffer/Paste from 2", FALSE);
+  }
+
+  if ((object_buffer[2] != NULL) && (object_buffer[2]->next != NULL)) {
+    x_menus_sensitivity(w_current, "Buffer/Paste from 3", TRUE);
+  } else {
+    x_menus_sensitivity(w_current, "Buffer/Paste from 3", FALSE);
+  }
+
+  if ((object_buffer[3] != NULL) && (object_buffer[3]->next != NULL)) {
+    x_menus_sensitivity(w_current, "Buffer/Paste from 4", TRUE);
+  } else {
+    x_menus_sensitivity(w_current, "Buffer/Paste from 4", FALSE);
+  }
+
+  if ((object_buffer[4] != NULL) && (object_buffer[4]->next != NULL)) {
+    x_menus_sensitivity(w_current, "Buffer/Paste from 5", TRUE);
+  } else {
+    x_menus_sensitivity(w_current, "Buffer/Paste from 5", FALSE);
+  }
+ 
+
 }
  
 #if 0
@@ -639,52 +679,72 @@ void i_update_cursor(TOPLEVEL *w_current)
 #endif
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief Set filename as gschem  window title
  *  \par Function Description
- *
+ *  Set the window title using the gnome HID format style.
  */
-void i_set_filename(TOPLEVEL *w_current, const char *string)
+void i_set_filename(TOPLEVEL *w_current, const gchar *string)
 {
-  char trunc_string[41];
-  int len;
-  int i;
+  gchar *print_string=NULL;
+  gchar *filename=NULL;
 
-  if (!w_current->filename_label) {
+  if (!w_current->main_window)
+    return;
+  if (string == NULL)
+    return;
+
+  filename = g_path_get_basename(string);
+  
+  print_string = g_strdup_printf("%s - gschem", filename);
+  
+  /* alternativ code with length limited pathname */
+/*  int max_len = 70;
+    if (strlen(string) > max_len) {
+    print_string = g_strdup_printf("gschem: ...%s",
+				   &(string[strlen(string)-max_len]));
+  }
+  else {
+    print_string = g_strdup_printf("gschem: %s",string);
+  }
+*/
+
+  gtk_window_set_title(GTK_WINDOW(w_current->main_window),
+		       print_string);
+  
+  g_free(print_string);
+  g_free(filename);
+}
+
+/*! \brief Write the grid settings to the gschem status bar
+ *  \par Function Description
+ *  The function takes the current grid paramters of gschem and
+ *  prints it to the status bar.
+ *  The format is "Grid([SnapGridSize],[CurrentGridSize])"
+ */
+void i_set_grid(TOPLEVEL *w_current, int visible_grid) 
+{
+  gchar *print_string=NULL;
+  gchar *snap=NULL;
+  gchar *grid=NULL;
+
+  if (!w_current->grid_label) {
     return;
   }
+  
+  if (!w_current->snap)
+    snap = g_strdup(_("OFF"));
+  else
+    snap = g_strdup_printf("%d", w_current->snap_size);
 
-  if (string) {
-    len = strlen(string);
-    w_current->DONT_RESIZE = 1;
+  if (!w_current->grid)
+    grid = g_strdup(_("OFF"));
+  else
+    grid = g_strdup_printf("%d", visible_grid);
 
-    if (w_current->filename_label) {
-      if (len > 40) {
-
-        trunc_string[0] = '.';
-        trunc_string[1] = '.';
-        trunc_string[2] = '.';
-
-        trunc_string[40] = '\0';
-        for (i = 39 ; i > 2; i--) {
-          if (len >= 0) {
-            trunc_string[i] = string[len];
-          } else {
-            break;
-          }
-          len--;
-        }
-
-        gtk_label_set(GTK_LABEL(w_current->
-                                filename_label),
-                      trunc_string);
-
-      } else {
-
-        gtk_label_set(GTK_LABEL(w_current->
-                                filename_label),
-                      (char *) string);
-      }
-    }
-  }
+  print_string = g_strdup_printf(_("Grid(%s, %s)"), snap, grid);
+  gtk_label_set(GTK_LABEL(w_current->grid_label), print_string);
+  
+  g_free(print_string);
+  g_free(grid);
+  g_free(snap);
 }

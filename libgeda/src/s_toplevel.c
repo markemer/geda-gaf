@@ -184,6 +184,7 @@ TOPLEVEL *s_toplevel_new (void)
   toplevel->middle_label = NULL;
   toplevel->right_label  = NULL;
   toplevel->filename_label = NULL;
+  toplevel->grid_label = NULL;
   toplevel->status_label = NULL;
 
   toplevel->toolbar_select = NULL;
@@ -292,6 +293,7 @@ TOPLEVEL *s_toplevel_new (void)
   toplevel->pin_style = 0;
   toplevel->net_style = 0;
   toplevel->bus_style = 0;
+  toplevel->line_style = 0;
   toplevel->zoom_with_pan = 0;
 
   toplevel->actionfeedback_mode = OUTLINE;

@@ -100,10 +100,8 @@ OBJECT *o_line_add(TOPLEVEL *w_current, OBJECT *object_list,
   o_set_fill_options(w_current, new_node,
 		     FILLING_HOLLOW, -1, -1, -1, -1, -1);
   
-  /* \todo questionable cast */
-  new_node->draw_func = (void *) line_draw_func;
-  /* \todo questionable cast */
-  new_node->sel_func = (void *) select_func;  
+  new_node->draw_func = line_draw_func;
+  new_node->sel_func = select_func;  
   
   /* compute bounding box and screen coords */
   o_line_recalc(w_current, new_node);
@@ -807,43 +805,50 @@ void o_line_print(TOPLEVEL *w_current, FILE *fp, OBJECT *o_current,
    * solid to avoid and endless loop produced by other functions.
    */
   line_width = o_current->line_width;
-  if(line_width <= 2) line_width = 2;
+  if(line_width <=2) {
+    if(w_current->line_style == THICK) {
+      line_width=LINE_WIDTH;
+    } else {
+      line_width=2;
+    }
+  }
+
   length = o_current->line_length;
   space  = o_current->line_space;
   
   switch(o_current->line_type) {
     case(TYPE_SOLID):
       length = -1; space = -1;
-      outl_func = (void *) o_line_print_solid;
+      outl_func = o_line_print_solid;
       break;
       
     case(TYPE_DOTTED):
       length = -1;
-      outl_func = (void *) o_line_print_dotted;
+      outl_func = o_line_print_dotted;
       break;
       
     case(TYPE_DASHED):
-      outl_func = (void *) o_line_print_dashed;
+      outl_func = o_line_print_dashed;
       break;
       
     case(TYPE_CENTER):
-      outl_func = (void *) o_line_print_center;
+      outl_func = o_line_print_center;
       break;
       
     case(TYPE_PHANTOM):
-      outl_func = (void *) o_line_print_phantom;
+      outl_func = o_line_print_phantom;
       break;
       
     case(TYPE_ERASE):
       /* Unused for now, print it solid */
       length = -1; space = -1;
-      outl_func = (void *) o_line_print_solid;
+      outl_func =  o_line_print_solid;
       break;
   }
 
   if((length == 0) || (space == 0)) {
     length = -1; space = -1;
-    outl_func = (void *) o_line_print_solid;
+    outl_func = o_line_print_solid;
   }
   
   (*outl_func)(w_current, fp,

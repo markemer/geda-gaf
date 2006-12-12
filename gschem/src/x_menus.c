@@ -220,10 +220,8 @@ void get_main_menu(TOPLEVEL * w_current, GtkWidget ** menubar)
     root_menu = gtk_menu_item_new_with_label (menu_name);
     /* do not free *raw_menu_name */
 
-    help_string = gettext("Help");
-    if (strcmp(menu_name, help_string) == 0) {
-      gtk_menu_item_right_justify (GTK_MENU_ITEM(root_menu));
-    }
+    /* no longer right justify the help menu since that has gone out of style */
+
     gtk_widget_show (root_menu);
     gtk_menu_item_set_submenu (GTK_MENU_ITEM (root_menu), menu);
     gtk_menu_bar_append (GTK_MENU_BAR (menu_bar), root_menu);
@@ -239,7 +237,7 @@ void get_main_menu(TOPLEVEL * w_current, GtkWidget ** menubar)
  *
  */
 static gchar* gettext_fn(const gchar *path,
-			 gpointer func_data __attribute__((unused)))
+			 gpointer func_data ATTRIBUTE_UNUSED)
 {
 	return gettext(path);
 }

@@ -42,17 +42,18 @@
   g_object_set_data_full (G_OBJECT (component), name, \
     gtk_widget_ref (widget), (GDestroyNotify) gtk_widget_unref)
 
+#define DIALOG_BORDER_SPACING 10
+#define DIALOG_ELEMENT_SPACING 10
+
+
 static GtkWidget* create_menu_linetype (TOPLEVEL *w_current);
 static gint line_type_dialog_linetype_change (GtkWidget *w, gpointer data);
-static int line_type_dialog_keypress (GtkWidget * widget, GdkEventKey * event, gpointer data);
 static void line_type_dialog_ok (GtkWidget *w, gpointer data);
-static void line_type_dialog_cancel (GtkWidget *w, gpointer data);
 
 static GtkWidget* create_menu_filltype (TOPLEVEL *w_current);
 static gint fill_type_dialog_filltype_change(GtkWidget *w, gpointer data);
-static int fill_type_dialog_keypress(GtkWidget * widget, GdkEventKey * event, gpointer data);
 static void fill_type_dialog_ok(GtkWidget *w, gpointer data);
-static void fill_type_dialog_cancel(GtkWidget *w, gpointer data);
+
 
 struct line_type_data {
   GtkWidget *dialog;
@@ -304,10 +305,12 @@ void text_input_dialog (TOPLEVEL *w_current)
 /***************** End of Text Input dialog box ***********************/
 
 /***************** Start of Text Edit dialog box **********************/
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief CAllback for a text aligment change
  *  \par Function Description
- *
+ *  This function stores a change of the text alignment in the
+ *  <b>TOPLEVEL</b> struct.
+ *  \todo Remove that function. Only the OK-Button should set any
+ *  properties in the TOPLEVEL struct.
  */
 gint change_alignment(GtkWidget *w, TOPLEVEL *w_current)
 {
@@ -318,13 +321,13 @@ gint change_alignment(GtkWidget *w, TOPLEVEL *w_current)
   /*w_current->page_current->CHANGED=1; I don't think this belongs */
   /* o_undo_savestate(w_current, UNDO_ALL); I don't think this belongs */
 	
-  return(0);
+  return 0;
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief Create the alignment menu for the text property dialog
  *  \par Function Description
- *
+ *  This function creates a GtkMenu with nine different alignment 
+ *  entries.
  */
 static GtkWidget *create_menu_alignment (TOPLEVEL *w_current)
 {
@@ -435,32 +438,17 @@ static GtkWidget *create_menu_alignment (TOPLEVEL *w_current)
                      w_current);
   gtk_widget_show (menuitem);
 
-  return(menu);
+  return menu;
 }
 
 /* we reuse the color menu so we need to declare it */
 static GtkWidget *create_color_menu(TOPLEVEL * w_current, int * select_index);
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief Apply the settings from the text property dialog
  *  \par Function Description
- *
- */
-int text_edit_dialog_keypress(GtkWidget * widget, GdkEventKey * event, 
-			      TOPLEVEL * w_current)
-{
-   if (strcmp(gdk_keyval_name(event->keyval), "Escape") == 0) {
-	text_edit_dialog_cancel(NULL, w_current);	
- 	return TRUE;
-   }
-
-   return FALSE;
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
+ *  This function applies the user settings to the selected text objects
+ *  and closes the dialog
+ *  \todo Check why we have no color attribute in that dialog
  */
 void text_edit_dialog_ok(GtkWidget *w, TOPLEVEL *w_current)
 {
@@ -472,17 +460,20 @@ void text_edit_dialog_ok(GtkWidget *w, TOPLEVEL *w_current)
   int num_selected;
   GtkTextBuffer *textbuffer;
   GtkTextIter start, end;
+  GtkWidget *widget;
 
   num_selected = o_selection_return_num(w_current->page_current->selection2_head);
 
   /* text string entry will only show up if one object is selected */
   if (num_selected == 1) {
-    textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(w_current->teentry));
+    widget = g_object_get_data (G_OBJECT (w_current->tewindow), "textentry");
+    textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
     gtk_text_buffer_get_bounds (textbuffer, &start, &end);
     text_string =  gtk_text_iter_get_text (&start, &end);
   } /* else the string will be null which is okay */
   
-  text_size_string = (char *) gtk_entry_get_text(GTK_ENTRY(w_current->tsentry));
+  widget = g_object_get_data (G_OBJECT (w_current->tewindow), "sizeentry");
+  text_size_string = (char *) gtk_entry_get_text(GTK_ENTRY(widget));
 
   if (text_string) {
     len = strlen(text_string);
@@ -502,139 +493,150 @@ void text_edit_dialog_ok(GtkWidget *w, TOPLEVEL *w_current)
 
   i_set_state(w_current, SELECT);
   i_update_toolbar(w_current);
-
-  gtk_grab_remove(w_current->tewindow);
   gtk_widget_destroy(w_current->tewindow);
   w_current->tewindow = NULL;
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! 
+ *  \brief Cancel function for the text property dialog
  *  \par Function Description
- *
+ *  Just close the dialog and clean up.
+ *  \todo join the function into text_edit_dialog_response()
  */
 void text_edit_dialog_cancel(GtkWidget *w, TOPLEVEL *w_current)
 {
   i_set_state(w_current, SELECT);
   i_update_toolbar(w_current);
-  gtk_grab_remove(w_current->tewindow);
   gtk_widget_destroy(w_current->tewindow);
   w_current->tewindow = NULL;
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief Response function for the text property dialog
  *  \par Function Description
- *
+ *  This function receives the user response of the text property dialog.
+ *  The response is either <b>OK</b> or <b>Cancel</b>
+ *  
+ */
+void text_edit_dialog_response(GtkWidget * widget, gint response, TOPLEVEL *w_current)
+{
+  switch(response) {
+  case GTK_RESPONSE_REJECT:
+  case GTK_RESPONSE_DELETE_EVENT:
+    text_edit_dialog_cancel(widget, w_current);
+    break;
+  case GTK_RESPONSE_ACCEPT:
+    text_edit_dialog_ok(widget, w_current);
+    break;
+  default:
+    printf("text_edit_dialog_response(): strange signal %d\n", response);
+  }
+}
+
+/*! \brief Create the edit text properties dialog
+ *  \par Function Description
+ *  This Function creates the dialog to edit text properties. 
+ *  \todo Check why there's no color in the calling parameters
  */
 void text_edit_dialog (TOPLEVEL *w_current, char *string, int text_size,
 		       int text_alignment)
 {
   GtkWidget *label = NULL;
-  GtkWidget *buttonok     = NULL;
-  GtkWidget *buttoncancel = NULL;
-  GtkWidget *vbox, *action_area;
+  GtkWidget *vbox;
   GtkWidget *optionmenu = NULL;
   GtkWidget *align_menu = NULL;
   GtkWidget *viewport1 = NULL;
+  GtkWidget *textentry = NULL;
+  GtkWidget *sizeentry = NULL;
   GtkWidget *scrolled_window = NULL;
   GtkTextBuffer *textbuffer;
   char *text_size_string;
-  int len;
-  int num_selected;
+  int num_selected=0;
   int select_index=0;
 
-  num_selected = o_selection_return_num(w_current->page_current->selection2_head);
-  
   if (!w_current->tewindow) {
-    w_current->tewindow = x_create_dialog_box(&vbox, &action_area);
-    
-    gtk_window_set_default_size (GTK_WINDOW (w_current->tewindow), 250, 300);
+    w_current->tewindow = gtk_dialog_new_with_buttons(_("Edit Text Properties"),
+						      GTK_WINDOW(w_current->main_window),
+						      GTK_DIALOG_MODAL,
+						      GTK_STOCK_CANCEL,
+						      GTK_RESPONSE_REJECT,
+						      GTK_STOCK_OK,
+						      GTK_RESPONSE_ACCEPT,
+						      NULL);
+
+    gtk_dialog_set_default_response(GTK_DIALOG(w_current->tewindow),
+				    GTK_RESPONSE_ACCEPT);
+
+    gtk_signal_connect(GTK_OBJECT(w_current->tewindow), "response",
+		       GTK_SIGNAL_FUNC(text_edit_dialog_response), w_current);
 
     gtk_window_position(GTK_WINDOW (w_current->tewindow),
                         GTK_WIN_POS_MOUSE);
 
-    gtk_signal_connect(GTK_OBJECT (w_current->tewindow),
-                       "destroy",
-                       GTK_SIGNAL_FUNC(destroy_window),
-                       &w_current->tewindow);
+    
+    vbox = GTK_DIALOG(w_current->tewindow)->vbox;
+    gtk_container_set_border_width(GTK_CONTAINER(w_current->tewindow),5);
+    gtk_box_set_spacing(GTK_BOX(vbox),5);
 
-    gtk_signal_connect(GTK_OBJECT(w_current->tewindow),
-                     "key_press_event",
-                     (GtkSignalFunc) text_edit_dialog_keypress, w_current);
-
-
-#if 0 /* removed because it was causing the dialog box to not close */
-    gtk_signal_connect(GTK_OBJECT (w_current->tewindow),
-                       "delete_event",
-                       GTK_SIGNAL_FUNC(gtk_widget_destroyed),
-                       &w_current->tewindow);
-#endif
-
-    gtk_window_set_title(GTK_WINDOW (w_current->tewindow),
-                         _("Edit Text"));
-    gtk_container_border_width(
-                               GTK_CONTAINER(w_current->tewindow), 10);
-
+    /* add a text box if only one object is selected */
+    num_selected = o_selection_return_num(w_current->page_current->selection2_head);
     if (num_selected == 1) {
-      label = gtk_label_new (_("Edit Text"));
-      gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 3);
+      label = gtk_label_new (_("Text Content:"));
+      gtk_misc_set_alignment(GTK_MISC(label),0,0);
+      gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
       gtk_widget_show (label);
 
       viewport1 = gtk_viewport_new (NULL, NULL);
       gtk_widget_show (viewport1);
+      gtk_widget_set_size_request(GTK_WIDGET(viewport1),-1,75);
 
       scrolled_window = gtk_scrolled_window_new(NULL, NULL);
       gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				     GTK_POLICY_AUTOMATIC, 
 				     GTK_POLICY_AUTOMATIC);
       gtk_container_add (GTK_CONTAINER (viewport1), scrolled_window);
-      gtk_box_pack_start( GTK_BOX(vbox), viewport1, TRUE, TRUE, 10);
+      gtk_box_pack_start( GTK_BOX(vbox), viewport1, TRUE, TRUE, 0);
       gtk_widget_show(scrolled_window);
       
-      w_current->teentry = gtk_text_view_new();
-      gtk_text_view_set_editable(GTK_TEXT_VIEW(w_current->teentry), TRUE);
-      select_all_text_in_textview(GTK_TEXT_VIEW(w_current->teentry));
+      textentry = gtk_text_view_new();
+      gtk_text_view_set_editable(GTK_TEXT_VIEW(textentry), TRUE);
+      select_all_text_in_textview(GTK_TEXT_VIEW(textentry));
 
       /*! \bug FIXME: Set tab's width in the textview widget. */
       /* See first the code in text_input_dialog and get it working before adding it here. */
 
-      gtk_container_add(GTK_CONTAINER(scrolled_window), w_current->teentry);
-
-      gtk_widget_show (w_current->teentry);
-      gtk_widget_grab_focus(w_current->teentry);
+      gtk_container_add(GTK_CONTAINER(scrolled_window), textentry);
+      gtk_widget_show (textentry);
+      gtk_widget_grab_focus(textentry);
+      GLADE_HOOKUP_OBJECT(w_current->tewindow, textentry,"textentry");
     }
 
-    label = gtk_label_new(_("Edit Text Color"));
-    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 0);
+    label = gtk_label_new(_("Text Color:"));
+    gtk_misc_set_alignment(GTK_MISC(label),0,0);
+    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
     gtk_widget_show(label);
     
     optionmenu = gtk_option_menu_new();
-    
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(optionmenu), create_color_menu(w_current, &select_index));
+    gtk_option_menu_set_menu(GTK_OPTION_MENU(optionmenu), 
+			     create_color_menu(w_current, &select_index));
     gtk_option_menu_set_history(GTK_OPTION_MENU(optionmenu), select_index);
 	
-    gtk_box_pack_start(GTK_BOX(vbox), optionmenu, FALSE, TRUE, 5);
+    gtk_box_pack_start(GTK_BOX(vbox), optionmenu, FALSE, TRUE, 0);
     gtk_widget_show(optionmenu);
 
-    label = gtk_label_new (_("Edit Text Size"));
-    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 0);
+    label = gtk_label_new (_("Text Size:"));
+    gtk_misc_set_alignment(GTK_MISC(label),0,0);
+    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
     gtk_widget_show (label);
 
-    w_current->tsentry = gtk_entry_new_with_max_length (10);
-    gtk_editable_select_region(
-                               GTK_EDITABLE (w_current->tsentry), 0, -1);
-    gtk_box_pack_start(
-                       GTK_BOX(vbox),
-                       w_current->tsentry, FALSE, FALSE, 5);
-    gtk_signal_connect(GTK_OBJECT(w_current->tsentry), "activate",
-                       GTK_SIGNAL_FUNC(text_edit_dialog_ok),
-                       w_current);
-    gtk_widget_show (w_current->tsentry);
+    sizeentry = gtk_entry_new_with_max_length (10);
+    gtk_editable_select_region(GTK_EDITABLE (sizeentry), 0, -1);
+    gtk_box_pack_start(GTK_BOX(vbox),
+                       sizeentry, FALSE, FALSE, 5);
+    gtk_widget_show (sizeentry);
 
-		
-    label = gtk_label_new (_("Edit Text Alignment"));
-    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 5);
+    label = gtk_label_new (_("Text Alignment:"));
+    gtk_misc_set_alignment(GTK_MISC(label),0,0);
+    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
     gtk_widget_show (label);
 
     optionmenu = gtk_option_menu_new ();
@@ -647,50 +649,28 @@ void text_edit_dialog (TOPLEVEL *w_current, char *string, int text_size,
     gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(gtk_menu_get_active(GTK_MENU(align_menu))),
 				   TRUE);
 
+    GLADE_HOOKUP_OBJECT(w_current->tewindow, sizeentry,"sizeentry");
+
     gtk_box_pack_start(GTK_BOX(vbox), optionmenu, FALSE, TRUE, 0);
     gtk_widget_show(optionmenu);
-
-
-    buttoncancel = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
-    GTK_WIDGET_SET_FLAGS(buttoncancel, GTK_CAN_DEFAULT);
-    gtk_box_pack_start(
-                       GTK_BOX(action_area),
-                       buttoncancel, TRUE, TRUE, 5);
-    gtk_signal_connect(GTK_OBJECT (buttoncancel), "clicked",
-                       GTK_SIGNAL_FUNC(text_edit_dialog_cancel),
-                       w_current);
-    gtk_widget_show(buttoncancel);
-
-    buttonok = gtk_button_new_from_stock (GTK_STOCK_OK);
-    GTK_WIDGET_SET_FLAGS (buttonok, GTK_CAN_DEFAULT);
-    gtk_box_pack_start(
-                       GTK_BOX(action_area),
-                       buttonok, TRUE, TRUE, 5);
-    gtk_signal_connect(GTK_OBJECT (buttonok), "clicked",
-                       GTK_SIGNAL_FUNC(text_edit_dialog_ok),
-                       w_current);
-    gtk_widget_show(buttonok);
-    gtk_widget_grab_default(buttonok);
-
   }
 
   if (!GTK_WIDGET_VISIBLE (w_current->tewindow)) {
     gtk_widget_show (w_current->tewindow);
     if (string != NULL) {
-      len = strlen(string);
       if (num_selected == 1) { /* only if one thing is selected */
-	textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(w_current->teentry));
+	textentry = g_object_get_data (G_OBJECT (w_current->tewindow), "textentry");
+	textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textentry));
 	gtk_text_buffer_set_text(GTK_TEXT_BUFFER(textbuffer), string, -1);
-	select_all_text_in_textview(GTK_TEXT_VIEW(w_current->teentry));
+	select_all_text_in_textview(GTK_TEXT_VIEW(textentry));
       }
     }
 
     text_size_string = g_strdup_printf("%d", text_size);
-    gtk_entry_set_text(GTK_ENTRY(w_current->tsentry),
+    sizeentry = g_object_get_data (G_OBJECT (w_current->tewindow), "sizeentry");
+    gtk_entry_set_text(GTK_ENTRY(sizeentry),
                        text_size_string);
     g_free(text_size_string);
-
-    gtk_grab_add (w_current->tewindow);
   }
 }
 
@@ -698,10 +678,9 @@ void text_edit_dialog (TOPLEVEL *w_current, char *string, int text_size,
 
 /***************** Start of Line Type/width dialog box ****************/
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief Create a line type menu for the line type dialog
  *  \par Function Description
- *
+ *  This function creates a GtkMenu with the different linetypes.
  */
 static GtkWidget *create_menu_linetype (TOPLEVEL *w_current)
 {
@@ -734,10 +713,10 @@ static GtkWidget *create_menu_linetype (TOPLEVEL *w_current)
   return(menu);
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief Callback function for the linetype menu item in the line type dialog
  *  \par Function Description
- *
+ *  This Function is called when the user changes the line type selection.
+ *  It sets the dash space/length entries either active or inactive.
  */
 static gint line_type_dialog_linetype_change(GtkWidget *w, gpointer data)
 {
@@ -780,28 +759,11 @@ static gint line_type_dialog_linetype_change(GtkWidget *w, gpointer data)
   return(0);
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
- */
-static int line_type_dialog_keypress(GtkWidget *widget, GdkEventKey *event, 
-				     gpointer data)
-{
-  struct line_type_data *line_type_data = (struct line_type_data*)data;
-    
-  if (strcmp (gdk_keyval_name (event->keyval), "Escape") == 0) {
-    line_type_dialog_cancel (NULL, (gpointer) line_type_data);
-    return TRUE;
-  }
 
-  return FALSE;
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief Worker function for the line type and width dialog
  *  \par Function Description
- *
+ *  The function takes the properties of the dialog and applies
+ *  them to the selected objects.
  */
 static void line_type_dialog_ok(GtkWidget *w, gpointer data)
 {
@@ -883,59 +845,54 @@ static void line_type_dialog_ok(GtkWidget *w, gpointer data)
     }
   }
 
-  /* get ride of the list of objects but not the objects */
-  g_list_free (objects);
-  line_type_data->objects = NULL;
-    
   toplevel->page_current->CHANGED = 1;
-  i_set_state (toplevel, SELECT);
-  i_update_toolbar (toplevel);
-    
-  gtk_grab_remove (line_type_data->dialog);
-  gtk_widget_destroy (line_type_data->dialog);
-    
-  g_free (line_type_data);
-
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief response function for the line type and width dialog
  *  \par Function Description
- *
+ *  This function takes the user input and applies it to selected 
+ *  objects.
+ *  After that it kills the dialog.
  */
-static void line_type_dialog_cancel(GtkWidget *w, gpointer data)
+void line_type_dialog_response(GtkWidget *widget, gint response, 
+			       struct line_type_data *line_type_data)
 {
-  struct line_type_data *line_type_data = (struct line_type_data*)data;
-  TOPLEVEL *toplevel = line_type_data->toplevel;
+  switch (response) {
+  case GTK_RESPONSE_REJECT:
+  case GTK_RESPONSE_DELETE_EVENT:
+    /* void */
+    break;
+  case GTK_RESPONSE_ACCEPT:
+    line_type_dialog_ok(widget, line_type_data);
+    break;
+  default:
+    printf("line_type_dialog_response(): strange signal %d\n",response);
+  }
     
-  /* free the list of selected objects */
-  g_list_free (line_type_data->objects);
-    
-  i_set_state (toplevel, SELECT);
-  i_update_toolbar (toplevel);
-    
-  gtk_grab_remove (line_type_data->dialog);
+  i_set_state (line_type_data->toplevel, SELECT);
+  i_update_toolbar (line_type_data->toplevel);
   gtk_widget_destroy (line_type_data->dialog);
-
+  
+  /* get ride of the list of objects but not the objects */
+  g_list_free (line_type_data->objects);
   g_free (line_type_data);
-    
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief Creates the line type and width dialog
  *  \par Function Description
- *
+ *  This function creates and sets up a dialog for manipulating the 
+ *  line width and the line type setting of objects.
  */
 void line_type_dialog (TOPLEVEL *w_current, GList *objects)
 {
   GtkWidget *dialog;
-  GtkWidget *buttonok     = NULL;
-  GtkWidget *buttoncancel = NULL;
-  GtkWidget *vbox, *action_area;
+  GtkWidget *vbox;
   GtkWidget *optionmenu   = NULL;
   GtkWidget *length_entry = NULL;
   GtkWidget *space_entry  = NULL;
   GtkWidget *width_entry  = NULL;
+  GtkWidget *table;
+  GtkWidget *label;
   struct line_type_data *line_type_data;
   gchar *width_str, *space_str, *length_str;
   gint type;
@@ -943,88 +900,81 @@ void line_type_dialog (TOPLEVEL *w_current, GList *objects)
   line_type_data = (struct line_type_data*) g_malloc (
     sizeof (struct line_type_data));
 
-  dialog = x_create_dialog_box(&vbox, &action_area);
+  dialog = gtk_dialog_new_with_buttons(_("Edit Line Width & Type"),
+				       GTK_WINDOW(w_current->main_window),
+				       GTK_DIALOG_MODAL,
+				       GTK_STOCK_CANCEL,
+				       GTK_RESPONSE_REJECT,
+				       GTK_STOCK_OK,
+				       GTK_RESPONSE_ACCEPT,
+				       NULL);
 
   gtk_window_position(GTK_WINDOW (dialog), GTK_WIN_POS_MOUSE);
   
-  gtk_signal_connect(GTK_OBJECT (dialog),
-                     "destroy",
-                     GTK_SIGNAL_FUNC(destroy_window),
-                     &dialog);
-  gtk_signal_connect (GTK_OBJECT (dialog),
-                      "key_press_event",
-                      (GtkSignalFunc) line_type_dialog_keypress,
-                      line_type_data);
+  gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
 
-  gtk_window_set_title(GTK_WINDOW (dialog), _("Edit Line Width & Type"));
-  gtk_container_border_width(GTK_CONTAINER(dialog), 10);
+  gtk_signal_connect(GTK_OBJECT(dialog), "response",
+		     GTK_SIGNAL_FUNC(line_type_dialog_response),
+		     line_type_data);
 
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      gtk_label_new (_("Line Width")),
-                      TRUE, TRUE, 0);
+  gtk_container_border_width(GTK_CONTAINER(dialog), 
+			     DIALOG_BORDER_SPACING);
+  vbox = GTK_DIALOG(dialog)->vbox;
+  gtk_box_set_spacing(GTK_BOX(vbox), DIALOG_ELEMENT_SPACING);
+
+
+  label = gtk_label_new(_("Line Properties:"));
+  gtk_misc_set_alignment(GTK_MISC(label),0,0);
+  gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
+
+  table = gtk_table_new (4, 2, FALSE);
+  gtk_table_set_row_spacings(GTK_TABLE(table), DIALOG_ELEMENT_SPACING);
+  gtk_table_set_col_spacings(GTK_TABLE(table), DIALOG_ELEMENT_SPACING);
+  gtk_box_pack_start(GTK_BOX(vbox), table, FALSE, FALSE, 0);
+
+  label = gtk_label_new (_("Width:"));
+  gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+  gtk_table_attach(GTK_TABLE(table), label, 0,1,0,1, GTK_FILL,0,0,0);
+
+  label = gtk_label_new (_("Type:"));
+  gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+  gtk_table_attach(GTK_TABLE(table), label, 0,1,1,2, GTK_FILL,0,0,0);
+
+  label = gtk_label_new (_("Dash Length:"));
+  gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+  gtk_table_attach(GTK_TABLE(table), label, 0,1,2,3, GTK_FILL,0,0,0);
+
+  label = gtk_label_new (_("Dash Space:"));
+  gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+  gtk_table_attach(GTK_TABLE(table), label, 0,1,3,4, GTK_FILL,0,0,0);
 
   width_entry = gtk_entry_new();
-  /*    gtk_editable_select_region(
-        GTK_EDITABLE(width_entry), 0, -1); */
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      width_entry,
-                      TRUE, TRUE, 10);
-  gtk_signal_connect(GTK_OBJECT(width_entry), "activate",
-                     GTK_SIGNAL_FUNC(line_type_dialog_ok),
-                     line_type_data);
+  gtk_entry_set_activates_default (GTK_ENTRY(width_entry), TRUE);
+  gtk_editable_select_region(GTK_EDITABLE(width_entry), 0, -1);
+  gtk_table_attach_defaults(GTK_TABLE(table), width_entry,
+			    1,2,0,1);
   
-  gtk_box_pack_start(GTK_BOX(vbox),
-                     gtk_label_new (_("Line Type")),
-                     TRUE, TRUE, 5);
-
   optionmenu = gtk_option_menu_new ();
   gtk_option_menu_set_menu(GTK_OPTION_MENU(optionmenu),
                            create_menu_linetype (w_current));
-  gtk_box_pack_start(GTK_BOX(vbox),
-                     optionmenu,
-                     TRUE, TRUE, 0);
+  gtk_table_attach_defaults(GTK_TABLE(table), optionmenu,
+			    1,2,1,2);
+
   gtk_signal_connect(GTK_OBJECT (optionmenu), "changed",
                      (GtkSignalFunc) line_type_dialog_linetype_change,
                      line_type_data);
   
-  gtk_box_pack_start(GTK_BOX(vbox),
-                     gtk_label_new (_("Line Dash Length")),
-                     TRUE, TRUE, 5);
-  
   length_entry = gtk_entry_new();
+  gtk_entry_set_activates_default (GTK_ENTRY(length_entry), TRUE);
   gtk_editable_select_region(GTK_EDITABLE(length_entry), 0, -1);
-  gtk_box_pack_start(GTK_BOX(vbox),
-                     length_entry,
-                     TRUE, TRUE, 10);
+  gtk_table_attach_defaults(GTK_TABLE(table), length_entry,
+			    1,2,2,3);
 
-  gtk_box_pack_start(GTK_BOX(vbox),
-                     gtk_label_new (_("Line Dash Space")),
-                     TRUE, TRUE, 5);
-  
   space_entry = gtk_entry_new();
+  gtk_entry_set_activates_default (GTK_ENTRY(space_entry), TRUE);
   gtk_editable_select_region(GTK_EDITABLE(space_entry), 0, -1);
-  gtk_box_pack_start(GTK_BOX(vbox),
-                     space_entry,
-                     TRUE, TRUE, 10);
-
-  buttoncancel = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
-  GTK_WIDGET_SET_FLAGS(buttoncancel, GTK_CAN_DEFAULT);
-  gtk_box_pack_start(GTK_BOX(action_area),
-                     buttoncancel,
-                     TRUE, TRUE, 0);
-  gtk_signal_connect(GTK_OBJECT (buttoncancel), "clicked",
-                     GTK_SIGNAL_FUNC(line_type_dialog_cancel),
-                     line_type_data);
-
-  buttonok = gtk_button_new_from_stock (GTK_STOCK_OK);
-  GTK_WIDGET_SET_FLAGS (buttonok, GTK_CAN_DEFAULT);
-  gtk_box_pack_start(GTK_BOX(action_area),
-                     buttonok,
-                     TRUE, TRUE, 0);
-  gtk_signal_connect(GTK_OBJECT (buttonok), "clicked",
-                     GTK_SIGNAL_FUNC(line_type_dialog_ok),
-                     line_type_data);
-  gtk_widget_grab_default(buttonok);
+  gtk_table_attach_defaults(GTK_TABLE(table), space_entry,
+			    1,2,3,4);
 
   /* populate the data structure */
   line_type_data->dialog = dialog;
@@ -1072,6 +1022,9 @@ void line_type_dialog (TOPLEVEL *w_current, GList *objects)
   gtk_option_menu_set_history (GTK_OPTION_MENU (optionmenu), type);
   gtk_entry_set_text (GTK_ENTRY (space_entry), space_str);
   gtk_entry_set_text (GTK_ENTRY (length_entry), length_str);
+
+  /* calling it once will set the dash space/length activity */
+  line_type_dialog_linetype_change(optionmenu, line_type_data);
   
   gtk_widget_grab_focus(width_entry);
   gtk_grab_add (dialog);
@@ -1081,17 +1034,15 @@ void line_type_dialog (TOPLEVEL *w_current, GList *objects)
   g_free (length_str);
   
   gtk_widget_show_all (dialog);
-  
 }
 
 /***************** End of Line Type / Width dialog box ****************/
 
 /***************** Start of Fill Type dialog box **********************/
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief Create a menu with fill types for the line type dialog
  *  \par Function Description
- *
+ *  This function creates a GtkMenu with the different fill types.
  */
 static GtkWidget *create_menu_filltype (TOPLEVEL *w_current)
 {
@@ -1123,10 +1074,10 @@ static GtkWidget *create_menu_filltype (TOPLEVEL *w_current)
   return menu;
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief Callback function for the filltype menu in the filltype dialog
  *  \par Function Description
- *
+ *  This function sets the entry activity according to the selected 
+ *  filltype of the filltype dialog.
  */
 static gint fill_type_dialog_filltype_change(GtkWidget *w, gpointer data)
 {
@@ -1180,28 +1131,10 @@ static gint fill_type_dialog_filltype_change(GtkWidget *w, gpointer data)
   return(0);
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief Apply the settings of the filltype dialog to the selection
  *  \par Function Description
- *
- */
-static int fill_type_dialog_keypress(GtkWidget * widget, GdkEventKey * event,
-				     gpointer data)
-{
-  struct fill_type_data *fill_type_data = (struct fill_type_data*)data;
-
-  if (strcmp (gdk_keyval_name (event->keyval), "Escape") == 0) {
-    fill_type_dialog_cancel (NULL, (gpointer) fill_type_data);
-    return TRUE;
-  }
-
-  return FALSE;
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
+ *  This function applies the settings of the filltype dialog to the 
+ *  selected objects
  */
 static void fill_type_dialog_ok(GtkWidget *w, gpointer data)
 {
@@ -1291,44 +1224,39 @@ static void fill_type_dialog_ok(GtkWidget *w, gpointer data)
       object = object->next;
     }
   }
+  toplevel->page_current->CHANGED = 1;
+}
+
+/*! \brief response function for the filltype dialog
+ *  \par Function Description
+ *  This function handles the user response to the filltype dialog.
+ *  It destroys the dialog after that.
+ */
+void fill_type_dialog_response(GtkWidget *widget, gint response,
+			       struct fill_type_data *fill_type_data)
+{
+  switch (response) {
+  case GTK_RESPONSE_REJECT:
+  case GTK_RESPONSE_DELETE_EVENT:
+    /* void */
+    break;
+  case GTK_RESPONSE_ACCEPT:
+    fill_type_dialog_ok(widget, fill_type_data);
+    break;
+  default:
+    printf("line_type_dialog_response(): strange signal %d\n",response);
+  }
+  
+  i_set_state (fill_type_data->toplevel, SELECT);
+  i_update_toolbar (fill_type_data->toplevel);
+  
+  gtk_grab_remove (fill_type_data->dialog);
+  gtk_widget_destroy (fill_type_data->dialog);
 
   /* get ride of the list of objects but not the objects */
-  g_list_free (objects);
-  fill_type_data->objects = NULL;
-    
-  toplevel->page_current->CHANGED = 1;
-  i_set_state (toplevel, SELECT);
-  i_update_toolbar (toplevel);
-    
-  gtk_grab_remove (fill_type_data->dialog);
-  gtk_widget_destroy (fill_type_data->dialog);
-    
-  g_free (fill_type_data);
-  
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
- */
-static void fill_type_dialog_cancel(GtkWidget *w, gpointer data)
-{
-  struct fill_type_data *fill_type_data = (struct fill_type_data*)data;
-  TOPLEVEL *toplevel = fill_type_data->toplevel;
-
-  /* free the list of selected objects */
   g_list_free (fill_type_data->objects);
-  
-  i_set_state (toplevel, SELECT);
-  i_update_toolbar (toplevel);
-  
-  gtk_grab_remove (fill_type_data->dialog);
-  gtk_widget_destroy (fill_type_data->dialog);
-
   g_free (fill_type_data);
-  
-}
+} 
 
 /*! \todo Finish function documentation!!!
  *  \brief
@@ -1338,15 +1266,15 @@ static void fill_type_dialog_cancel(GtkWidget *w, gpointer data)
 void fill_type_dialog(TOPLEVEL *w_current, GList *objects)
 {
   GtkWidget *dialog;
-  GtkWidget *buttonok     = NULL;
-  GtkWidget *buttoncancel = NULL;
-  GtkWidget *vbox, *action_area;
+  GtkWidget *vbox;
   GtkWidget *optionmenu = NULL;
   GtkWidget *width_entry = NULL;
   GtkWidget *angle1_entry = NULL;
   GtkWidget *pitch1_entry = NULL;
   GtkWidget *angle2_entry = NULL;
   GtkWidget *pitch2_entry = NULL;
+  GtkWidget *label;
+  GtkWidget *table;
   struct fill_type_data *fill_type_data;
   gchar *width_str, *angle1_str, *pitch1_str, *angle2_str, *pitch2_str;
   gint type;
@@ -1354,120 +1282,96 @@ void fill_type_dialog(TOPLEVEL *w_current, GList *objects)
   fill_type_data = (struct fill_type_data*) g_malloc (
     sizeof (struct fill_type_data));
 
-  dialog = x_create_dialog_box (&vbox, &action_area);
+  dialog = gtk_dialog_new_with_buttons(_("Edit Fill Type"),
+				       GTK_WINDOW(w_current->main_window),
+				       GTK_DIALOG_MODAL,
+				       GTK_STOCK_CANCEL,
+				       GTK_RESPONSE_REJECT,
+				       GTK_STOCK_OK,
+				       GTK_RESPONSE_ACCEPT,
+				       NULL);
 
   gtk_window_position(GTK_WINDOW (dialog), GTK_WIN_POS_MOUSE);
   
-  gtk_signal_connect(GTK_OBJECT (dialog),
-                     "destroy",
-                     GTK_SIGNAL_FUNC(destroy_window),
-                     &dialog);
-  gtk_signal_connect (GTK_OBJECT (dialog),
-                      "key_press_event",
-                      (GtkSignalFunc) fill_type_dialog_keypress,
-                      fill_type_data);
+  gtk_dialog_set_default_response(GTK_DIALOG(dialog),
+				  GTK_RESPONSE_ACCEPT);
 
-  gtk_window_set_title(GTK_WINDOW (dialog), _("Edit Fill Type"));
-  gtk_container_border_width(GTK_CONTAINER(dialog), 10);
+  gtk_signal_connect(GTK_OBJECT(dialog), "response",
+		     GTK_SIGNAL_FUNC(fill_type_dialog_response), fill_type_data);
+
+  gtk_container_border_width(GTK_CONTAINER(dialog), DIALOG_BORDER_SPACING);
+  vbox = GTK_DIALOG(dialog)->vbox;
+  gtk_box_set_spacing(GTK_BOX(vbox), DIALOG_ELEMENT_SPACING);
   
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      gtk_label_new (_("Fill Type")),
-                      TRUE, TRUE, 0);
+
+  label = gtk_label_new(_("Fill Properties:"));
+  gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+  gtk_box_pack_start(GTK_BOX(vbox),label, FALSE, FALSE, 0);
+
+  table = gtk_table_new (6, 2, FALSE);
+  gtk_table_set_row_spacings(GTK_TABLE(table), DIALOG_ELEMENT_SPACING);
+  gtk_table_set_col_spacings(GTK_TABLE(table), DIALOG_ELEMENT_SPACING);
+  gtk_box_pack_start(GTK_BOX(vbox), table, FALSE, FALSE, 0);
+
+  label = gtk_label_new (_("Fill Type:"));
+  gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+  gtk_table_attach(GTK_TABLE(table), label, 0,1,0,1, GTK_FILL,0,0,0);
+
+  label = gtk_label_new (_("Line Width:"));
+  gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+  gtk_table_attach(GTK_TABLE(table), label, 0,1,1,2, GTK_FILL,0,0,0);
+
+  label = gtk_label_new (_("Angle 1:"));
+  gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+  gtk_table_attach(GTK_TABLE(table), label, 0,1,2,3, GTK_FILL,0,0,0);
+
+  label = gtk_label_new (_("Pitch 1:"));
+  gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+  gtk_table_attach(GTK_TABLE(table), label, 0,1,3,4, GTK_FILL,0,0,0);
+
+  label = gtk_label_new (_("Angle 2:"));
+  gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+  gtk_table_attach(GTK_TABLE(table), label, 0,1,4,5, GTK_FILL,0,0,0);
+
+  label = gtk_label_new (_("Pitch 2:"));
+  gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
+  gtk_table_attach(GTK_TABLE(table), label, 0,1,5,6, GTK_FILL,0,0,0);
+
 
   optionmenu = gtk_option_menu_new ();
   gtk_option_menu_set_menu(GTK_OPTION_MENU(optionmenu),
                            create_menu_filltype (w_current));
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      optionmenu,
-                      TRUE, TRUE, 0);
+  gtk_table_attach_defaults(GTK_TABLE(table), optionmenu,
+			    1,2,0,1);
+
   gtk_signal_connect(GTK_OBJECT (optionmenu), "changed",
                      (GtkSignalFunc) fill_type_dialog_filltype_change,
                      fill_type_data);
 
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      gtk_label_new (_("Line Width")),
-                      TRUE, TRUE, 0);
-
   width_entry = gtk_entry_new();
-  gtk_editable_select_region (GTK_EDITABLE (width_entry), 0, -1);
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      width_entry,
-                      TRUE, TRUE, 10);
-  gtk_signal_connect (GTK_OBJECT (width_entry), "activate",
-                      GTK_SIGNAL_FUNC (fill_type_dialog_ok),
-                      fill_type_data);
-
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      gtk_label_new (_("Angle1")),
-                      TRUE, TRUE, 0);
+  gtk_entry_set_activates_default (GTK_ENTRY(width_entry), TRUE);
+  gtk_table_attach_defaults(GTK_TABLE(table), width_entry,
+			    1,2,1,2);
 
   angle1_entry = gtk_entry_new ();
-  gtk_editable_select_region (GTK_EDITABLE (angle1_entry), 0, -1);
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      angle1_entry,
-                      TRUE, TRUE, 10);
-  gtk_signal_connect (GTK_OBJECT (angle1_entry), "activate",
-                      GTK_SIGNAL_FUNC (fill_type_dialog_ok),
-                      fill_type_data);
-		
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      gtk_label_new (_("Pitch1")),
-                      TRUE, TRUE, 0);
+  gtk_entry_set_activates_default (GTK_ENTRY(angle1_entry), TRUE);
+  gtk_table_attach_defaults(GTK_TABLE(table), angle1_entry,
+			    1,2,2,3);
 
   pitch1_entry = gtk_entry_new ();
-  gtk_editable_select_region (GTK_EDITABLE (pitch1_entry), 0, -1);
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      pitch1_entry,
-                      TRUE, TRUE, 10);
-  gtk_signal_connect (GTK_OBJECT (pitch1_entry), "activate",
-                      GTK_SIGNAL_FUNC (fill_type_dialog_ok),
-                      fill_type_data);
-		
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      gtk_label_new (_("Angle2")),
-                      TRUE, TRUE, 0);
+  gtk_entry_set_activates_default (GTK_ENTRY(pitch1_entry), TRUE);
+  gtk_table_attach_defaults(GTK_TABLE(table), pitch1_entry,
+			    1,2,3,4);
 
   angle2_entry = gtk_entry_new ();
-  gtk_editable_select_region (GTK_EDITABLE (angle2_entry), 0, -1);
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      angle2_entry,
-                      TRUE, TRUE, 10);
-  gtk_signal_connect (GTK_OBJECT (angle2_entry), "activate",
-                      GTK_SIGNAL_FUNC (fill_type_dialog_ok),
-                      fill_type_data);
-
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      gtk_label_new (_("Pitch2")),
-                      TRUE, TRUE, 0);
+  gtk_entry_set_activates_default (GTK_ENTRY(angle2_entry), TRUE);
+  gtk_table_attach_defaults(GTK_TABLE(table), angle2_entry,
+			    1,2,4,5);
 
   pitch2_entry = gtk_entry_new ();
-  gtk_editable_select_region (GTK_EDITABLE (pitch2_entry), 0, -1);
-  gtk_box_pack_start (GTK_BOX (vbox),
-                      pitch2_entry,
-                      TRUE, TRUE, 10);
-  gtk_signal_connect (GTK_OBJECT (pitch2_entry), "activate",
-                      GTK_SIGNAL_FUNC (fill_type_dialog_ok),
-                      fill_type_data);
-
-		
-  buttoncancel = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
-  GTK_WIDGET_SET_FLAGS (buttoncancel, GTK_CAN_DEFAULT);
-  gtk_box_pack_start (GTK_BOX (action_area),
-                      buttoncancel,
-                      TRUE, TRUE, 0);
-  gtk_signal_connect (GTK_OBJECT (buttoncancel), "clicked",
-                      GTK_SIGNAL_FUNC (fill_type_dialog_cancel),
-                      fill_type_data);
-
-  buttonok = gtk_button_new_from_stock (GTK_STOCK_OK);
-  GTK_WIDGET_SET_FLAGS (buttonok, GTK_CAN_DEFAULT);
-  gtk_box_pack_start (GTK_BOX (action_area),
-                      buttonok,
-                      TRUE, TRUE, 0);
-  gtk_signal_connect (GTK_OBJECT (buttonok), "clicked",
-                      GTK_SIGNAL_FUNC (fill_type_dialog_ok),
-                      fill_type_data);
-  gtk_widget_grab_default (buttonok);
+  gtk_entry_set_activates_default (GTK_ENTRY(pitch2_entry), TRUE);
+  gtk_table_attach_defaults(GTK_TABLE(table), pitch2_entry,
+			    1,2,5,6);
 
   /* populate the data structure */
   fill_type_data->dialog = dialog;
@@ -1528,6 +1432,9 @@ void fill_type_dialog(TOPLEVEL *w_current, GList *objects)
   gtk_entry_set_text (GTK_ENTRY (pitch2_entry), pitch2_str);
   gtk_entry_select_region (GTK_ENTRY (pitch2_entry), 0, strlen (pitch2_str));
   
+  /* Set the widget activity according to the current filltype */
+  fill_type_dialog_filltype_change(optionmenu, fill_type_data);
+
   gtk_widget_grab_focus(width_entry);
   gtk_grab_add (dialog);
   
@@ -1702,146 +1609,87 @@ void arc_angle_dialog (TOPLEVEL *w_current)
 
 /***************** Start of Translate dialog box *********************/
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief response function for the translate dialog
  *  \par Function Description
- *
+ *  This function takes the user action and applies it.
+ *  \todo improve put error detection
  */
-int translate_dialog_keypress(GtkWidget * widget, GdkEventKey * event, 
-			      TOPLEVEL * w_current)
+void translate_dialog_response(GtkWidget *widget, gint response,
+			       TOPLEVEL *w_current)
 {
-   if (strcmp(gdk_keyval_name(event->keyval), "Escape") == 0) {
-	translate_dialog_cancel(NULL, w_current);	
-        return TRUE;
-   }
-
-   return FALSE;
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
- */
-void translate_dialog_ok(GtkWidget *w, TOPLEVEL *w_current)
-{
-  char *string=NULL;
-
-  string = (char *) gtk_entry_get_text(GTK_ENTRY(w_current->trentry));
-
-  if ((string[0] != '\0')) {
-    /*! \todo put error detection */
-    /* zero offset has a special meaning... */
-    o_complex_translate_all(w_current, atoi(string));
+  GtkWidget *textentry;
+  gchar *string;
+ 
+  switch (response) {
+  case GTK_RESPONSE_REJECT:
+  case GTK_RESPONSE_DELETE_EVENT:
+    /* void */
+    break;
+  case GTK_RESPONSE_ACCEPT:
+    textentry = g_object_get_data(G_OBJECT(w_current->trwindow),"textentry");
+    string = (gchar*) gtk_entry_get_text(GTK_ENTRY(textentry));
+    if (strlen(string) != 0) {
+      o_complex_translate_all(w_current, atoi(string));
+    }
+    break;
+  default:
+    printf("slot_edit_dialog_response(): strange signal %d\n",response);
   }
 
-#if 0
-  gtk_grab_remove(w_current->trwindow);
-#endif
-  gtk_widget_destroy(w_current->trwindow);
-  w_current->trwindow=NULL;
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
- */
-void translate_dialog_cancel(GtkWidget *w, TOPLEVEL *w_current)
-{
   i_set_state(w_current, SELECT);
   i_update_toolbar(w_current);
-#if 0
-	gtk_grab_remove(w_current->trwindow);
-#endif
   gtk_widget_destroy(w_current->trwindow);
   w_current->trwindow=NULL;
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
+
+/*! \brief Create the translate dialog
  *  \par Function Description
- *
+ *  Create the dialog to translate symbols.
  */
 void translate_dialog (TOPLEVEL *w_current)
 {
-  GtkWidget *label = NULL;
-  GtkWidget *buttonok = NULL;
-  GtkWidget *buttoncancel = NULL;
-  GtkWidget *vbox, *action_area;
+  GtkWidget *label;
+  GtkWidget *textentry;
+  GtkWidget *vbox;
 
   if (!w_current->trwindow) {
-    w_current->trwindow = x_create_dialog_box(&vbox, &action_area);
-
+    w_current->trwindow = gtk_dialog_new_with_buttons(_("Translate"),
+						      GTK_WINDOW(w_current->main_window),
+						      GTK_DIALOG_MODAL,
+						      GTK_STOCK_CANCEL,
+						      GTK_RESPONSE_REJECT,
+						      GTK_STOCK_OK,
+						      GTK_RESPONSE_ACCEPT,
+						      NULL);
     gtk_window_position(GTK_WINDOW (w_current->trwindow),
                         GTK_WIN_POS_MOUSE);
 
-    gtk_signal_connect(GTK_OBJECT (w_current->trwindow),
-                       "destroy",
-                       GTK_SIGNAL_FUNC(destroy_window),
-                       &w_current->trwindow);
+    gtk_signal_connect(GTK_OBJECT (w_current->trwindow), "response",
+                       GTK_SIGNAL_FUNC(translate_dialog_response), w_current);
 
-    gtk_signal_connect(GTK_OBJECT(w_current->trwindow),
-                     "key_press_event",
-                     (GtkSignalFunc) translate_dialog_keypress, w_current);
+    gtk_dialog_set_default_response(GTK_DIALOG(w_current->trwindow),
+				    GTK_RESPONSE_ACCEPT);
 
-#if 0 /* removed because it was causing the dialog box to not close */
-    gtk_signal_connect(GTK_OBJECT (w_current->trwindow),
-                       "delete_event",
-                       GTK_SIGNAL_FUNC(destroy_window),
-                       &w_current->trwindow);
-#endif
-
-    gtk_window_set_title(GTK_WINDOW (w_current->trwindow),
-                         _("Translate"));
-    gtk_container_border_width (GTK_CONTAINER (
-                                               w_current->trwindow), 10);
+    gtk_container_border_width(GTK_CONTAINER(w_current->trwindow), DIALOG_BORDER_SPACING);
+    vbox = GTK_DIALOG(w_current->trwindow)->vbox;
+    gtk_box_set_spacing(GTK_BOX(vbox), DIALOG_ELEMENT_SPACING);
 
     label = gtk_label_new(_("Offset to translate?\n(0 for origin)"));
     gtk_misc_set_padding(GTK_MISC (label), 10, 10);
-    gtk_box_pack_start(
-                       GTK_BOX(vbox),
-                       label, TRUE, TRUE, 0);
-    gtk_widget_show (label);
+    gtk_box_pack_start(GTK_BOX(vbox), label, TRUE, TRUE, 0);
+    
+    textentry = gtk_entry_new_with_max_length (10);
+    gtk_entry_set_text(GTK_ENTRY(textentry), "0");
+    gtk_editable_select_region(GTK_EDITABLE(textentry), 0, -1);
+    gtk_entry_set_activates_default(GTK_ENTRY(textentry), TRUE);
+    gtk_box_pack_start(GTK_BOX(vbox),textentry, FALSE, FALSE, 0);
 
-    w_current->trentry = gtk_entry_new_with_max_length (10);
-    gtk_editable_select_region(GTK_EDITABLE(w_current->trentry),
-                               0, -1);
-    gtk_box_pack_start(GTK_BOX(vbox),
-                       w_current->trentry, FALSE, FALSE, 5);
-    gtk_signal_connect(GTK_OBJECT(w_current->trentry), "activate",
-                       GTK_SIGNAL_FUNC(translate_dialog_ok),
-                       w_current);
-    gtk_widget_show (w_current->trentry);
-    gtk_widget_grab_focus(w_current->trentry);
-
-    buttoncancel = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
-    GTK_WIDGET_SET_FLAGS (buttoncancel, GTK_CAN_DEFAULT);
-    gtk_box_pack_start(
-                       GTK_BOX(action_area),
-                       buttoncancel, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT (buttoncancel), "clicked",
-                       GTK_SIGNAL_FUNC(translate_dialog_cancel),
-                       w_current);
-    gtk_widget_show (buttoncancel);
-
-    buttonok = gtk_button_new_from_stock (GTK_STOCK_OK);
-    GTK_WIDGET_SET_FLAGS (buttonok, GTK_CAN_DEFAULT);
-    gtk_box_pack_start (GTK_BOX (action_area),
-                        buttonok, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT (buttonok), "clicked",
-                       GTK_SIGNAL_FUNC(translate_dialog_ok),
-                       w_current);
-    gtk_widget_show (buttonok);
-    gtk_widget_grab_default (buttonok);
-
+    GLADE_HOOKUP_OBJECT(w_current->trwindow, textentry, "textentry");
   }
 
   if (!GTK_WIDGET_VISIBLE (w_current->trwindow)) {
-    gtk_widget_show (w_current->trwindow);
-#if 0
-    gtk_grab_add (w_current->trwindow);
-#endif
+    gtk_widget_show_all (w_current->trwindow);
   }
 }
 
@@ -2150,162 +1998,100 @@ void snap_size_dialog (TOPLEVEL *w_current)
 
 /***************** Start of slot edit dialog box *********************/
 
-/*! \todo Finish function documentation!!!
+/*! \todo response function for the slot edit dialog
  *  \brief
  *  \par Function Description
- *
+ *  The function takes the dialog entry and applies the new slot to the 
+ *  symbol.
  */
-int slot_edit_dialog_keypress(GtkWidget * widget, GdkEventKey * event, 
-			      TOPLEVEL * w_current)
+void slot_edit_dialog_response(GtkWidget *widget, gint response, TOPLEVEL *w_current)
 {
-   if (strcmp(gdk_keyval_name(event->keyval), "Escape") == 0) {
-	slot_edit_dialog_cancel(NULL, w_current);	
-        return TRUE;
-   }
-
-   return FALSE;
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
- */
-void slot_edit_dialog_ok(GtkWidget *w, TOPLEVEL *w_current)
-{
+  GtkWidget *textentry;
   int len;
-  char *string = NULL;
+  gchar *string = NULL;
 
-  string = (char *) gtk_entry_get_text(GTK_ENTRY(w_current->seentry));
-
-  if (string[0] != '\0') {
+  switch (response) {
+  case GTK_RESPONSE_REJECT:
+  case GTK_RESPONSE_DELETE_EVENT:
+    /* void */
+    break;
+  case GTK_RESPONSE_ACCEPT:
+    textentry = g_object_get_data(G_OBJECT(w_current->sewindow),"textentry");
+    string = (gchar*) gtk_entry_get_text(GTK_ENTRY(textentry));
     len = strlen(string);
-
-#if DEBUG
-    printf("text was: _%s_ %d\n", string, len);
-#endif
-
-    if (len < 80) {
+    if (len != 0) {
       o_slot_end(w_current, string, len);
-      o_undo_savestate(w_current, UNDO_ALL);
-    } else {
-      /*! \todo you should NOT have limits */
-      fprintf(stderr, _("String too long... hack!\n"));
     }
+    break;
+  default:
+    printf("slot_edit_dialog_response(): strange signal %d\n",response);
   }
-
   i_set_state(w_current, SELECT);
   i_update_toolbar(w_current);
-
-  gtk_grab_remove(w_current->sewindow);
   gtk_widget_destroy(w_current->sewindow);
   w_current->sewindow = NULL;
 }
+    
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief Create the slot entry dialog
  *  \par Function Description
- *
- */
-void slot_edit_dialog_cancel(GtkWidget *w, TOPLEVEL *w_current)
-{
-  i_set_state(w_current, SELECT);
-  i_update_toolbar(w_current);
-  gtk_grab_remove(w_current->sewindow);
-  gtk_widget_destroy(w_current->sewindow);
-  w_current->sewindow = NULL;
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
+ *  This function creates the slot edit dialog.
  */
 void slot_edit_dialog (TOPLEVEL *w_current, char *string)
 {
   GtkWidget *label = NULL;
-  GtkWidget *buttonok = NULL;
-  GtkWidget *buttoncancel = NULL;
-  GtkWidget *vbox, *action_area;
-  int len;
+  GtkWidget *textentry;
+  GtkWidget *vbox;
 
   if (!w_current->sewindow) {
-    w_current->sewindow = x_create_dialog_box(&vbox, &action_area);
+    w_current->sewindow = gtk_dialog_new_with_buttons(_("Edit slot number"),
+						      GTK_WINDOW(w_current->main_window),
+						      GTK_DIALOG_MODAL,
+						      GTK_STOCK_CANCEL,
+						      GTK_RESPONSE_REJECT,
+						      GTK_STOCK_OK,
+						      GTK_RESPONSE_ACCEPT,
+						      NULL);
 
     gtk_window_position(GTK_WINDOW(w_current->sewindow),
                         GTK_WIN_POS_MOUSE);
 
-    gtk_signal_connect(GTK_OBJECT (w_current->sewindow),
-                       "destroy", GTK_SIGNAL_FUNC(destroy_window),
-                       &w_current->sewindow);
+    gtk_dialog_set_default_response (GTK_DIALOG (w_current->sewindow), 
+				     GTK_RESPONSE_ACCEPT);
 
-    gtk_signal_connect(GTK_OBJECT(w_current->sewindow),
-                     "key_press_event",
-                     (GtkSignalFunc) slot_edit_dialog_keypress, w_current);
+    gtk_signal_connect(GTK_OBJECT(w_current->sewindow), "response",
+		       GTK_SIGNAL_FUNC(slot_edit_dialog_response),
+		       w_current);
 
-#if 0 /* removed because it was causing the dialog box to not close */
-    gtk_signal_connect(GTK_OBJECT (w_current->sewindow),
-                       "delete_event",
-                       GTK_SIGNAL_FUNC(destroy_window),
-                       &w_current->sewindow);
-#endif
+    gtk_container_border_width(GTK_CONTAINER(w_current->sewindow), 
+			       DIALOG_BORDER_SPACING);
+    vbox = GTK_DIALOG(w_current->sewindow)->vbox;
+    gtk_box_set_spacing(GTK_BOX(vbox), DIALOG_ELEMENT_SPACING);
 
-    gtk_window_set_title(GTK_WINDOW (w_current->sewindow),
-                         _("Edit slot number"));
-    gtk_container_border_width(
-                               GTK_CONTAINER(w_current->sewindow), 10);
+    label = gtk_label_new (_("Edit slot number:"));
+    gtk_misc_set_alignment(GTK_MISC(label),0,0);
+    gtk_box_pack_start(GTK_BOX (vbox), label, FALSE, FALSE, 0);
 
-    label = gtk_label_new (_("Edit slot number"));
-    gtk_box_pack_start(
-                       GTK_BOX (vbox),
-                       label, TRUE, TRUE, 0);
-    gtk_widget_show (label);
-
-    w_current->seentry = gtk_entry_new();
-    gtk_editable_select_region(
-                               GTK_EDITABLE (w_current->seentry), 0, -1);
+    textentry = gtk_entry_new();
     gtk_box_pack_start( GTK_BOX(vbox),
-                       w_current->seentry, TRUE, TRUE, 10);
+                       textentry, FALSE, FALSE, 0);
+    gtk_entry_set_max_length(GTK_ENTRY(textentry), 80);
+    gtk_entry_set_activates_default (GTK_ENTRY(textentry),TRUE);
 
-    gtk_signal_connect(GTK_OBJECT(w_current->seentry), "activate",
-                       GTK_SIGNAL_FUNC(slot_edit_dialog_ok),
-                       w_current);
-    gtk_widget_show (w_current->seentry);
-    gtk_widget_grab_focus(w_current->seentry);
+    GLADE_HOOKUP_OBJECT(w_current->sewindow, textentry, "textentry");
+    gtk_widget_show_all (w_current->sewindow);
+  }
 
-    buttoncancel = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
-    GTK_WIDGET_SET_FLAGS (buttoncancel, GTK_CAN_DEFAULT);
-    gtk_box_pack_start (GTK_BOX (action_area), buttoncancel, 
-                        TRUE, TRUE, 0);
-    gtk_signal_connect (GTK_OBJECT (buttoncancel), "clicked",
-                        GTK_SIGNAL_FUNC(slot_edit_dialog_cancel),
-                        w_current);
-    gtk_widget_show (buttoncancel);
-
-    buttonok = gtk_button_new_from_stock (GTK_STOCK_OK);
-    GTK_WIDGET_SET_FLAGS (buttonok, GTK_CAN_DEFAULT);
-    gtk_box_pack_start(
-                       GTK_BOX(action_area),
-                       buttonok, TRUE, TRUE, 0);
-    gtk_signal_connect (GTK_OBJECT (buttonok), "clicked",
-                        GTK_SIGNAL_FUNC(slot_edit_dialog_ok),
-                        w_current);
-    gtk_widget_show (buttonok);
-    gtk_widget_grab_default (buttonok);
-
+  if (string != NULL) {
+    textentry = g_object_get_data(G_OBJECT(w_current->sewindow),"textentry");
+    gtk_entry_set_text(GTK_ENTRY(textentry), string);
+    gtk_entry_select_region(GTK_ENTRY(textentry),
+			    strlen("slot="), strlen(string));
   }
 
   if (!GTK_WIDGET_VISIBLE (w_current->sewindow)) {
-    gtk_widget_show (w_current->sewindow);
-
-    if (string != NULL) {
-      len = strlen(string);
-      gtk_entry_set_text(GTK_ENTRY(w_current->seentry),
-                         string);
-      gtk_entry_select_region(GTK_ENTRY(w_current->seentry),
-                              strlen("slot="), len);
-    }
-    gtk_grab_add (w_current->sewindow);
+    gtk_widget_show_all (w_current->sewindow);
+    gtk_window_activate_focus (GTK_WINDOW(w_current->sewindow));
   }
 }
 
@@ -2316,7 +2102,6 @@ void slot_edit_dialog (TOPLEVEL *w_current, char *string)
 /*! \todo Finish function documentation!!!
  *  \brief
  *  \par Function Description
- *
  */
 int about_dialog_keypress(GtkWidget * widget, GdkEventKey * event, 
 			  TOPLEVEL * w_current)
@@ -2744,42 +2529,12 @@ static GtkWidget *create_color_menu (TOPLEVEL * w_current, int * select_index)
       item_index++;
     }
   }
-  
-  
   return menu;
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief Apply a color change to selected objects
  *  \par Function Description
- *
- */
-int color_edit_dialog_keypress(GtkWidget * widget, GdkEventKey * event, 
-			       TOPLEVEL * w_current)
-{
-   if (strcmp(gdk_keyval_name(event->keyval), "Escape") == 0) {
-	color_edit_dialog_close(NULL, w_current);	
-        return TRUE;
-   }
-
-   return FALSE;
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
- */
-void color_edit_dialog_close(GtkWidget *w, TOPLEVEL *w_current)
-{
-  gtk_widget_destroy(w_current->clwindow);
-  w_current->clwindow = NULL;
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
+ *  This function applies a color change to the currently selected objects.
  */
 void color_edit_dialog_apply(GtkWidget *w, TOPLEVEL *w_current)
 {
@@ -2823,80 +2578,79 @@ void color_edit_dialog_apply(GtkWidget *w, TOPLEVEL *w_current)
   o_undo_savestate(w_current, UNDO_ALL);
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
+/*! \brief response function for the color edit dialog
  *  \par Function Description
- *
+ *  This function takes the user response from the color edit dialog
+ */
+void color_edit_dialog_response(GtkWidget *widget, gint response, TOPLEVEL *w_current)
+{
+  switch (response) {
+  case GTK_RESPONSE_REJECT:
+  case GTK_RESPONSE_DELETE_EVENT:
+    gtk_widget_destroy(w_current->clwindow);
+    w_current->clwindow = NULL;
+    break;
+  case GTK_RESPONSE_ACCEPT:
+    color_edit_dialog_apply(widget, w_current);
+    break;
+  default:
+    printf("ERROR: color_edit_dialog_response(): strange signal %d\n",response);
+  }
+}
+
+
+/*! \brief Create the color edit dialog
+ *  \par Function Description
+ *  This function creates the color edit dialog
  */
 void color_edit_dialog (TOPLEVEL *w_current)
 {
-  GtkWidget *buttonclose = NULL;
-  GtkWidget *buttonapply = NULL;
   GtkWidget *optionmenu;
-  GtkWidget *vbox, *action_area;
+  GtkWidget *label;
+  GtkWidget *vbox;
   int select_index = 0;
 
   if (!w_current->clwindow) {
-    w_current->clwindow = x_create_dialog_box(&vbox, &action_area);
+    w_current->clwindow = gtk_dialog_new_with_buttons(_("Color Edit"),
+						      GTK_WINDOW(w_current->main_window),
+						      0, /* nonmodal dialog */
+						      GTK_STOCK_CLOSE,
+						      GTK_RESPONSE_REJECT,
+						      GTK_STOCK_APPLY,
+						      GTK_RESPONSE_ACCEPT,
+						      NULL);
 
     gtk_window_position (GTK_WINDOW (w_current->clwindow),
                          GTK_WIN_POS_MOUSE);
 
-    gtk_window_set_title (GTK_WINDOW (w_current->clwindow),
-                          _("Color Edit"));
-    gtk_container_border_width(
-                               GTK_CONTAINER(w_current->clwindow), 5);
+    gtk_dialog_set_default_response (GTK_DIALOG (w_current->clwindow), 
+				     GTK_RESPONSE_ACCEPT);
 
-    gtk_signal_connect (GTK_OBJECT (w_current->clwindow),
-                        "destroy", GTK_SIGNAL_FUNC(destroy_window),
-                        &w_current->clwindow);
+    gtk_signal_connect(GTK_OBJECT(w_current->clwindow), "response",
+		       GTK_SIGNAL_FUNC(color_edit_dialog_response),
+		       w_current);
 
-    gtk_signal_connect(GTK_OBJECT(w_current->clwindow),
-                     "key_press_event",
-                     (GtkSignalFunc) color_edit_dialog_keypress, w_current);
+    gtk_container_border_width(GTK_CONTAINER(w_current->clwindow), 
+			       DIALOG_BORDER_SPACING);
+    vbox = GTK_DIALOG(w_current->clwindow)->vbox;
+    gtk_box_set_spacing(GTK_BOX(vbox), DIALOG_ELEMENT_SPACING);
 
-#if 0 /* removed because it was causing the dialog box to not close */
-    gtk_signal_connect (GTK_OBJECT (w_current->clwindow),
-                        "delete_event",
-                        GTK_SIGNAL_FUNC(destroy_window),
-                        &w_current->clwindow);
-#endif
+    label = gtk_label_new(_("Object color:"));
+    gtk_misc_set_alignment(GTK_MISC(label),0,0);
+    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
 
     optionmenu = gtk_option_menu_new ();
     gtk_option_menu_set_menu(GTK_OPTION_MENU(optionmenu),
                              create_color_menu (w_current, &select_index));
     gtk_option_menu_set_history(GTK_OPTION_MENU (optionmenu), select_index);
-    gtk_box_pack_start(
-                       GTK_BOX(vbox),
-                       optionmenu, TRUE, TRUE, 0);
-    gtk_widget_show (optionmenu);
-
-    buttonclose = gtk_button_new_from_stock (GTK_STOCK_CLOSE);
-    gtk_box_pack_start(
-                       GTK_BOX(action_area),
-                       buttonclose, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT (buttonclose), "clicked",
-                       GTK_SIGNAL_FUNC(color_edit_dialog_close),
-                       w_current);
-    gtk_widget_show(buttonclose);
-
-    buttonapply = gtk_button_new_from_stock (GTK_STOCK_APPLY);
-    GTK_WIDGET_SET_FLAGS (buttonapply, GTK_CAN_DEFAULT);
-    gtk_box_pack_start(
-                       GTK_BOX(action_area),
-                       buttonapply, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT (buttonapply), "clicked",
-                       GTK_SIGNAL_FUNC(color_edit_dialog_apply),
-                       w_current);
-    gtk_widget_show (buttonapply);
-    gtk_widget_grab_default(buttonapply);
-
+    gtk_box_pack_start(GTK_BOX(vbox),
+                       optionmenu, FALSE, FALSE, 0);
+    gtk_widget_show_all(w_current->clwindow);
   }
 
-  if (!GTK_WIDGET_VISIBLE(w_current->clwindow)) {
-    gtk_widget_show(w_current->clwindow);
-  } else {
-    gdk_window_raise(w_current->clwindow->window);
+  if (w_current->clwindow) {
+    gtk_widget_show_all(w_current->clwindow);
+    gtk_window_activate_focus(GTK_WINDOW(w_current->clwindow));
   }
 }
 
@@ -2904,8 +2658,8 @@ void color_edit_dialog (TOPLEVEL *w_current)
 
 /***************** Start of help/keymapping dialog box **************/
 
-/* limit this to 128 hotkeys */
-static char *hotkey_strings[128];
+#define MAX_HOTKEY_BUFFER  256
+static char *hotkey_strings[MAX_HOTKEY_BUFFER];
 static int hotkey_counter=0;
 
 /*! \todo Finish function documentation!!!
@@ -2959,7 +2713,7 @@ void x_dialog_hotkeys_free_all(void)
 void x_dialog_hotkeys_fill(char *string) 
 {
 
-  if (hotkey_counter > 127) {
+  if (hotkey_counter > MAX_HOTKEY_BUFFER-1) {
     printf(_("Ran out of space in the hotkey buffer...\n"));
     return;
   }	
@@ -4430,7 +4184,7 @@ close_confirmation_dialog_constructor (GType type,
 	                    FALSE, FALSE, 0);
   
   return object;
-};
+}
 
 static void
 close_confirmation_dialog_set_property (GObject      *object,

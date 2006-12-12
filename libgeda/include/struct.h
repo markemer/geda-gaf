@@ -540,6 +540,7 @@ struct st_toplevel {
   GtkWidget *middle_label;
   GtkWidget *right_label;
   GtkWidget *filename_label;
+  GtkWidget *grid_label;
   GtkWidget *status_label;
 
   GtkWidget *toolbar_select;
@@ -657,6 +658,7 @@ struct st_toplevel {
   int pin_style;
   int net_style;
   int bus_style;
+  int line_style;
   int zoom_with_pan; 
 
   /* can be either OUTLINE or BOUNDINGBOX */

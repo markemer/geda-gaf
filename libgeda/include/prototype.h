@@ -72,6 +72,7 @@ SCM g_set_attrib_value_internal(SCM attrib_smob, SCM scm_value, TOPLEVEL **world
 void g_init_attrib_smob(void);
 
 SCM g_get_attrib_bounds(SCM attrib_smob);
+SCM g_get_attrib_angle(SCM attrib_smob);
 SCM g_make_object_smob(TOPLEVEL *curr_w, OBJECT *object);
 SCM g_get_object_attributes(SCM object_smob);
 void g_init_object_smob(void);
@@ -279,6 +280,9 @@ void o_circle_image_write(TOPLEVEL *w_current, OBJECT *o_current, int origin_x, 
 /* o_complex_basic.c */
 void get_complex_bounds(TOPLEVEL *w_current, OBJECT *complex, int *left, int *top, int *right, int *bottom);
 void get_complex_bounds_selection(TOPLEVEL *w_current, SELECTION *head, int *left, int *top, int *right, int *bottom);
+void world_get_single_object_bounds(TOPLEVEL *w_current, OBJECT *o_current, 
+				    int *left, int *top, 
+				    int *right, int *bottom);
 void world_get_complex_bounds(TOPLEVEL *w_current, OBJECT *complex, int *left, int *top, int *right, int *bottom);
 OBJECT *add_head(void);
 int o_complex_is_eligible_attribute(TOPLEVEL *w_current, OBJECT *object, int promote_invisible);
@@ -497,7 +501,7 @@ char *expand_env_variables(char *string);
 void s_clib_init (void);
 void s_clib_free (void);
 void s_clib_add_directory (const gchar *directory);
-const GSList* s_clib_get_directories ();
+const GList* s_clib_get_directories ();
 GSList* s_clib_get_files (const gchar *directory, const gchar *filter);
 const GSList* s_clib_search_basename (const gchar *basename);
 

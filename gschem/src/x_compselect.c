@@ -119,33 +119,32 @@ x_compselect_callback_response (GtkDialog *dialog,
             g_ascii_strcasecmp (toplevel->current_clib, directory) != 0 ||
             toplevel->current_basename == NULL ||
             g_ascii_strcasecmp (toplevel->current_basename, component) != 0) {
-          gint diff_x, diff_y;
-          
-          g_free (toplevel->current_clib);
+	  g_free (toplevel->current_clib);
           toplevel->current_clib = directory;
         
           strcpy (toplevel->current_basename, component);
-          g_free (component);
+	} else {
+	  g_free(directory);
+	}
+	g_free (component);
+	if (toplevel->event_state == ENDCOMP) {
+          gint diff_x, diff_y;
+
+	  diff_x = toplevel->last_x - toplevel->start_x;
+	  diff_y = toplevel->last_y - toplevel->start_y;
+	  
+	  o_complex_translate_display(toplevel,
+				      diff_x, diff_y,
+				      toplevel->page_current->complex_place_head);
+	}
         
-          if (toplevel->event_state == ENDCOMP) {
-            diff_x = toplevel->last_x - toplevel->start_x;
-            diff_y = toplevel->last_y - toplevel->start_y;
-            
-            o_complex_translate_display(toplevel,
-                                        diff_x, diff_y,
-                                        toplevel->page_current->complex_place_head);
-          }
+	o_list_delete_rest(toplevel,
+			   toplevel->page_current->complex_place_head);
+	o_complex_set_filename(toplevel, toplevel->current_clib,
+			       toplevel->current_basename);
         
-          o_list_delete_rest(toplevel,
-                             toplevel->page_current->complex_place_head);
-          o_complex_set_filename(toplevel, toplevel->current_clib,
-                                 toplevel->current_basename);
-        
-          toplevel->event_state = DRAWCOMP;
-        } else {
-          g_free (component);
-          g_free (directory);
-        }
+	toplevel->event_state = DRAWCOMP;
+
         break;
       }
       case GTK_RESPONSE_CLOSE:
@@ -181,12 +180,14 @@ x_compselect_open (TOPLEVEL *toplevel)
                       G_CALLBACK (x_compselect_callback_response),
                       toplevel);
     
+    gtk_window_set_transient_for(GTK_WINDOW(toplevel->cswindow),
+				 GTK_WINDOW(toplevel->main_window));
+
     gtk_widget_show (toplevel->cswindow);
     
   } else {
     gdk_window_raise (toplevel->cswindow->window);
   }
-
 }
 
 /*! \brief Closes the component selection dialog.
@@ -437,7 +438,7 @@ compselect_filter_timeout (gpointer data)
  if (model != NULL) {
     gtk_tree_model_filter_refilter ((GtkTreeModelFilter*)model);
   }
-  
+
   /* return FALSE to remove the source */
   return FALSE;
 }
@@ -531,14 +532,14 @@ static GtkTreeModel*
 compselect_create_child_model (void)
 {
   GtkTreeStore *store;
-  const GSList *directories, *dir; 
+  const GList *directories, *dir; 
 
   store = (GtkTreeStore*)gtk_tree_store_new (1,
                                              G_TYPE_STRING);
   
   /* populate component store */
   directories = s_clib_get_directories ();
-  for (dir = directories; dir != NULL; dir = g_slist_next (dir)) {
+  for (dir = directories; dir != NULL; dir = g_list_next (dir)) {
     GtkTreeIter iter, iter2;
     GSList *components, *comp;
 
