@@ -654,7 +654,7 @@ void o_update_component(TOPLEVEL *w_current, OBJECT *o_current);
 void o_autosave_backups(TOPLEVEL *toplevel);
 /* o_move.c */
 void o_move_start(TOPLEVEL *w_current, int x, int y);
-void o_move_end_lowlevel(TOPLEVEL *w_current, OBJECT *list, int type, int diff_x, int diff_y, int screen_diff_x, int screen_diff_y, GList **other_objects, GList **connected_objects);
+void o_move_end_lowlevel(TOPLEVEL *w_current, OBJECT *list, int type, int diff_x, int diff_y, GList **other_objects, GList **connected_objects);
 void o_move_end(TOPLEVEL *w_current);
 int o_move_return_whichone(OBJECT *object, int x, int y);
 void o_move_check_endpoint(TOPLEVEL *w_current, OBJECT *object);

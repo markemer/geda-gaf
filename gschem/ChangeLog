@@ -1,5 +1,9 @@
 2006-12-27 Peter Clifton <pcjc2@cam.ac.uk>
 
+	* include/prototype.h, src/o_move.c: Modify o_move_end_lowlevel() 
+	  to not require screen coordinates as a parameter (which were 
+	  unused). Alter usage in o_move_end() as appropriate.
+
 	* src/o_text.c: Modify o_text_place_rotate() to use world
 	  coordinates, and o_text_rotate_world internally.
 
