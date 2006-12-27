@@ -649,51 +649,6 @@ void o_picture_modify(TOPLEVEL *w_current, OBJECT *object,
   o_picture_recalc(w_current, object);
 }
 
-/*! \brief Rotate a picture OBJECT.
- *  \par Function Description
- *  This function applies a rotation of center (<B>centerx</B>, <B>centery</B>)
- *  and angle <B>angle</B> to the picture object <B>*object</B>.
- *  The coordinates of the rotation center are in screen units. 
- *  <B>angle</B> must be a 90 degree multiple. If not, no rotation is applied.
- *
- *  The rotation is made with the #o_picture_rotate_world() function
- *  that perform a rotation of angle <B>angle</B> and center
- *  (<B>world_centerx</B>, <B>world_centery</B>) in world unit.
- *
- *  \param [in]     w_current  The TOPLEVEL object.
- *  \param [in]     centerx    Rotation center x coordinate in SCREEN units.
- *  \param [in]     centery    Rotation center y coordinate in SCREEN units.
- *  \param [in]     angle      Rotation angle in degrees (unused).
- *  \param [in,out] object     Picture OBJECT to rotate.
- *
- *  \note
- *  takes in screen coordinates for the centerx,y, and then does the rotate 
- *  in world space
- *  also ignores angle argument... for now, rotate only in 90 degree 
- *  increments
- *  fixed to 90 degrees... it's *not* general now
- */
-void o_picture_rotate(TOPLEVEL *w_current,
-		      int centerx, int centery, int angle,
-		      OBJECT *object)
-{
-  int world_centerx, world_centery;
-
-  /* convert the center of rotation to world unit */
-  SCREENtoWORLD(w_current,
-				centerx, centery, 
-                &world_centerx, &world_centery);  
-
-  /* rotate the picture */
-  /* the check of the rotation angle is in o_picture_rotate_world() */
-  o_picture_rotate_world(w_current,
-					 world_centerx, world_centery, angle,
-					 object);
-
-  /* screen coords and boundings are updated by _rotate_world() */
-  
-}
-
 /*! \brief Rotate picture OBJECT using WORLD coordinates.
  *  \par Function Description 
  *  This function rotates the picture described by <B>*object</B> around

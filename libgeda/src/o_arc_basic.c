@@ -460,43 +460,6 @@ void o_arc_translate_world(TOPLEVEL *w_current, int dx, int dy,
 
 /*! \brief
  *  \par Function Description
- *  This function applies a rotation of center (<B>centerx</B>,<B>centery</B>)
- *  and angle <B>angle</B> to the arc object <B>*object</B>.
- *  The coordinates of the rotation center are in screen units.
- *  The angle is in degree.
- *
- *  The rotation is made with th <B>o_arc_rotate_world()</B> function
- *  that perform a rotation of <B>angle</B> and center
- *  (<B>world_centerx</B>,<B>world_centery</B>) in world unit.
- *
- *  \param [in] w_current  The TOPLEVEL object.
- *  \param [in] centerx
- *  \param [in] centery
- *  \param [in] angle
- *  \param [in] object
- */
-void o_arc_rotate(TOPLEVEL *w_current,
-		  int centerx, int centery, int angle,
-		  OBJECT *object)
-{
-  int world_centerx, world_centery;
-
-  /* convert the center of rotation to world unit */
-  SCREENtoWORLD(w_current,
-				centerx, centery,
-                &world_centerx, &world_centery);
-
-  /* rotate the arc */
-  o_arc_rotate_world(w_current,
-					 world_centerx, world_centery, angle,
-					 object);
-
-  /* screen coords and boundings are updated by _rotate_world() */
-  
-}                                   
-
-/*! \brief
- *  \par Function Description
  *  This function rotates the world coordinates of an arc of an angle
  *  specified by <B>angle</B>. The center of the rotation is given by
  *  (<B>world_centerx</B>,<B>world_centery</B>).

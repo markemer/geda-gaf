@@ -480,45 +480,6 @@ void o_circle_translate_world(TOPLEVEL *w_current,
   
 }
 
-/*! \brief Rotate a Circle OBJECT.
- *  \par Function Description
- *  The function #o_circle_rotate_world() rotate the circle described by
- *  <B>*object</B> around the (<B>world_centerx</B>,<B>world_centery</B>) point by
- *  angle <B>angle</B> degrees.
- *  The center of rotation is in world unit.
- *
- *  \param [in]     w_current  The TOPLEVEL object.
- *  \param [in]     centerx    Rotation center x coordinate in SCREEN units.
- *  \param [in]     centery    Rotation center y coordinate in SCREEN units.
- *  \param [in]     angle      Rotation angle in degrees (unused).
- *  \param [in,out] object     Circle OBJECT to rotate.
- *
- *  \note
- *  takes in screen coordinates for the centerx,y, and then does the rotate 
- *  in world space
- *  also ignores angle argument... for now, rotate only in 90 degree 
- *  increments
- */
-void o_circle_rotate(TOPLEVEL *w_current,
-		     int centerx, int centery, int angle,
-		     OBJECT *object)
-{
-  int world_centerx, world_centery;
-
-  /* convert the center of rotation to world unit */
-  SCREENtoWORLD(w_current,
-				centerx, centery, 
-                &world_centerx, &world_centery);  
-
-  /* rotate the circle */
-  o_circle_rotate_world(w_current,
-			world_centerx, world_centery, angle,
-			object);
-  
-  /* screen coords and boundings are updated by _rotate_world() */
-  
-}
-
 /*! \brief Rotate Circle OBJECT using WORLD coordinates. 
  *  \par Function Description
  *  The function #o_circle_rotate_world() rotate the circle described by

@@ -480,47 +480,6 @@ void o_line_translate_world(TOPLEVEL *w_current,
     
 }
 
-/*! \brief Rotate a line OBJECT.
- *  \par Function Description
- *  This function applies a rotation of center (<B>centerx</B>,<B>centery</B>)
- *  and angle <B>angle</B> to the line object <B>*object</B>.
- *  The coordinates of the rotation center are in screen units.
- *  <B>angle</B> mst be a 90 degree multiple. If not, no rotation is applied.
- *
- *  The rotation is made by the #o_line_rotate_world() function
- *  that perform a rotation of angle <B>angle</B> and center
- *  (<B>world_centerx</B>,<B>world_centery</B>) in world unit.
- *
- *  \param [in]     w_current  The TOPLEVEL object.
- *  \param [in]     centerx    Rotation center x coordinate in SCREEN units.
- *  \param [in]     centery    Rotation center y coordinate in SCREEN units.
- *  \param [in]     angle      Rotation angle in degrees (unused).
- *  \param [in,out] object     Line OBJECT to rotate.
- *
- *  \note
- *  takes in screen coordinates for the centerx,y, and then does the rotate 
- *  in world space
- *  also ignores angle argument... for now, rotate only in 90 degree 
- *  increments
- */
-void o_line_rotate(TOPLEVEL *w_current, int centerx, int centery, int angle,
-		   OBJECT *object)
-{
-  int world_centerx, world_centery;
-
-  /* convert the center of rotation to world unit */
-  SCREENtoWORLD(w_current, centerx, centery, 
-                &world_centerx,
-                &world_centery);  
-
-  /* rotate the line */
-  /* the check on the rotation angle is in o_line_rotate_world() */
-  o_line_rotate_world(w_current,
-					  world_centerx, world_centery, angle,
-					  object);
-  
-}
-
 /*! \brief Rotate Line OBJECT using WORLD coordinates. 
  *  \par Function Description 
  *  This function rotates the line described by

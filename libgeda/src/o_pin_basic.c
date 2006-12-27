@@ -529,39 +529,6 @@ void o_pin_image_write(TOPLEVEL *w_current, OBJECT *o_current,
  *  \par Function Description
  *
  */
-void o_pin_rotate(TOPLEVEL *w_current, int centerx, int centery, int angle,
-		  OBJECT *object)
-{
-  int world_centerx, world_centery;
-  int newx, newy;
-
-  SCREENtoWORLD(w_current, centerx, centery, 
-                &world_centerx,
-                &world_centery);  
-
-  /* translate object to origin */
-  o_pin_translate_world(w_current, -world_centerx, -world_centery, object);
-
-  rotate_point_90(object->line->x[0], object->line->y[0], angle,
-                  &newx, &newy);
-
-  object->line->x[0] = newx;
-  object->line->y[0] = newy;
-
-  rotate_point_90(object->line->x[1], object->line->y[1], angle,
-                  &newx, &newy);
-
-  object->line->x[1] = newx;
-  object->line->y[1] = newy;
-
-  o_pin_translate_world(w_current, world_centerx, world_centery, object);
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
- */
 void o_pin_rotate_world(TOPLEVEL *w_current, int world_centerx, 
 			int world_centery, int angle,
 			OBJECT *object)

@@ -563,44 +563,6 @@ void o_net_image_write(TOPLEVEL *w_current, OBJECT *o_current,
  *  \brief
  *  \par Function Description
  *
- * takes in screen coordinates for the centerx,y, and then does the rotate 
- * in world space
- * also ignores angle argument... for now, rotate only in 90 degree 
- * increments
- * fully functional
- */
-void o_net_rotate(TOPLEVEL *w_current, int centerx, int centery, int angle,
-		  OBJECT *object)
-{
-  int world_centerx, world_centery;
-  int newx, newy;
-
-  SCREENtoWORLD(w_current, centerx, centery,
-                &world_centerx, &world_centery);
-
-  /* translate object to origin */
-  o_net_translate_world(w_current, -world_centerx, -world_centery,
-                        object);
-
-  rotate_point_90(object->line->x[0], object->line->y[0], angle,
-                  &newx, &newy);
-
-  object->line->x[0] = newx;
-  object->line->y[0] = newy;
-
-  rotate_point_90(object->line->x[1], object->line->y[1], angle,
-                  &newx, &newy);
-
-  object->line->x[1] = newx;
-  object->line->y[1] = newy;
-
-  o_net_translate_world(w_current, world_centerx, world_centery, object);
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
  *
  */
 void o_net_rotate_world(TOPLEVEL *w_current,

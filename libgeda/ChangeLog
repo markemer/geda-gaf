@@ -3,6 +3,12 @@
 	* include/prototype.h, src/o_arc_basic.c, src/o_box_basic.c,
 	  src/o_bus_basic.c, src/o_circle_basic.c, src/o_line_basic.c,
 	  src/o_net_basic.c, src/o_picture.c, src/o_pin_basic.c,
+	  src/o_text_basic.c: Removed o_..._rotate() functions unused
+	  since changing to world coordinates
+
+	* include/prototype.h, src/o_arc_basic.c, src/o_box_basic.c,
+	  src/o_bus_basic.c, src/o_circle_basic.c, src/o_line_basic.c,
+	  src/o_net_basic.c, src/o_picture.c, src/o_pin_basic.c,
 	  src/o_text_basic.c: Removed o_..._mirror() functions unused
 	  since changing to world coordinates
 
