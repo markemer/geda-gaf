@@ -202,8 +202,8 @@ void o_unlock(TOPLEVEL *w_current)
  *  \param [in] centerx    Center x coordinate of rotation.
  *  \param [in] centery    Center y coordinate of rotation.
  */
-void o_rotate_90(TOPLEVEL *w_current, GList *list,
-		 int centerx, int centery)
+void o_rotate_90_world(TOPLEVEL *w_current, GList *list,
+		       int centerx, int centery)
 {
   OBJECT *object;
   GList *s_current;
@@ -248,7 +248,7 @@ void o_rotate_90(TOPLEVEL *w_current, GList *list,
         other_objects = s_conn_return_others(other_objects, object);
         s_conn_remove(w_current, object);
                                 
-        o_net_rotate(w_current, centerx, centery, 90, object);
+        o_net_rotate_world(w_current, centerx, centery, 90, object);
         s_conn_update_object(w_current, object);
 	if (!w_current->DONT_REDRAW) {
 	  o_net_draw(w_current, object);
@@ -279,7 +279,7 @@ void o_rotate_90(TOPLEVEL *w_current, GList *list,
         other_objects = s_conn_return_others(other_objects, object);
         s_conn_remove(w_current, object);
         
-        o_bus_rotate(w_current, centerx, centery, 90, object);
+        o_bus_rotate_world(w_current, centerx, centery, 90, object);
         s_conn_update_object(w_current, object);
 	if (!w_current->DONT_REDRAW) {
 	  o_bus_draw(w_current, object);
@@ -310,7 +310,7 @@ void o_rotate_90(TOPLEVEL *w_current, GList *list,
         other_objects = s_conn_return_others(other_objects, object);
         s_conn_remove(w_current, object);
         
-        o_pin_rotate(w_current, centerx, centery, 
+        o_pin_rotate_world(w_current, centerx, centery, 
                      90, object);
         s_conn_update_object(w_current, object);
 	if (!w_current->DONT_REDRAW) {
@@ -351,7 +351,7 @@ void o_rotate_90(TOPLEVEL *w_current, GList *list,
         /* do the rotate */
         /*w_current->ADDING_SEL=1; NEWSEL: needed? */
         new_angle = (object->complex->angle + 90) % 360;
-        o_complex_rotate(w_current, centerx, centery,
+        o_complex_rotate_world(w_current, centerx, centery,
                          new_angle, 90, object);
         /*w_current->ADDING_SEL = 0; NEWSEL: needed? */
         s_conn_update_complex(w_current, object->complex->prim_objs);
@@ -377,7 +377,7 @@ void o_rotate_90(TOPLEVEL *w_current, GList *list,
 	  o_line_erase(w_current, object);
 	}
 
-        o_line_rotate(w_current, centerx, centery, 
+        o_line_rotate_world(w_current, centerx, centery, 
                       90, object);
 
 	if (!w_current->DONT_REDRAW) {
@@ -392,7 +392,7 @@ void o_rotate_90(TOPLEVEL *w_current, GList *list,
 	  o_box_erase(w_current, object);
 	}
 
-        o_box_rotate(w_current, centerx, centery, 
+        o_box_rotate_world(w_current, centerx, centery, 
                      90, object);
 
 	if (!w_current->DONT_REDRAW) {
@@ -408,7 +408,7 @@ void o_rotate_90(TOPLEVEL *w_current, GList *list,
 	  o_picture_erase(w_current, object);
 	}
 	
-        o_picture_rotate(w_current, centerx, centery, 
+        o_picture_rotate_world(w_current, centerx, centery, 
                      90, object);
 
 	if (!w_current->DONT_REDRAW) {
@@ -422,7 +422,7 @@ void o_rotate_90(TOPLEVEL *w_current, GList *list,
 	  o_circle_erase(w_current, object);
 	}
 
-        o_circle_rotate(w_current, centerx, centery, 
+        o_circle_rotate_world(w_current, centerx, centery, 
                         90, object);
 
 	if (!w_current->DONT_REDRAW) {
@@ -435,13 +435,7 @@ void o_rotate_90(TOPLEVEL *w_current, GList *list,
 	  o_arc_erase(w_current, object);
 	}
 
-#if 0 /* not needed anymore */
-	SCREENtoWORLD(w_current, centerx, centery, 
-		      &world_centerx, &world_centery);
-        o_arc_rotate_world(w_current, world_centerx, world_centery, 90, object);
-#endif
-
-        o_arc_rotate(w_current, centerx, centery, 90, object);
+        o_arc_rotate_world(w_current, centerx, centery, 90, object);
 	if (!w_current->DONT_REDRAW) {
 	  o_arc_draw(w_current, object);
 	}
@@ -454,7 +448,7 @@ void o_rotate_90(TOPLEVEL *w_current, GList *list,
 	}
 
         new_angle = (object->text->angle + 90) % 360;
-        o_text_rotate(w_current, centerx, centery,
+        o_text_rotate_world(w_current, centerx, centery,
                       new_angle, 90, object);
 
 	if (!w_current->DONT_REDRAW) {

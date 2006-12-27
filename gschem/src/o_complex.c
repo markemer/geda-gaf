@@ -188,8 +188,8 @@ void o_complex_place_rotate(TOPLEVEL *w_current)
 {
   OBJECT *o_current;
   GList *ptr;
-  int screen_x_local = -1;
-  int screen_y_local = -1;
+  int x_local = -1;
+  int y_local = -1;
   int new_angle;
 
   ptr = w_current->page_current->complex_place_list;
@@ -197,14 +197,14 @@ void o_complex_place_rotate(TOPLEVEL *w_current)
     o_current = (OBJECT *) ptr->data;
     switch(o_current->type) {	
       case(OBJ_COMPLEX):
-        screen_x_local = o_current->complex->screen_x; 
-        screen_y_local = o_current->complex->screen_y;
+        x_local = o_current->complex->x; 
+        y_local = o_current->complex->y;
         break;
     }
     ptr = ptr->next;
   }
 
-  if (screen_x_local == -1) {
+  if (x_local == -1) {
     printf(_("Could not find complex in new componet placement!\n"));
     return;
   }
@@ -216,14 +216,14 @@ void o_complex_place_rotate(TOPLEVEL *w_current)
 
       case(OBJ_TEXT):
         new_angle = (o_current->text->angle + 90) % 360;
-        o_text_rotate(w_current, screen_x_local, screen_y_local,
-                      new_angle, 90, o_current);
+        o_text_rotate_world(w_current, x_local, y_local,
+                            new_angle, 90, o_current);
         break;
 
       case(OBJ_COMPLEX):
         new_angle = (o_current->complex->angle + 90) % 360;
-        o_complex_rotate(w_current, screen_x_local, screen_y_local,
-                         new_angle, 90, o_current);
+        o_complex_rotate_world(w_current, x_local, y_local,
+                               new_angle, 90, o_current);
         break;
 
     }
@@ -353,9 +353,9 @@ void o_complex_end(TOPLEVEL *w_current, int screen_x, int screen_y)
         for (i = 0; i < temp; i++) {
           new_angle = (o_temp->
                        text->angle + 90) % 360;
-          o_text_rotate(w_current, 
-                        screen_x, screen_y,
-                        new_angle, 90, o_temp);
+          o_text_rotate_world(w_current, 
+                              x, y,
+                              new_angle, 90, o_temp);
         }
         break;
     }
@@ -706,26 +706,19 @@ void o_complex_translate_selection(TOPLEVEL *w_current, int dx, int dy,
  *  \par Function Description
  *
  */
-void o_complex_rotate(TOPLEVEL *w_current, int centerx, int centery,
-		      int angle, int angle_change, OBJECT *object)
+void o_complex_rotate_world(TOPLEVEL *w_current, int centerx, int centery,
+		            int angle, int angle_change, OBJECT *object)
 {
   int x, y;
   int newx, newy;
-  int world_centerx, world_centery;
 
-  SCREENtoWORLD(w_current,
-                centerx,
-                centery,
-                &world_centerx,
-                &world_centery);
-
-  x = object->complex->x + (-world_centerx);
-  y = object->complex->y + (-world_centery);
+  x = object->complex->x + (-centerx);
+  y = object->complex->y + (-centery);
 
   rotate_point_90(x, y, 90, &newx, &newy);
 
-  x = newx + (world_centerx);
-  y = newy + (world_centery);
+  x = newx + (centerx);
+  y = newy + (centery);
 
   o_complex_world_translate_toplevel(w_current,
                                      -object->complex->x, 
