@@ -1,5 +1,8 @@
 2006-12-27 Peter Clifton <pcjc2@cam.ac.uk>
 
+	* include/prototype.h, src/o_complex.c: Remove unused
+	  function o_complex_mirror2()
+
 	* include/prototype.h, src/o_misc.c, src/o_complex.c,
 	  src/i_callbacks.c, src/x_event.c: Made o_complex_mirror() 
 	  into o_complex_mirror_world(), made o_mirror() into
