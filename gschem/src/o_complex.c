@@ -750,20 +750,13 @@ void o_complex_rotate(TOPLEVEL *w_current, int centerx, int centery,
  *  \par Function Description
  *
  */
-int o_complex_mirror(TOPLEVEL *w_current, int centerx, int centery,
+int o_complex_mirror_world(TOPLEVEL *w_current, int world_centerx, int world_centery,
 		     OBJECT *object)
 {
   int x, y;
   int newx, newy;
   int origx, origy;
-  int world_centerx, world_centery;
   int change = 0;
-
-  SCREENtoWORLD(w_current,
-                centerx,
-                centery,
-                &world_centerx,
-                &world_centery);
 
   origx = object->complex->x;
   origy = object->complex->y;

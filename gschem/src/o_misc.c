@@ -633,7 +633,7 @@ void o_unembed(TOPLEVEL *w_current, OBJECT *o_current)
  *  \par Function Description
  * 
  */
-void o_mirror(TOPLEVEL *w_current, GList *list, int centerx, int centery)
+void o_mirror_world(TOPLEVEL *w_current, GList *list, int centerx, int centery)
 {
   OBJECT *object;
   GList *s_current;
@@ -674,7 +674,7 @@ void o_mirror(TOPLEVEL *w_current, GList *list, int centerx, int centery)
         other_objects = s_conn_return_others(other_objects, object);
         s_conn_remove(w_current, object);
 
-        o_net_mirror(w_current, centerx, centery, object);
+        o_net_mirror_world(w_current, centerx, centery, object);
         s_conn_update_object(w_current, object);
         o_net_draw(w_current, object);
         
@@ -699,7 +699,7 @@ void o_mirror(TOPLEVEL *w_current, GList *list, int centerx, int centery)
         other_objects = s_conn_return_others(other_objects, object);
         s_conn_remove(w_current, object);
 
-        o_pin_mirror(w_current, centerx, centery, object);
+        o_pin_mirror_world(w_current, centerx, centery, object);
         s_conn_update_object(w_current, object);
         o_pin_draw(w_current, object);
 
@@ -723,7 +723,7 @@ void o_mirror(TOPLEVEL *w_current, GList *list, int centerx, int centery)
         other_objects = s_conn_return_others(other_objects, object);
         s_conn_remove(w_current, object);
         
-        o_bus_mirror(w_current, centerx, centery, object);
+        o_bus_mirror_world(w_current, centerx, centery, object);
         s_conn_update_object(w_current, object);
         o_bus_draw(w_current, object);
         
@@ -754,7 +754,7 @@ void o_mirror(TOPLEVEL *w_current, GList *list, int centerx, int centery)
           o_current = o_current->next;
         }
       
-        o_complex_mirror(w_current, centerx, centery, object);
+        o_complex_mirror_world(w_current, centerx, centery, object);
         s_conn_update_complex(w_current, object->complex->prim_objs);
         o_complex_draw(w_current, object);
 
@@ -771,7 +771,7 @@ void o_mirror(TOPLEVEL *w_current, GList *list, int centerx, int centery)
       case(OBJ_LINE):
         o_line_erase_grips(w_current, object);
         o_line_erase(w_current, object);
-        o_line_mirror(w_current,
+        o_line_mirror_world(w_current,
                       centerx, centery, object);
         o_line_draw(w_current, object);
         break;
@@ -779,7 +779,7 @@ void o_mirror(TOPLEVEL *w_current, GList *list, int centerx, int centery)
       case(OBJ_BOX):
         o_box_erase_grips(w_current, object);
         o_box_erase(w_current, object);
-        o_box_mirror(w_current,
+        o_box_mirror_world(w_current,
                      centerx, centery, object);
         o_box_draw(w_current, object);
         break;
@@ -787,7 +787,7 @@ void o_mirror(TOPLEVEL *w_current, GList *list, int centerx, int centery)
       case(OBJ_PICTURE):
         o_picture_erase_grips(w_current, object);
         o_picture_erase(w_current, object);
-        o_picture_mirror(w_current,
+        o_picture_mirror_world(w_current,
 			 centerx, centery, object);
         o_picture_draw(w_current, object);
         break;
@@ -795,7 +795,7 @@ void o_mirror(TOPLEVEL *w_current, GList *list, int centerx, int centery)
       case(OBJ_CIRCLE):
         o_circle_erase_grips(w_current, object);
         o_circle_erase(w_current, object);
-        o_circle_mirror(w_current,
+        o_circle_mirror_world(w_current,
                         centerx, centery, object);
         o_circle_draw(w_current, object);
         break;
@@ -806,13 +806,13 @@ void o_mirror(TOPLEVEL *w_current, GList *list, int centerx, int centery)
 	SCREENtoWORLD(w_current, centerx, centery, 
 		      &world_centerx, &world_centery);
 #endif
-        o_arc_mirror(w_current, centerx, centery, object);
+        o_arc_mirror_world(w_current, centerx, centery, object);
         o_arc_draw(w_current, object);
         break;
 
       case(OBJ_TEXT):
         o_text_erase(w_current, object);
-        o_text_mirror(w_current,
+        o_text_mirror_world(w_current,
                       centerx, centery, object);
         o_text_draw(w_current, object);
         break;

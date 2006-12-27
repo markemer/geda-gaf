@@ -151,6 +151,7 @@ gint x_event_button_pressed(GtkWidget *widget, GdkEventButton *event,
 			    TOPLEVEL *w_current)
 {
   int prev_state; 
+  int w_x, w_y;
 
   exit_if_null(w_current);
   global_window_current = w_current;
@@ -442,9 +443,13 @@ gint x_event_button_pressed(GtkWidget *widget, GdkEventButton *event,
         break;
 
       case(ENDMIRROR):
-        o_mirror(w_current,
+        SCREENtoWORLD( w_current,
+  	       (int) event->x,
+  	       (int) event->y,
+               &w_x, &w_y );
+        o_mirror_world(w_current,
                  w_current->page_current->selection_list,
-                 (int) event->x, (int) event->y);
+                 w_x, w_y);
 
         w_current->inside_action = 0;
 	i_set_state(w_current, SELECT);

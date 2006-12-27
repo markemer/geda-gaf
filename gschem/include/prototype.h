@@ -565,7 +565,7 @@ void o_complex_translate2(TOPLEVEL *w_current, int dx, int dy, OBJECT *object);
 void o_complex_translate_all(TOPLEVEL *w_current, int offset);
 void o_complex_translate_selection(TOPLEVEL *w_current, int dx, int dy, GList *head);
 void o_complex_rotate(TOPLEVEL *w_current, int centerx, int centery, int angle, int angle_change, OBJECT *object);
-int o_complex_mirror(TOPLEVEL *w_current, int centerx, int centery, OBJECT *object);
+int o_complex_mirror_world(TOPLEVEL *w_current, int centerx, int centery, OBJECT *object);
 OBJECT *o_complex_mirror2(TOPLEVEL *w_current, OBJECT *list, int centerx, int centery, OBJECT *object);
 /* o_copy.c */
 void o_copy_start(TOPLEVEL *w_current, int x, int y);
@@ -644,7 +644,7 @@ void o_rotate_90(TOPLEVEL *w_current, GList *list,
 		 int centerx, int centery);
 void o_embed(TOPLEVEL *w_current, OBJECT *o_current);
 void o_unembed(TOPLEVEL *w_current, OBJECT *o_current);
-void o_mirror(TOPLEVEL *w_current, GList *list, int centerx, int centery);
+void o_mirror_world(TOPLEVEL *w_current, GList *list, int centerx, int centery);
 void o_edit_show_hidden_lowlevel(TOPLEVEL *w_current, OBJECT *o_list);
 void o_edit_show_hidden(TOPLEVEL *w_current, OBJECT *o_list);
 void o_edit_make_visible(TOPLEVEL *w_current, OBJECT *o_list);

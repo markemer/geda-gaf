@@ -1,3 +1,10 @@
+2006-12-27 Peter Clifton <pcjc2@cam.ac.uk>
+
+	* include/prototype.h, src/o_misc.c, src/o_complex.c,
+	  src/i_callbacks.c, src/x_event.c: Made o_complex_mirror() 
+	  into o_complex_mirror_world(), made o_mirror() into
+	  o_mirror_world(), and converted usage as appropriate.
+
 2006-12-26 Carlos Nieves Onega <cnieves@iespana.es>
 
 	* lib/system-gschemrc.in: Don't place the titleblock automatically if
