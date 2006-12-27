@@ -397,41 +397,6 @@ char *o_arc_save(OBJECT *object)
   return(buf);
 }
 
-
-/*! \brief
- *  \par Function Description
- *  This function translates the arc described in the <B>object</B>
- *  pointed structure by <B>dx</B> horizontally and <B>dy</B> vertically.
- *  <B>dx</B> and <B>dy</B> are in screen unit.
- *
- *  The translation vector is converted in world unit. The translation
- *  is made with <B>o_arc_translate_world()</B> that also updates the
- *  screen coordinates and the bounding box.
- *
- *  \param [in] w_current  The TOPLEVEL object.
- *  \param [in] dx         
- *  \param [in] dy         
- *  \param [in] object
- */
-void o_arc_translate(TOPLEVEL *w_current, int dx, int dy, OBJECT *object)
-{
-  int world_dx, world_dy;
-  
-  if (object == NULL) {
-    return;
-  }
-
-  /* convert the translation vector in world unit */
-  world_dx = SCREENabs(w_current, dx);
-  world_dy = SCREENabs(w_current, dy);
-  
-  /* translate the arc */
-  o_arc_translate_world(w_current, world_dx, world_dy, object);
-
-  /* screen coords and boundings are updated by _translate_world() */
-	
-}
-
 /*! \brief
  *  \par Function Description
  *  This function applies a translation of (<B>dx</B>,<B>dy</B>)

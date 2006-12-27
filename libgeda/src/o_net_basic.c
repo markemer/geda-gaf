@@ -320,42 +320,6 @@ char *o_net_save(OBJECT *object)
  *
  *
  */
-void o_net_translate(TOPLEVEL *w_current, int dx, int dy, OBJECT *object)
-{
-  int x, y;
-
-  if (object == NULL)
-  printf("nt NO!\n");
-
-
-  /* Do world coords */
-  object->line->screen_x[0] = object->line->screen_x[0] + dx;
-  object->line->screen_y[0] = object->line->screen_y[0] + dy;
-  object->line->screen_x[1] = object->line->screen_x[1] + dx;
-  object->line->screen_y[1] = object->line->screen_y[1] + dy;
-
-  /* do we want snap grid here? */
-  SCREENtoWORLD(w_current, object->line->screen_x[0],
-                object->line->screen_y[0], &x, &y);
-
-  object->line->x[0] = snap_grid(w_current, x);
-  object->line->y[0] = snap_grid(w_current, y);
-
-  SCREENtoWORLD(w_current, object->line->screen_x[1],
-                object->line->screen_y[1], &x, &y);
-
-  object->line->x[1] = snap_grid(w_current, x);
-  object->line->y[1] = snap_grid(w_current, y);
-
-  s_tile_update_object(w_current, object);
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
- *
- */
 void o_net_translate_world(TOPLEVEL *w_current, int x1, int y1,
 			   OBJECT *object)
 {

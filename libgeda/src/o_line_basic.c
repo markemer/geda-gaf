@@ -391,44 +391,6 @@ char *o_line_save(OBJECT *object)
 
   return(buf);
 }
-      
-/*! \brief Translate a line position by a delta.
- *  \par Function Description
- *  This function applies a translation of (<B>dx</B>,<B>dy</B>) to the
- *  line described by <B>*object</B>. <B>dx</B> and <B>dy</B> are in
- *  screen unit.
- *
- *  \param [in]     w_current   The TOPLEVEL object.
- *  \param [in]     dx          x distance to move.
- *  \param [in]     dy          y distance to move.
- *  \param [in,out] object      Line OBJECT to translate.
- */
-void o_line_translate(TOPLEVEL *w_current, int dx, int dy, OBJECT *object)
-{
-  int x, y;
-
-  if (object == NULL) printf("lt NO!\n");
-
-  /* Do screen coords */
-  object->line->screen_x[0] = object->line->screen_x[0] + dx;
-  object->line->screen_y[0] = object->line->screen_y[0] + dy;
-  object->line->screen_x[1] = object->line->screen_x[1] + dx;
-  object->line->screen_y[1] = object->line->screen_y[1] + dy;
-  
-  /* do we want snap grid here? hack */
-  SCREENtoWORLD(w_current,
-		object->line->screen_x[0], object->line->screen_y[0], 
-		&x, &y);  
-  object->line->x[0] = snap_grid(w_current, x);
-  object->line->y[0] = snap_grid(w_current, y);
-  
-  SCREENtoWORLD(w_current,
-		object->line->screen_x[1], object->line->screen_y[1], 
-		&x, &y);  
-  object->line->x[1] = snap_grid(w_current, x);
-  object->line->y[1] = snap_grid(w_current, y);
-  
-}
 
 /*! \brief Translate a line position in WORLD coordinates by a delta.
  *  \par Function Description

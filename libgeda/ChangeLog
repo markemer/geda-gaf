@@ -1,5 +1,11 @@
 2006-12-27 Peter Clifton <pcjc2@cam.ac.uk>
 
+	* include/prototype.h, src/o_arc_basic.c, src/o_box_basic.c, 
+	  src/o_bus_basic.c, src/o_circle_basic.c, src/o_complex_basic.c, 
+	  src/o_line_basic.c, src/o_net_basic.c, src/o_picture.c, 
+	  src/o_pin_basic.c: Removed o_..._translate() functions which
+	  are unused.
+
 	* include/prototype.h, src/o_arc_basic.c, src/o_box_basic.c,
 	  src/o_bus_basic.c, src/o_circle_basic.c, src/o_line_basic.c,
 	  src/o_net_basic.c, src/o_picture.c, src/o_pin_basic.c,
