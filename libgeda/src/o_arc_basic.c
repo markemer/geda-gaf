@@ -550,42 +550,6 @@ void o_arc_rotate_world(TOPLEVEL *w_current,
   
 }                                   
 
-/*! \brief
- *  \par Function Description
- *  This function mirrors the screen coordinates of an arc.
- *  The symetry axis is given by the vertical line going
- *  through the point (<B>centerx</B>,<B>centery</B>).
- *  
- *  <B>centerx</B> and <B>centery</B> are in screen unit.
- *
- *  The arc is translated in order to put the point (<B>centerx</B>,<B>centery</B>)
- *  on the origin. The center of the arc is then mirrored. The start angle of
- *  the arc and the sweep of the arc are also mirrored.
- * 
- *  The arc is finally back translated to its previous location on the page.
- *
- *  \param [in] w_current  The TOPLEVEL object.
- *  \param [in] centerx
- *  \param [in] centery
- *  \param [in] object
- */
-void o_arc_mirror(TOPLEVEL *w_current,
-		  int centerx, int centery,
-		  OBJECT *object)
-{
-  int world_centerx, world_centery;
-
-  /* convert mirror origin in world unit */
-  SCREENtoWORLD(w_current, centerx, centery,
-                &world_centerx, &world_centery);
-
-  /* mirror the arc */
-  o_arc_mirror_world(w_current, world_centerx, world_centery, object);
-
-  /* screen coords and boundings are updated by _rotate_world() */
-  
-}
-
 /*! \brief Mirror the WORLD coordinates of an ARC.
  *  \par Function Description
  *  This function mirrors the world coordinates of an arc.

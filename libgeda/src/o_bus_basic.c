@@ -601,29 +601,6 @@ void o_bus_rotate_world(TOPLEVEL *w_current,
  * \par Function Description
  *
  */
-void o_bus_mirror(TOPLEVEL *w_current,
-		  int centerx, int centery, OBJECT *object)
-{
-  int world_centerx, world_centery;
-
-  SCREENtoWORLD(w_current, centerx, centery, 
-                &world_centerx,
-                &world_centery);  
-
-  /* translate object to origin */
-  o_bus_translate_world(w_current, -world_centerx, -world_centery, object);
-
-  object->line->x[0] = -object->line->x[0];
-
-  object->line->x[1] = -object->line->x[1];
-
-  o_bus_translate_world(w_current, world_centerx, world_centery, object);
-}
-
-/* \brief
- * \par Function Description
- *
- */
 void o_bus_mirror_world(TOPLEVEL *w_current,
 			int world_centerx, int world_centery, OBJECT *object)
 {

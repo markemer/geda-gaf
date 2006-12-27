@@ -2452,19 +2452,3 @@ void o_text_mirror_world(TOPLEVEL *w_current,
   o_text_recreate(w_current, object);
 }
 
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
- */
-void o_text_mirror(TOPLEVEL *w_current,
-		   int centerx, int centery, OBJECT *object)
-{
-  int world_centerx, world_centery;
-
-  SCREENtoWORLD(w_current, centerx, centery,
-                &world_centerx,
-                &world_centery);
-
-  o_text_mirror_world(w_current, world_centerx, world_centery, object);
-}

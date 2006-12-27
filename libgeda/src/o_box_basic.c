@@ -642,40 +642,6 @@ void o_box_rotate_world(TOPLEVEL *w_current,
   o_box_recalc(w_current, object);
 }
 
-/*! \brief Mirror a BOX.
- *  \par Function Description
- *  This function mirrors the box from the point (<B>centerx</B>,<B>centery</B>) in
- *  screen unit.
- *
- *  The origin of the mirror in screen unit is converted in world unit. The
- *  box is mirrored with the function #o_box_mirror_world() for which the
- *  origin of the mirror must be given in world unit.
- *
- *  \param [in]     w_current  The TOPLEVEL object.
- *  \param [in]     centerx    Origin x coordinate in WORLD units.
- *  \param [in]     centery    Origin y coordinate in WORLD units.
- *  \param [in,out] object     BOX OBJECT to mirror.
- */
-void o_box_mirror(TOPLEVEL *w_current,
-		  int centerx, int centery,
-		  OBJECT *object)
-{
-  int world_centerx, world_centery;
-
-  /* convert the origin of mirror */
-  SCREENtoWORLD(w_current, centerx, centery, 
-                &world_centerx,
-                &world_centery);  
-
-  /* apply the mirror in world coords */
-  o_box_mirror_world(w_current,
-		     world_centerx, world_centery,
-		     object);
-  
-  /* screen coords and boundings are updated by _mirror_world() */
-  
-}
-
 /*! \brief Mirror BOX using WORLD coordinates.
  *  \par Function Description
  *  This function mirrors the box from the point
