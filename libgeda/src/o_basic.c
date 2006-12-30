@@ -51,17 +51,17 @@
  *  This function takes a rectangular region and a point.  It will check
  *  if the point is located in the region or not.
  *
- *  \param [in] left    Left coordinate of the region.
- *  \param [in] top     Top coordinate of the region.
- *  \param [in] right   Right coordinate of the region.
- *  \param [in] bottom  Bottom coordinate of the region.
+ *  \param [in] xmin    Smaller x coordinate of the region.
+ *  \param [in] ymin    Smaller y coordinate of the region.
+ *  \param [in] xmax    Larger x coordinate of the region.
+ *  \param [in] ymax    Larger y coordinate of the region.
  *  \param [in] x       x coordinate of the point to check.
  *  \param [in] y       y coordinate of the point to check.
  *  \return 1 if the point is inside the region, 0 otherwise.
  */
-int inside_region(int left, int top, int right, int bottom, int x, int y)
+int inside_region(int xmin, int ymin, int xmax, int ymax, int x, int y)
 {
-  return ((x >= left && x <= right && y >= top && y <= bottom) ? 1 : 0);
+  return ((x >= xmin && x <= xmax && y >= ymin && y <= ymax) ? 1 : 0);
 }
 
 /*! \brief Redraw an object on the screen.

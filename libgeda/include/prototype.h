@@ -194,7 +194,7 @@ OBJECT **o_attrib_return_attribs(OBJECT *object_list, OBJECT *sel_object);
 void o_attrib_free_returned(OBJECT **found_objects);
 
 /* o_basic.c */
-int inside_region(int left, int top, int right, int bottom, int x, int y);
+int inside_region(int xmin, int ymin, int xmax, int ymax, int x, int y);
 void o_redraw_single(TOPLEVEL *w_current, OBJECT *o_current);
 void o_recalc_single_object(TOPLEVEL *w_current, OBJECT *o_current);
 void o_recalc_object_list(TOPLEVEL *w_current, OBJECT *object_list);

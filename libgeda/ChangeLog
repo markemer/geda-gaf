@@ -1,3 +1,10 @@
+2006-12-30 Peter Clifton <pcjc2@cam.ac.uk>
+
+	* include/prototype.h, src/o_basic.c: Changed variable names and 
+	  comments to function inside_region() to allow its use with world
+	  coordinates without apparently swapping top and bottom (which have
+	  different sense in screen and world coords. Now uses {x/y}{min/max}.
+
 2006-12-27 Peter Clifton <pcjc2@cam.ac.uk>
 
 	* include/prototype.h, src/o_arc_basic.c, src/o_box_basic.c, 
