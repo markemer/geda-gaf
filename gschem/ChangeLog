@@ -1,3 +1,135 @@
+2007-02-11 Peter Clifton <pcjc2@cam.ac.uk>
+
+	Sync with trunc
+
+	2007-02-11 Carlos Nieves Onega <cnieves@iespana.es>
+	
+		* po/es_ES.po: Updated spanish translation.
+	
+		* ChangeLog: added author entry for the commits Ales made yesterday.
+	
+	2007-02-11  Werner Hoch <werner.ho@gmx.de>
+	
+		* po/de_DE.po: updated german translation
+	
+		* po/*po: updated files to add the strings for the attribute editor
+	
+		* include/prototypes.h: removed unused declarations
+	
+		* src/x_attribedit.c: switched the single attribut editor to GtkDialog.
+		  removed the delete button.
+	
+	2007-02-10  Mike Jarabek  <mjarabek@sentex.ca>
+	
+		* include/i_vars.h include/prototype.h lib/system-gschemrc.in
+		src/g_rc.c src/g_register.c src/i_vars.c: Added code to scale the
+		output postscript font under user control.  This is controlled via
+		the postscript-font-scale rc keyword.
+	
+	2007-02-10 Ales Hvezda   <ahvezda@geda.seul.org>
+	
+		* include/x_compselect.h, include/x_pagesel.h, src/o_bus.c,
+		src/o_grips.c, src/o_net.c, src/x_autonumber.c, src/x_compselect.c,
+		src/x_dialog.c, src/x_image.c, src/x_menus.c, src/x_preview.c,
+		src/x_print.c: Fixed a whole bunch of compiler warnings and work on
+		[ 1620806 ] various probably bugs and comments about them
+	
+		* docs/gschem.1: Updated the man page a little for bug:
+		[ 1556064 ] man page version out of date
+	
+		* configure.ac.in: Bumped package version to 20070216.
+	
+	2007-02-10 Carlos Nieves Onega <cnieves@iespana.es>
+	
+		* src/g_funcs.c: propagate f_print_file errors to scheme functions.
+	
+		* src/x_print.c: Fixed compiler warning. Also added a popup message
+		  warning the user if the f_print_file function fails.
+	
+		* scheme/auto-place-attribs.scm: Check if the list is empty before
+		  calling to stable-sort. It is an error for guile versions >= 1.8.
+		  Thanks to DJ for reporting this.
+	
+	2007-02-10 Ales Hvezda   <ahvezda@geda.seul.org>
+	
+		* src/globals.c: Removed quit_func since it is completely unused.
+	
+		* configure.ac.in: Added a call to AC_GNU_SOURCE to make autoconf
+		and friends complain less.
+		
+	2007-01-16 Ales Hvezda   <ahvezda@geda.seul.org>
+	
+		* src/x_image.c: Removed unnecessary printf
+	
+	2007-01-09 Ales Hvezda   <ahvezda@geda.seul.org>
+	
+		* src/o_misc.c: Applied patch by Peter Clifton to prevent a crash 
+		when updating embedded components.  Should not free strings that
+		are owned by libgeda.
+	
+	2007-01-08 Ales Hvezda   <ahvezda@geda.seul.org>
+	
+		* include/prototype.h, src/o_misc.c: Moved o_embed and o_unembed
+		into libgeda so that gschlas can also call these functions
+		(to add shell scriptable embed/unembed of all components/pictures 
+		functionality).
+	
+	2007-01-05 Carlos Nieves Onega <cnieves@iespana.es>
+	
+		* configure.ac.in: Applied patch from Peter Clifton, adding
+		  missing AC_DEFINE(HAS_LIBGD, 1,...) which is still required 
+		  to enable libgd support.
+		
+	2007-01-04 Werner Hoch <werner.ho@gmx.de>
+	
+		* src/x_compselect.c: added expand property for the filter entry
+	
+		* src/x_autonumber.c: set default the searchtext to the first history
+		  element, use SCOPE_PAGE as skip default value
+	
+	2007-01-03 Werner Hoch <werner.ho@gmx.de>
+	
+		* src/x_print.c: replaced saveas button with a fileopen icon,
+		  Changed labels and added colons, fixed widget packaging.
+	
+		* bitmap/Makefile.am, bitmap/gschem-alignment*.png,
+		  bitmap/gschem-filltype*.png: new icons for filltype and text
+		  alignment.
+	
+	2007-01-02 Werner Hoch <werner.ho@gmx.de>
+	
+		* src/o_picture.c: picture_change_selection_dialog() replaced
+	          GtkFileSelection dialog with a GtkFileChooserDialog. Refactored
+		  and renamed the callback function.
+	
+		* src/o_picture.c: picture_selection_dialog() replaced the
+	          GtkFileSelection dialog with a GtkFileChooserDialog
+	
+		* src/x_script.c: replaced the GtkFileSelection dialog with a
+		  GtkFileChooserDialog
+	
+		* src/x_log.c: insert text at the end of the buffer instead of cursor
+		  position. Replaced gtk_text_view_scroll_to_iter() with
+		  gtk_text_view_scroll_to_mark() which works more reliable.
+	
+	2006-12-31 Werner Hoch <werner.ho@gmx.de>
+	
+		* src/x_autonumber.c: fixed a bug if one searchtext is a subset
+		  of another one. Bug reported by Levente Kovacs.
+	
+	2006-12-29 Werner Hoch <werner.ho@gmx.de>
+	
+		* src/x_mulitattrib.c: added transient_for flag to the dialog.
+		  Suggested by Kurt Peters
+	
+	2006-12-28 Werner Hoch <werner.ho@gmx.de>
+	
+		* src/x_image.c: replaced the browse button with an icon.
+		  Misc cosmetics.
+	
+		* src/x_autonumber.c: switched the autonumber dialog to GtkDialog,
+		  fixed a bug when unselecting the "remove numbers" CheckButton
+
 2006-12-27 Peter Clifton <pcjc2@cam.ac.uk>
 
 	* include/prototype.h, src/o_move.c: Modify o_move_end_lowlevel() 

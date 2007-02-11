@@ -6,7 +6,7 @@ AC_CONFIG_SRCDIR([src/gschem.c])
 AC_PREREQ(2.54)
 
 PACKAGE=geda-gschem
-VERSION=20061020
+VERSION=20070216
 echo Configuring $PACKAGE version $VERSION
 
 # Initialize automake 
@@ -16,6 +16,8 @@ AM_CONFIG_HEADER([config.h])
 # Initialize maintainer mode
 AM_MAINTAINER_MODE
 
+# Call this to make autoconf and friends happy
+AC_GNU_SOURCE
 
 #########################################################################
 # Command line flags start
@@ -252,6 +254,7 @@ must recompile libgeda with gdlib support.])
 	else
 		AC_MSG_RESULT([yes])
 		LIBGD=yes
+		AC_DEFINE(HAS_LIBGD, 1, [If gd has been installed, define this])
 	fi
 else
 	LIBGD=no

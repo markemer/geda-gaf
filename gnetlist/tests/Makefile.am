@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = hierarchy 
+SUBDIRS = hierarchy drc2
 
 EXTRA_DIST = 7447.vhdl README amp.spice darlington.spice netattrib.geda \
 	     netattrib.sch powersupply.PCB powersupply.allegro \
@@ -10,6 +10,8 @@ EXTRA_DIST = 7447.vhdl README amp.spice darlington.spice netattrib.geda \
              singlenet.protel singlenet.sch stack.geda amp.spice-sdb \
 	     darlington.spice-sdb skt.switcap test.ana multiequal.sch \
 	     multiequal.spice-sdb gnetlistrc.vhdl
+
+check_SCRIPTS = tests
 
 tests:
 # cleanup

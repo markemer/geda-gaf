@@ -1,3 +1,60 @@
+2007-02-11 Peter Clifton <pcjc2@cam.ac.uk>
+
+	Sync with trunc
+
+	2007-02-11 Werner Hoch <werner.ho@gmx.de>
+	
+		* src/s_toplevel.c: added missing toplevel inits (tshowwindow, ...)
+	
+	2007-02-10 Ales Hvezda   <ahvezda@geda.seul.org>
+	
+		* include/funcs.h: Removed quit_func since it is completely unused.
+	
+		* include/prototype.h, src/f_basic.c, src/o_arc_basic.c: Fixed
+		a whole bunch of compiler warnings and work on [ 1620806 ]
+		various probably bugs and comments about them
+	
+		* configure.ac: Bumped package version to 20070216.  Also changed
+		shared library's version number to 28:0:0
+	
+	2007-02-10 Carlos Nieves Onega <cnieves@iespana.es>
+	
+		* src/f_print.c: Make f_print_header return an error return value
+		  if something goes wrong, and propagate it to the caller functions.
+		  Unlink the file created by f_print_file if there is an error in
+		  f_print_header.
+		
+		* autogen.sh: Added automake version number check.
+	
+	2007-02-10  Mike Jarabek  <mjarabek@sentex.ca>
+	
+		* include/struct.h, src/o_text_basic.c, src/s_toplevel.c: Added
+		code to scale the output postscript font under user control.  This
+		is controlled via the postscript-font-scale rc keyword.
+	
+	2007-02-10  Mike Jarabek  <mjarabek@sentex.ca>
+	
+		* src/f_print.c: Applied Wojciech Kazubski's patch for offset
+		printing orgins. Fixes bug #160757
+	
+	2007-01-16 Ales Hvezda   <ahvezda@geda.seul.org>
+	
+		* src/o_arc_basic.c: Applied patch by Peter Clifton to fix
+		the output of arcs when using libgd.
+	
+		* src/Makefile.am: Applied patch by Peter Clifton to add --silent to
+		libtool.
+	
+	2007-01-08 Ales Hvezda   <ahvezda@geda.seul.org>
+	
+		* include/prototype.h, src/Makefile.am, src/o_embed.c: Moved
+		o_embed(...) and o_unembed(...) into o_embed.c so that gschlas
+		can also call these useful functions (to support scriptable 
+		embedding and unembedding of components).
+	
+		* src/.cvsignore: Oops, remove obsolete *.c rule that was causing
+		cvs to ignore new (but not added) C files.
+
 2006-12-30 Peter Clifton <pcjc2@cam.ac.uk>
 
 	* include/prototype.h, src/o_basic.c: Changed variable names and 

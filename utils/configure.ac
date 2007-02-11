@@ -4,7 +4,7 @@ AC_CONFIG_SRCDIR([src/gmk_sym.c])
 AC_PREREQ(2.54)
 
 PACKAGE=geda-utils
-VERSION=20061020
+VERSION=20070216
 echo Configuring $PACKAGE version $VERSION
 
 # Initialize automake 
@@ -29,6 +29,7 @@ AC_ARG_WITH(rcdir, [  --with-rcdir=path       Change where the system-*rc files 
 
 # Checks for programs.
 AC_PROG_CC
+AM_PROG_CC_C_O
 AM_CONDITIONAL(CCISGCC, test "$GCC" = "yes")
 AC_PROG_CPP
 AC_PROG_MAKE_SET
@@ -286,6 +287,39 @@ AC_MSG_RESULT([no])
 
 #
 #########################################################################
+
+#########################################################################
+#
+# Change default location for pcb's newlib library directory
+#
+# Used by gsch2pcb
+
+AC_MSG_CHECKING([For the default pcb installation data directory])
+AC_ARG_WITH(pcb-datadir,
+	[  --with-pcb-datadir=path
+                          Change the default location for an installed pcb.  This is used
+                          to set the default search path for pcb newlib libraries.
+                          [[default=${datadir}]]],
+	[PCBDATADIR=$withval],
+	[PCBDATADIR="${datadir}"]
+)
+AC_MSG_RESULT([${PCBDATADIR}])
+CPPFLAGS="$CPPFLAGS -DPCBDATADIR=\\\"${PCBDATADIR}\\\""
+
+AC_MSG_CHECKING([For the default pcb newlib search path])
+AC_ARG_WITH(pcb-newlib-path,
+	[  --with-pcb-newlib-path=path
+                          Change the default search path for PCB newlib libraries
+                          [[default=${datadir}/pcb/pcblib-newlib:${datadir}/pcb/newlib]]],
+	[PCBLIBPATH=$withval],
+	[PCBLIBPATH="${PCBDATADIR}/pcb/pcblib-newlib:${PCBDATADIR}/pcb/newlib"]
+)
+AC_MSG_RESULT([${PCBLIBPATH}])
+CPPFLAGS="$CPPFLAGS -DPCBLIBPATH=\\\"${PCBLIBPATH}\\\""
+
+#
+#########################################################################
+
 #########################################################################
 # Check for groff start
 #
@@ -388,6 +422,7 @@ AC_OUTPUT
 expandedGEDADATADIR=`eval "echo $GEDADATADIR"`
 expandedGEDARCDIR=`eval "echo $GEDARCDIR"`
 expandedGEDADOCDIR=`eval "echo $GEDADOCDIR"`
+expandedPCBLIBPATH=`eval "echo $PCBLIBPATH"`
 
 AC_MSG_RESULT([
 ** Configuration summary for $PACKAGE $VERSION:
@@ -399,6 +434,7 @@ AC_MSG_RESULT([
    data directory:                   $expandedGEDADATADIR
    rc directory:                     $expandedGEDARCDIR
    documentation directory:          $expandedGEDADOCDIR
+   default pcb newlib path:          $expandedPCBLIBPATH
    dmalloc debugging:                $with_dmalloc
    Electric Fence debugging:         $with_efence
 ])

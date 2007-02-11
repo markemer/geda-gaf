@@ -31,13 +31,15 @@
 ;;; Questions? Contact matt@ettus.com
 ;;; This software is released under the terms of the GNU GPL
 
+(use-modules (ice-9 rdelim)) ;; guile-1.8 fix
+
 (define bom2
   (lambda (output-filename)
     (let ((port (if (string=? "-" output-filename)
 		      (current-output-port)
 		      (open-output-file output-filename)))
 	  (attriblist (bom2:parseconfig (open-input-file "attribs"))))
-      (bom2:printlist (cons 'package attriblist) port #\:)
+      (bom2:printlist (cons 'refdes attriblist) port #\:)
       (newline port)
       (bom2:printbom port (bom2:components packages attriblist))
       (close-output-port port))))

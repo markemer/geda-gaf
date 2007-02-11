@@ -1,3 +1,102 @@
+2007-02-11 (later) Stuart Brorson   <sdb@cloud9.net>
+	* scheme/gnet-spice-sdb.scm, scheme/gnetlist.scm: Changed 
+	string-pad-right to safe-string-head per suggestion from Jeff
+	Mallatt.  Added safe-string-head to gnetlist.scm.
+	
+2007-02-11 Stuart Brorson   <sdb@cloud9.net>
+	* scheme/gnet-spice-sdb.scm: Incorporated patch from Jeff Mallatt
+	enabling SPICE netlisting of slotted parts.
+	
+2007-02-10 Ales Hvezda   <ahvezda@geda.seul.org>
+
+	* docs/gnetlist.1, src/gnetlist.c, src/parsecmd.c: Applied patch by
+	Tomaz Solc [ 1593644 ] gnetlist: use "-g help" to list available
+	backends. Thanks!
+
+	* tests/.cvsignore: Added rule to ignore all the newly generated 
+	files.
+
+	* scheme/gnet-bom.scm, scheme/gnet-bom2.scm: Applied patch to
+	change "package" to "refdes" [ 1656822 ] BOM/BOM2 should use
+	refdes in title line
+
+	* tests/hierarchy/hierarchy.geda: Updated golden file due to ordering
+	of output changing. 
+
+	* src/globals.c: Removed quit_func since it is completely unused.
+
+	* docs/gnetlist.1: Updated the man page a little for bug:
+	[ 1556064 ] man page version out of date
+
+	* tests/*.spice-sdb: Updated golden files to be current due to 
+	version number update.
+	
+	* configure.ac: Bumped package version to 20070216.
+
+2007-02-10 Carlos Nieves Onega <cnieves@iespana.es>
+
+	* tests/Makefile.am, tests/drc2/Makefile.am, 
+	  tests/hierarchy/Makefile.am:
+	  When running "make check", run "make tests" too.
+
+        * tests/drc2/Makefile.am:
+	  Added a pass/failed line after each test.
+
+	* tests/drc2/.cvsignore: Added this new file.
+	
+	* configure.ac, tests/Makefile.am, tests/drc2/Makefile.am,
+	  tests/drc2/*.sch, tests/drc2/*.drc2:
+	  Added new regression test suite for the drc2 backend.
+
+	* scheme/gnet-drc2.scm: Changed a (begin) to a (let ()) due to
+	  guile 1.8 problems. Thanks to Stuart Brorson por reporting, and
+	  Dean Ferreyra for pointing out the fix.
+
+2007-02-08 19:24  Dan McMahill <danmc>
+
+	* configure.ac, scheme/Makefile.am, scheme/gnet-gsch2pcb.scm.in: 1)
+	   add a new option to gsch2pcb "use-m4" for the project file or
+	  "--use-m4" for the command line.  By default now, gsch2pcb will
+	  not try to run m4 at all.  If you want the old behaviour of
+	  running m4, you'll have to use this option.  It seems that this
+	  is what most users want (no m4 involved at run time).
+
+	  2) rather than hard coding a number of paths like /usr/X11R6/lib
+	  and /usr/local/share into the code for places to look for PCB
+	  footprints, use a single default directory which is based on
+	  ${datadir}.  If the user wants to, they can override that with
+	  --with-pcb-datadir=/opt/pcb-20070204/share for example.
+
+	  3)  when searching for newlib footprints with, for example, a
+	  name like footprint=MY1206, match either "MY1206" or "MY1206.fp"
+	  so we can start having extensions on footprint files without
+	  needing to explicitly add the ".fp" part in the footprint=
+	  attribute.  All of the footprints in the pcb distribution which
+	  came from the m4 libraries have .fp extensions now.
+
+	  4)  add some example schematic files in the gsch2pcb example
+	  directory
+
+2007-01-15 Stuart Brorson <sdb@cloud9./net>
+	
+	* scheme/gnet-bom.scm, scheme/gnet-bom2.scm: Added
+	(use-modules (ice-9 rdelim)) fix guile-1.8 problem.
+
+2007-01-16 Ales Hvezda   <ahvezda@geda.seul.org>
+
+	* scheme/gnet-switcap.scm: Added added (use-modules (ice-9 rdelim)) 
+	to get read-line included and working.
+
+2007-01-15 Stuart Brorson <sdb@cloud9./net>
+	* scheme/gnet-spice-sdb.scm: Changed escaping for parens to fix 
+	guile-1.8 bug.  Also added (use-modules (ice-9 rdelim)) to enable 
+	read-line.
+
+2007-01-07 Stuart Brorson <sdb@cloud9./net>
+	* scheme/gnet-spice-sdb.scm: Added SPICE-NPN and SPICE-PNP
+	to dispatch to cover cases where people had munged the transistor
+	symbols.
+	
 2006-11-21 Ales Hvezda   <ahvezda@geda.seul.org>
 
         * configure.ac: Fixed libgeda detection/find error message when

@@ -222,6 +222,7 @@ SCM g_rc_logging(SCM mode);
 SCM g_rc_embed_components(SCM mode);
 SCM g_rc_text_size(SCM size);
 SCM g_rc_text_caps_style(SCM mode);
+SCM g_rc_postscript_font_scale(SCM scale);
 SCM g_rc_snap_size(SCM size);
 SCM g_rc_logging_destination(SCM mode);
 SCM g_rc_default_series_name(SCM name);
@@ -641,8 +642,6 @@ void o_lock(TOPLEVEL *w_current);
 void o_unlock(TOPLEVEL *w_current);
 void o_rotate_90_world(TOPLEVEL *w_current, GList *list, 
 		 int centerx, int centery);
-void o_embed(TOPLEVEL *w_current, OBJECT *o_current);
-void o_unembed(TOPLEVEL *w_current, OBJECT *o_current);
 void o_mirror_world(TOPLEVEL *w_current, GList *list, int centerx, int centery);
 void o_edit_show_hidden_lowlevel(TOPLEVEL *w_current, OBJECT *o_list);
 void o_edit_show_hidden(TOPLEVEL *w_current, OBJECT *o_list);
@@ -676,8 +675,6 @@ int o_net_add_busrippers(TOPLEVEL *w_current, OBJECT *net_obj, GList *other_obje
 /* o_picture.c */
 void o_picture_start(TOPLEVEL *w_current, int x, int y);
 void o_picture_end(TOPLEVEL *w_current, int x, int y);
-void picture_selection_ok (GtkWidget *widget, TOPLEVEL *w_current);
-void picture_selection_cancel (GtkWidget *widget, TOPLEVEL *w_current);
 void picture_selection_dialog (TOPLEVEL *w_current);
 void o_picture_eraserubber(TOPLEVEL *w_current);
 void o_picture_rubberbox_xor(TOPLEVEL *w_current);
@@ -686,8 +683,8 @@ void o_picture_draw(TOPLEVEL *w_current, OBJECT *o_current);
 void o_picture_draw_grips(TOPLEVEL *w_current, OBJECT *o_current);
 void o_picture_erase_grips(TOPLEVEL *w_current, OBJECT *o_current);
 void o_picture_erase(TOPLEVEL *w_current, OBJECT *o_current);
-void o_picture_draw_xor(TOPLEVEL *w_current, int dx, int dy, OBJECT *o_current);void picture_change_selection_cancel (GtkWidget *widget, TOPLEVEL *w_current);
-void picture_change_selection_ok (GtkWidget *widget, TOPLEVEL *w_current);
+void o_picture_draw_xor(TOPLEVEL *w_current, int dx, int dy, OBJECT *o_current);
+void o_picture_exchange(TOPLEVEL *w_current, GdkPixbuf *pixbuf, const gchar *filename);
 void picture_change_filename_dialog (TOPLEVEL *w_current);
 
 /* o_pin.c */
@@ -744,6 +741,8 @@ void attrib_edit_dialog_ok(GtkWidget *w, TOPLEVEL *w_current);
 void attrib_edit_dialog_cancel(GtkWidget *w, TOPLEVEL *w_current);
 void attrib_edit_dialog_delete(GtkWidget *w, TOPLEVEL *w_current);
 void attrib_edit_dialog(TOPLEVEL *w_current, OBJECT *list, int flag);
+/* x_autonumber.c */
+void autonumber_text_dialog(TOPLEVEL *w_current);
 /* x_basic.c */
 void x_repaint_background(TOPLEVEL *w_current);
 void x_hscrollbar_set_ranges(TOPLEVEL *w_current);
@@ -763,42 +762,19 @@ gchar *x_color_get_name(int index);
 int text_view_calculate_real_tab_width(GtkTextView *textview, int tab_size);
 void select_all_text_in_textview(GtkTextView *textview);
 void destroy_window(GtkWidget *widget, GtkWidget **window);
-int text_input_dialog_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
 void text_input_dialog_apply(GtkWidget *w, TOPLEVEL *w_current);
-void text_input_dialog_close(GtkWidget *w, TOPLEVEL *w_current);
 void text_input_dialog(TOPLEVEL *w_current);
 gint change_alignment(GtkWidget *w, TOPLEVEL *w_current);
-int text_edit_dialog_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
 void text_edit_dialog_ok(GtkWidget *w, TOPLEVEL *w_current);
-void text_edit_dialog_cancel(GtkWidget *w, TOPLEVEL *w_current);
 void text_edit_dialog(TOPLEVEL *w_current, char *string, int text_size, int text_alignment);
 void line_type_dialog(TOPLEVEL *w_current, GList *objects);
 void fill_type_dialog(TOPLEVEL *w_current, GList *objects);
-int arc_angles_dialog_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
-void arc_angles_dialog_ok(GtkWidget *w, TOPLEVEL *w_current);
-void arc_angles_dialog_cancel(GtkWidget *w, TOPLEVEL *w_current);
 void arc_angle_dialog(TOPLEVEL *w_current);
-int translate_dialog_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
-void translate_dialog_ok(GtkWidget *w, TOPLEVEL *w_current);
-void translate_dialog_cancel(GtkWidget *w, TOPLEVEL *w_current);
 void translate_dialog(TOPLEVEL *w_current);
-int text_size_dialog_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
-void text_size_dialog_ok(GtkWidget *w, TOPLEVEL *w_current);
-void text_size_dialog_cancel(GtkWidget *w, TOPLEVEL *w_current);
 void text_size_dialog(TOPLEVEL *w_current);
-int snap_size_dialog_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
-void snap_size_dialog_ok(GtkWidget *w, TOPLEVEL *w_current);
-void snap_size_dialog_cancel(GtkWidget *w, TOPLEVEL *w_current);
 void snap_size_dialog(TOPLEVEL *w_current);
-int slot_edit_dialog_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
-void slot_edit_dialog_ok(GtkWidget *w, TOPLEVEL *w_current);
-void slot_edit_dialog_cancel(GtkWidget *w, TOPLEVEL *w_current);
 void slot_edit_dialog(TOPLEVEL *w_current, char *string);
-int about_dialog_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
-void about_dialog_close(GtkWidget *w, TOPLEVEL *w_current);
 void about_dialog(TOPLEVEL *w_current);
-int coord_dialog_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
-void coord_dialog_close(GtkWidget *w, TOPLEVEL *w_current);
 void coord_display_update(TOPLEVEL *w_current, int x, int y);
 void coord_dialog(TOPLEVEL *w_current, int x, int y);
 gint color_set(GtkWidget *w, gpointer data);
@@ -807,8 +783,6 @@ int color_edit_dialog_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *
 void color_edit_dialog_close(GtkWidget *w, TOPLEVEL *w_current);
 void color_edit_dialog_apply(GtkWidget *w, TOPLEVEL *w_current);
 void color_edit_dialog(TOPLEVEL *w_current);
-int x_dialog_hotkeys_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
-void x_dialog_hotkeys_close(GtkWidget *w, TOPLEVEL *w_current);
 void x_dialog_hotkeys_free_all(void);
 void x_dialog_hotkeys_fill(char *string);
 void x_dialog_hotkeys(TOPLEVEL *w_current);
@@ -820,19 +794,9 @@ char * generic_filesel_dialog(const char *, const char *, gint);
 
 void generic_text_input_ok(GtkWidget *w, TOPLEVEL *w_current);
 void generic_text_input_dialog(TOPLEVEL *w_current);
-int find_text_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
-void find_text_ok(GtkWidget *w, TOPLEVEL *w_current);
-void find_text_done(GtkWidget *w, TOPLEVEL *w_current);
 void find_text_dialog(TOPLEVEL *w_current);
-int hide_text_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
-void hide_text_ok(GtkWidget *w, TOPLEVEL *w_current);
-void hide_text_done(GtkWidget *w, TOPLEVEL *w_current);
 void hide_text_dialog(TOPLEVEL *w_current);
-int show_text_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
-void show_text_ok(GtkWidget *w, TOPLEVEL *w_current);
-void show_text_done(GtkWidget *w, TOPLEVEL *w_current);
 void show_text_dialog(TOPLEVEL *w_current);
-void autonumber_text_dialog(TOPLEVEL *w_current);
 void major_changed_dialog(TOPLEVEL* w_current);
 void x_dialog_close_changed_page (TOPLEVEL *toplevel, PAGE *page);
 gboolean x_dialog_close_window (TOPLEVEL *toplevel);
@@ -894,8 +858,6 @@ GtkWidget *e_gtk_button_new_with_icon(const char *text, const char *stock);
 /* x_print.c */
 void x_print_setup(TOPLEVEL *w_current, char *filename);
 /* x_script.c */
-void script_selection_ok(GtkWidget *w, TOPLEVEL *w_current);
-void script_selection_cancel(GtkWidget *w, TOPLEVEL *w_current);
 void setup_script_selector(TOPLEVEL *w_current);
 /* x_stroke.c */
 void x_stroke_add_point(TOPLEVEL *w_current, int x, int y);

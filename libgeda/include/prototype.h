@@ -312,6 +312,10 @@ void o_complex_mirror_lowlevel(TOPLEVEL *w_current, int world_centerx, int world
 OBJECT *o_complex_return_pin_object(OBJECT *object, char *pin);
 void o_complex_check_symversion(TOPLEVEL* w_current, OBJECT* object);
 
+/* o_embed.c */
+void o_embed(TOPLEVEL *w_current, OBJECT *o_current);
+void o_unembed(TOPLEVEL *w_current, OBJECT *o_current);
+
 /* o_image.c */
 void o_image_init(void);
 void o_image_create(int x, int y, int color_mode);
@@ -411,8 +415,8 @@ void o_pin_update_whichend(TOPLEVEL *w_current, OBJECT *object_list, int num_pin
 /* o_selection.c */
 void o_selection_add(GList **head, OBJECT *o_selected);
 void o_selection_print_all(const GList **head);
-void o_selection_select(OBJECT *object, int color); // DEPRECATED
-void o_selection_unselect(OBJECT *object);          // DEPRECATED
+void o_selection_select(OBJECT *object, int color); /* DEPRECATED */
+void o_selection_unselect(OBJECT *object);          /* DEPRECATED */
 void o_selection_remove(GList **head, OBJECT *o_selected);
 void o_selection_unselect_list(TOPLEVEL *w_current, GList **head);
 

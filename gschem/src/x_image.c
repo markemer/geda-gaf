@@ -30,6 +30,7 @@
 
 #include "../include/globals.h"
 #include "../include/prototype.h"
+#include "../include/x_dialog.h"
 
 #ifdef HAVE_LIBDMALLOC
 #include <dmalloc.h>
@@ -282,7 +283,6 @@ void x_image_lowlevel(TOPLEVEL *w_current, const char* filename)
   /* try to use recalc here */
   o_redraw_all(w_current);
 
-  printf("Calling f_image_write.\n");
   f_image_write(w_current, filename, width, height, 
                 w_current->image_color);
 #else
@@ -388,7 +388,6 @@ void x_image_response(GtkWidget * widget, gint response, TOPLEVEL *w_current)
   }
 }
 
-
 /*! \todo Finish function documentation!!!
  *  \brief
  *  \par Function Description
@@ -462,8 +461,9 @@ void x_image_setup (TOPLEVEL *w_current, char *filename)
 		       GTK_SIGNAL_FUNC(x_image_response), w_current);
 
     box = GTK_DIALOG(w_current->iwindow)->vbox;
-    gtk_container_set_border_width(GTK_CONTAINER(w_current->iwindow),5);
-    gtk_box_set_spacing(GTK_BOX(box),5);
+    gtk_container_set_border_width(GTK_CONTAINER(w_current->iwindow),
+				   DIALOG_BORDER_SPACING);
+    gtk_box_set_spacing(GTK_BOX(box), DIALOG_V_SPACING);
 
     label = gtk_label_new (_("Width x Height:"));
     gtk_misc_set_alignment( GTK_MISC (label), 0, 0);
@@ -474,7 +474,7 @@ void x_image_setup (TOPLEVEL *w_current, char *filename)
     gtk_option_menu_set_menu (GTK_OPTION_MENU (optionmenu), 
 			      create_menu_size (w_current));
     gtk_option_menu_set_history (GTK_OPTION_MENU (optionmenu), 2);
-    gtk_box_pack_start (GTK_BOX (box), optionmenu, TRUE, TRUE, 0);
+    gtk_box_pack_start (GTK_BOX (box), optionmenu, FALSE, FALSE, 0);
 
     label = gtk_label_new (_("Filename:"));
     gtk_misc_set_alignment( GTK_MISC (label), 0, 0);
@@ -482,14 +482,19 @@ void x_image_setup (TOPLEVEL *w_current, char *filename)
     gtk_box_pack_start (GTK_BOX (box),
                         label, FALSE, FALSE, 0);
 
-    hbox = gtk_hbox_new(FALSE,10);
+    hbox = gtk_hbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(box), hbox, FALSE, FALSE, 0);
     filename_entry = gtk_entry_new_with_max_length (200);
     gtk_editable_select_region (GTK_EDITABLE (filename_entry), 0, -1);
     gtk_box_pack_start (GTK_BOX (hbox),
                         filename_entry, TRUE, TRUE, 0);
 
-    button = gtk_button_new_with_mnemonic(_("_Browse"));
+    button = gtk_button_new();
+    gtk_container_add(GTK_CONTAINER(button),
+		      gtk_image_new_from_stock(GTK_STOCK_OPEN,
+					       GTK_ICON_SIZE_SMALL_TOOLBAR));
+    gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
+
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
     g_signal_connect(button, "clicked",
 		     GTK_SIGNAL_FUNC (x_image_select_filename),
@@ -497,22 +502,19 @@ void x_image_setup (TOPLEVEL *w_current, char *filename)
 
     GLADE_HOOKUP_OBJECT(w_current->iwindow,filename_entry,"filename_entry");
 
-    gtk_widget_show_all (box);
+    gtk_widget_show_all (w_current->iwindow);
   }
  
-  if (!GTK_WIDGET_VISIBLE (w_current->iwindow)) {
-    filename_entry = g_object_get_data (G_OBJECT (w_current->iwindow), "filename_entry");
-    gtk_entry_set_text(GTK_ENTRY(filename_entry), filename);
-    w_current->image_width = 800;
-    w_current->image_height = 600;
-    gtk_widget_show (w_current->iwindow);
-    gdk_window_raise(w_current->iwindow->window);
-    /* gtk_grab_add (w_current->iwindow);*/
-  } else {
-    /* window should already be mapped */
-    /* otherwise this will core */
-    gdk_window_raise(w_current->iwindow->window);
+  else { /* dialog already created */
+    gtk_window_present(GTK_WINDOW(w_current->iwindow));
   }
+
+  /* always set the data entries in the dialog */
+  filename_entry = g_object_get_data (G_OBJECT (w_current->iwindow), 
+				      "filename_entry");
+  gtk_entry_set_text(GTK_ENTRY(filename_entry), filename);
+  w_current->image_width = 800;
+  w_current->image_height = 600;
 }
 
 /*! \todo Finish function documentation!!!
@@ -574,8 +576,6 @@ GdkPixbuf *x_image_get_pixbuf (TOPLEVEL *w_current)
   int origin_x, origin_y, bottom, right;
   int size_x, size_y, s_right, s_left, s_top,s_bottom;
   TOPLEVEL toplevel;
-  OBJECT *aux;
-  char object_found = 0;
 
   /* Do a copy of the toplevel struct and work with it */
   memcpy(&toplevel, w_current, sizeof(TOPLEVEL));
