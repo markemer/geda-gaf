@@ -593,12 +593,12 @@ gboolean o_find_object(TOPLEVEL *w_current, int screen_x, int screen_y,
 		       gboolean deselect_afterwards);
 gboolean o_find_selected_object(TOPLEVEL *w_current, int screen_x, int screen_y);
 /* o_grips.c */
-OBJECT *o_grips_search(TOPLEVEL *w_current, int x, int y, int *whichone);
-OBJECT *o_grips_search_arc(TOPLEVEL *w_current, OBJECT *o_current, int x, int y, int size, int *whichone);
-OBJECT *o_grips_search_box(TOPLEVEL *w_current, OBJECT *o_current, int x, int y, int size, int *whichone);
-OBJECT *o_grips_search_picture(TOPLEVEL *w_current, OBJECT *o_current, int x, int y, int size, int *whichone);
-OBJECT *o_grips_search_circle(TOPLEVEL *w_current, OBJECT *o_current, int x, int y, int size, int *whichone);
-OBJECT *o_grips_search_line(TOPLEVEL *w_current, OBJECT *o_current, int x, int y, int size, int *whichone);
+OBJECT *o_grips_search_world(TOPLEVEL *w_current, int x, int y, int *whichone);
+OBJECT *o_grips_search_arc_world(TOPLEVEL *w_current, OBJECT *o_current, int x, int y, int size, int *whichone);
+OBJECT *o_grips_search_box_world(TOPLEVEL *w_current, OBJECT *o_current, int x, int y, int size, int *whichone);
+OBJECT *o_grips_search_picture_world(TOPLEVEL *w_current, OBJECT *o_current, int x, int y, int size, int *whichone);
+OBJECT *o_grips_search_circle_world(TOPLEVEL *w_current, OBJECT *o_current, int x, int y, int size, int *whichone);
+OBJECT *o_grips_search_line_world(TOPLEVEL *w_current, OBJECT *o_current, int x, int y, int size, int *whichone);
 int o_grips_start(TOPLEVEL *w_current, int x, int y);
 void o_grips_start_arc(TOPLEVEL *w_current, OBJECT *o_current, int x, int y, int whichone);
 void o_grips_start_box(TOPLEVEL *w_current, OBJECT *o_current, int x, int y, int whichone);

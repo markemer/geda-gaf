@@ -1,5 +1,8 @@
 2007-02-12 Peter Clifton <pcjc2@cam.ac.uk>
 
+	* include/prototype.h, src/o_grips.c: Changed to use world 
+	  coordinates internally for region checking.
+
 	* src/a_pan.c, src/i_callbacks.c, src/o_buffer.c, src/o_complex.c,
 	  src/o_copy.c, src/o_move.c, src/x_attribedit.c, src/x_dialog.c,
 	  src/x_event.c: Add manual grid-snapping after calls to
