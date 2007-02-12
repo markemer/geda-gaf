@@ -98,8 +98,7 @@ void o_text_draw_rectangle(TOPLEVEL *w_current, OBJECT *o_current)
   /* text is too small so go through and draw a rectangle in
      it's place */
 	
-  screen_x1 = o_current->text->screen_x;
-  screen_y1 = o_current->text->screen_y;
+  WORLDtoSCREEN( w_current, o_current->text->x, o_current->text->y, &screen_x1, &screen_y1 );
 
   if (w_current->override_color != -1 ) {  /* Override */
     color = x_get_color(w_current->override_color);
@@ -233,8 +232,9 @@ void o_text_draw(TOPLEVEL *w_current, OBJECT *o_current)
 
       offset = SCREENabs(w_current, 10);
       small_dist = SCREENabs(w_current, 20);
-      screen_x1 = o_current->text->screen_x + offset;
-      screen_y1 = o_current->text->screen_y + offset;
+      WORLDtoSCREEN( w_current, o_current->text->x, o_current->text->y, &screen_x1, &screen_y1 );
+      screen_x1 += offset;
+      screen_y1 += offset;
       if (w_current->DONT_REDRAW == 0) {
 	/* Top part of the I */
 	gdk_draw_line(w_current->window, w_current->gc,
@@ -286,8 +286,7 @@ void o_text_draw(TOPLEVEL *w_current, OBJECT *o_current)
 
   small_dist = SCREENabs(w_current, 10);
 
-  screen_x1 = o_current->text->screen_x;
-  screen_y1 = o_current->text->screen_y;
+  WORLDtoSCREEN( w_current, o_current->text->x, o_current->text->y, &screen_x1, &screen_y1 );
 
   /* this is not really a fix, but a lame patch */
   /* not having this will cause a bad draw of things when coords */
@@ -367,8 +366,7 @@ void o_text_draw_xor(TOPLEVEL *w_current, int dx, int dy, OBJECT *o_current)
     /* text is too small so go through and draw a line in
        it's place */
 
-    screen_x1 = o_current->text->screen_x;
-    screen_y1 = o_current->text->screen_y;
+    WORLDtoSCREEN( w_current, o_current->text->x, o_current->text->y, &screen_x1, &screen_y1 );
 
     if (o_current->saved_color != -1) {
       color = o_current->saved_color;

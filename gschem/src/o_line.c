@@ -73,8 +73,8 @@ void o_line_draw(TOPLEVEL *w_current, OBJECT *o_current)
 #if DEBUG
   printf("drawing line\n\n");
   printf("drawing line : %d,%d to %d,%d\n",
-         o_current->line->x1, o_current->line->y1,
-         o_current->line->x2, o_current->line->y2);
+         x1, y1,
+         x2, y2);
 #endif
 
   /*
@@ -105,9 +105,8 @@ void o_line_draw(TOPLEVEL *w_current, OBJECT *o_current)
   else
   color = x_get_color(o_current->color);
 	
-  if(o_current->screen_line_width > 0) {
-    line_width = o_current->screen_line_width;
-  } else {
+  line_width = SCREENabs( w_current, o_current->line_width );
+  if( line_width <= 0) {
     line_width = 1;
   }
 	
@@ -121,8 +120,8 @@ void o_line_draw(TOPLEVEL *w_current, OBJECT *o_current)
     break;
   }
 
-  length = o_current->screen_line_length;
-  space = o_current->screen_line_space;
+  length = SCREENabs( w_current, o_current->line_length );
+  space = SCREENabs( w_current, o_current->line_space );
 	
   switch(o_current->line_type) {
     case TYPE_SOLID:
@@ -778,6 +777,7 @@ void o_line_eraserubber(TOPLEVEL *w_current)
 void o_line_draw_xor(TOPLEVEL *w_current, int dx, int dy, OBJECT *o_current)
 {
   int color;
+  int sx[2], sy[2];
 
   if (o_current->line == NULL) {
     return;
@@ -792,11 +792,13 @@ void o_line_draw_xor(TOPLEVEL *w_current, int dx, int dy, OBJECT *o_current)
   /* changed for dark color stuff */
   gdk_gc_set_foreground(w_current->outline_xor_gc,
                         x_get_darkcolor(color));
+  
+  WORLDtoSCREEN( w_current, o_current->line->x[0], o_current->line->y[0], &sx[0], &sy[0] );
+  WORLDtoSCREEN( w_current, o_current->line->x[1], o_current->line->y[1], &sx[1], &sy[1] );
+
   gdk_draw_line(w_current->window, w_current->outline_xor_gc,
-                o_current->line->screen_x[0]+dx,
-                o_current->line->screen_y[0]+dy,
-                o_current->line->screen_x[1]+dx,
-                o_current->line->screen_y[1]+dy);
+                sx[0]+dx, sy[0]+dy,
+                sx[1]+dx, sy[1]+dy);
 
   /* backing store? nope not here */
 }

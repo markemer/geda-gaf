@@ -1,5 +1,10 @@
 2007-02-12 Peter Clifton <pcjc2@cam.ac.uk>
 
+	* src/o_arc.c, src/o_box.c, src/o_bus.c, src/o_circle.c, 
+	  src/o_line.c, src/o_net.c, src/o_picture.c, src/o_pin.c, 
+	  src/o_select.c, src/o_text.c: Modified drawing routines 
+	  to calculate coordinates directly from object world coords.
+
 	* src/o_arc.c, src/o_box.c, src/o_circle.c, src/o_line.c,
 	  src/o_picture.c: Modified grip drawing / undrawing code
 	  to calculate coordinates directly from object world coords.
