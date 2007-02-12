@@ -1,3 +1,7 @@
+2007-02-12 Peter Clifton <pcjc2@cam.ac.uk>
+
+	* src/m_basic.c: Remove implicit grid snapping in SCREENtoWOLRD()
+
 2007-02-11 Peter Clifton <pcjc2@cam.ac.uk>
 
 	Sync with trunc
