@@ -1,5 +1,8 @@
 2007-02-12 Peter Clifton <pcjc2@cam.ac.uk>
 
+	* src/x_dialog.c: Removed all calls to o_object_recalc() 
+	  now the data it calculates is no longer used.
+
 	* src/o_arc.c, src/o_box.c, src/o_bus.c, src/o_circle.c, 
 	  src/o_line.c, src/o_net.c, src/o_picture.c, src/o_pin.c, 
 	  src/o_select.c, src/o_text.c: Modified drawing routines 

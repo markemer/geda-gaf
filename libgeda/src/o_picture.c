@@ -459,8 +459,7 @@ OBJECT *o_picture_add(TOPLEVEL *w_current, OBJECT *object_list,
  *  This function recalculates the screen coords of the <B>o_current</B>
  *  parameter picture object from its world coords.
  *
- *  The picture coordinates and its bounding are recalculated as well
- *  as the #OBJECT specific fields (line width, filling ...).
+ *  The picture coordinates and its bounding are recalculated
  *
  *  \param [in] w_current      The TOPLEVEL object.
  *  \param [in,out] o_current  Picture OBJECT to be recalculated.
@@ -497,9 +496,6 @@ void o_picture_recalc(TOPLEVEL *w_current, OBJECT *o_current)
   o_current->right  = right;
   o_current->bottom = bottom;
   
-  /* recalc OBJECT specific parameters */
-  o_object_recalc(w_current, o_current);
-
 }
 
 /*! \brief Get picture bounding rectangle.

@@ -529,8 +529,7 @@ void o_arc_mirror_world(TOPLEVEL *w_current,
  *  pointed structure.
  *  It also recalculates the <B>OBJECT</B> specific fields and the bounding box of the arc.
  *  
- *  The <B>OBJECT</B> specific fields are handled by the function <B>o_object_recalc()</B>
- *  whereas bounding box - in screen units - is recalculated with the <B>get_arc_bounds()</B> function.
+ *  The bounding box - in screen units - is recalculated with the <B>get_arc_bounds()</B> function.
  *
  *  \param [in] w_current  The TOPLEVEL object.
  *  \param [in] o_current
@@ -559,9 +558,6 @@ void o_arc_recalc(TOPLEVEL *w_current, OBJECT *o_current)
 
   o_current->arc->screen_width  = screen_x2 - screen_x1; /* width */
   o_current->arc->screen_height = screen_y2 - screen_y1; /* height */
-
-  /* recalculates the line type information in o_current */
-  o_object_recalc(w_current, o_current);
 
   /* recalculates the bounding box */
   get_arc_bounds(w_current, o_current, &left, &top, &right, &bottom);

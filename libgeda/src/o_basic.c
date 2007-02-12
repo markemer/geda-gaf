@@ -279,39 +279,3 @@ void o_set_fill_options(TOPLEVEL *w_current, OBJECT *o_current,
   o_current->fill_angle2 = angle2;
 	
 }
-
-/*! \brief Recalculate a single OBJECT in screen coordinates.
- *  \par Function Description
- *  This function takes an OBJECT and converts it to SCREEN coordinates.
- *
- *  \param [in]     w_current  The TOPLEVEL object.
- *  \param [in,out] o_current  OBJECT to recalculate.
- *
- */
-void o_object_recalc(TOPLEVEL *w_current, OBJECT *o_current) 
-{
-  int width, length, space, pitch;
-	
-  if(o_current == NULL) {
-    return;
-  }
-
-  width = SCREENabs(w_current, o_current->line_width);
-  o_current->screen_line_width = width;
-
-  length = SCREENabs(w_current, o_current->line_length);
-  o_current->screen_line_length = length;
-
-  space = SCREENabs(w_current, o_current->line_space);
-  o_current->screen_line_space = space;
-
-  width = SCREENabs(w_current, o_current->fill_width);
-  o_current->screen_fill_width = width;
-  pitch = SCREENabs(w_current, o_current->fill_pitch1);
-  o_current->screen_fill_pitch1 = pitch;
-  pitch = SCREENabs(w_current, o_current->fill_pitch2);
-  o_current->screen_fill_pitch2 = pitch;
-
-}
-
-

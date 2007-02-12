@@ -624,8 +624,7 @@ void o_box_mirror_world(TOPLEVEL *w_current,
  *  This function recalculates the screen coords of the <B>o_current</B> pointed
  *  box object from its world coords.
  *
- *  The box coordinates and its bounding are recalculated as well as the
- *  OBJECT specific fields (line width, filling ...).
+ *  The box coordinates and its bounding are recalculated
  *
  *  \param [in] w_current      The TOPLEVEL object.
  *  \param [in,out] o_current  BOX OBJECT to be recalculated.
@@ -660,9 +659,6 @@ void o_box_recalc(TOPLEVEL *w_current, OBJECT *o_current)
   o_current->top    = top;
   o_current->right  = right;
   o_current->bottom = bottom;
-  
-  /* recalc OBJECT specific parameters */
-  o_object_recalc(w_current, o_current);
 }
 
 /*! \brief Get BOX bounding rectangle.

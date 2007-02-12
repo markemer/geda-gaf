@@ -531,7 +531,6 @@ void o_line_mirror_world(TOPLEVEL *w_current, int world_centerx,
  *  pointed line object from its world coords.
  *
  *  The line ends coordinates and its bounding box are recalculated
- *  as well as the OBJECT specific fields (line width, filling ...).
  *
  *  \param [in] w_current      The TOPLEVEL object.
  *  \param [in,out] o_current  Line OBJECT to be recalculated.
@@ -567,9 +566,6 @@ void o_line_recalc(TOPLEVEL *w_current, OBJECT *o_current)
   o_current->top    = top;
   o_current->right  = right;
   o_current->bottom = bottom;
-  
-  /* recalc OBJECT specific parameters */
-  o_object_recalc(w_current, o_current);
   
 }
 

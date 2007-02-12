@@ -580,9 +580,6 @@ void o_circle_recalc(TOPLEVEL *w_current, OBJECT *o_current)
   o_current->right  = right;
   o_current->bottom = bottom;
 
-  /* recalc OBJECT specific parameters */
-  o_object_recalc(w_current, o_current);
-  
 }
 
 /*! \brief Get circle bounding rectangle.

@@ -1,5 +1,10 @@
 2007-02-12 Peter Clifton <pcjc2@cam.ac.uk>
 
+* include/prototype.h, src/o_arc_basic.c, src/o_basic.c,
+	  src/o_box_basic.c, src/o_circle_basic.c, src/o_line_basic.c,
+	  src/o_picture.c: Removed o_object_recalc() and all calls
+	  to it now the data it calculates is no longer used.
+
 	* src/m_basic.c: Remove implicit grid snapping in SCREENtoWOLRD()
 
 2007-02-11 Peter Clifton <pcjc2@cam.ac.uk>
