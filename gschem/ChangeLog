@@ -1,3 +1,9 @@
+2007-02-12 Peter Clifton <pcjc2@cam.ac.uk>
+
+	* src/x_event.c: Grid snap in x_event.c after converting to world
+	  coords, rather than before. (The computation for grid snapping in
+	  screen coords involves a conversion to world coords and back)
+
 2007-02-11 Peter Clifton <pcjc2@cam.ac.uk>
 
 	Sync with trunc

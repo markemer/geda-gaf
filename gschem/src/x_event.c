@@ -841,9 +841,10 @@ gint x_event_button_released(GtkWidget *widget, GdkEventButton *event,
 	redraw_state = w_current->DONT_REDRAW;
 	w_current->DONT_REDRAW = 1;
         SCREENtoWORLD( w_current,
-  	       fix_x(w_current, w_current->start_x),
-	       fix_y(w_current, w_current->start_y),
-               &w_x, &w_y );
+                       w_current->start_x, w_current->start_y,
+                       &w_x, &w_y );
+        w_x = snap_grid(w_current, w_x);
+        w_y = snap_grid(w_current, w_y);
 	o_rotate_90_world(w_current, w_current->page_current->complex_place_list, w_x, w_y );
 	w_current->DONT_REDRAW = redraw_state;
 	w_current->rotated_inside ++;	
