@@ -996,18 +996,19 @@ void o_line_rubberline_xor(TOPLEVEL *w_current)
  */
 void o_line_draw_grips(TOPLEVEL *w_current, OBJECT *o_current) 
 {
+  int x[2], y[2];
+
   if (w_current->draw_grips == FALSE)
 	  return;
 
+  WORLDtoSCREEN( w_current, o_current->line->x[0], o_current->line->y[0], &x[0], &y[0] );
+  WORLDtoSCREEN( w_current, o_current->line->x[1], o_current->line->y[1], &x[1], &y[1] );
+
   /* draw the grip on line end 1 */
-  o_grips_draw(w_current, 
-	       o_current->line->screen_x[LINE_END1], 
-	       o_current->line->screen_y[LINE_END1]);
+  o_grips_draw(w_current, x[LINE_END1], y[LINE_END1]);
   
   /* draw the grip on line end 2 */
-  o_grips_draw(w_current,
-	       o_current->line->screen_x[LINE_END2], 
-	       o_current->line->screen_y[LINE_END2]);
+  o_grips_draw(w_current, x[LINE_END2], y[LINE_END2]);
 }
 
 /*! \brief Erase grip marks from line.
@@ -1021,17 +1022,18 @@ void o_line_draw_grips(TOPLEVEL *w_current, OBJECT *o_current)
  */
 void o_line_erase_grips(TOPLEVEL *w_current, OBJECT *o_current) 
 {
+  int x[2], y[2];
+
   if (w_current->draw_grips == FALSE)
     return;
   
+  WORLDtoSCREEN( w_current, o_current->line->x[0], o_current->line->y[0], &x[0], &y[0] );
+  WORLDtoSCREEN( w_current, o_current->line->x[1], o_current->line->y[1], &x[1], &y[1] );
+  
   /* erase the grip on line end 1 */
-  o_grips_erase(w_current, 
-		o_current->line->screen_x[LINE_END1],
-		o_current->line->screen_y[LINE_END1]);
+  o_grips_erase(w_current, x[LINE_END1], y[LINE_END1]);
   
   /* erase the grip on line end 2 */
-  o_grips_erase(w_current,
-		o_current->line->screen_x[LINE_END2],
-		o_current->line->screen_y[LINE_END2]);
+  o_grips_erase(w_current, x[LINE_END2], y[LINE_END2]);
   
 }

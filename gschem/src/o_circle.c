@@ -801,8 +801,10 @@ void o_circle_draw_grips(TOPLEVEL *w_current, OBJECT *o_current)
 	  return;
 
   /* coords of the lower right corner of the square */
-  x = o_current->circle->screen_x + o_current->circle->screen_radius;
-  y = o_current->circle->screen_y + o_current->circle->screen_radius;
+  WORLDtoSCREEN( w_current,
+                 o_current->circle->center_x + o_current->circle->radius,
+                 o_current->circle->center_y - o_current->circle->radius,
+                 &x, &y );
   
   /* grip on lower right corner of the square */
   o_grips_draw(w_current, x, y);
@@ -827,8 +829,10 @@ void o_circle_erase_grips(TOPLEVEL *w_current, OBJECT *o_current)
 	  return;
 
   /* coords of the lower right corner of square */
-  x = o_current->circle->screen_x + o_current->circle->screen_radius;
-  y = o_current->circle->screen_y + o_current->circle->screen_radius;
+  WORLDtoSCREEN( w_current,
+                 o_current->circle->center_x + o_current->circle->radius,
+                 o_current->circle->center_y - o_current->circle->radius,
+                 &x, &y );
   
   /* grip on lower right corner of the square */
   o_grips_erase(w_current, x, y);

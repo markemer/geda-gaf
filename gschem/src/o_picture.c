@@ -487,47 +487,41 @@ void o_picture_draw(TOPLEVEL *w_current, OBJECT *o_current)
  */
 void o_picture_draw_grips(TOPLEVEL *w_current, OBJECT *o_current) 
 {
+  int s_upper_x, s_upper_y, s_lower_x, s_lower_y;
+
 #if DEBUG
   printf("o_picture_draw_grips called\n");
 #endif
   if (w_current->draw_grips == FALSE)
 	  return;
 
+  WORLDtoSCREEN( w_current, o_current->picture->upper_x, o_current->picture->upper_y,
+                 &s_upper_x, &s_upper_y );
+  WORLDtoSCREEN( w_current, o_current->picture->lower_x, o_current->picture->lower_y,
+                 &s_lower_x, &s_lower_y );
+  
+
   /* grip on upper left corner (whichone = PICTURE_UPPER_LEFT) */
-  o_grips_draw(w_current,
-	       o_current->picture->screen_upper_x,
-	       o_current->picture->screen_upper_y);
+  o_grips_draw(w_current, s_upper_x, s_upper_y);
   
   /* grip on upper right corner (whichone = PICTURE_UPPER_RIGHT) */
-  o_grips_draw(w_current,
-	       o_current->picture->screen_lower_x,
-	       o_current->picture->screen_upper_y);
+  o_grips_draw(w_current, s_lower_x, s_upper_y);
   
   /* grip on lower left corner (whichone = PICTURE_LOWER_LEFT) */
-  o_grips_draw(w_current,
-	       o_current->picture->screen_upper_x,
-	       o_current->picture->screen_lower_y);
+  o_grips_draw(w_current, s_upper_x, s_lower_y);
   
   /* grip on lower right corner (whichone = PICTURE_LOWER_RIGHT) */
-  o_grips_draw(w_current,
-	       o_current->picture->screen_lower_x,
-	       o_current->picture->screen_lower_y);
+  o_grips_draw(w_current, s_lower_x, s_lower_y);
   
   /* Box surrounding the picture */
   gdk_draw_rectangle(w_current->window, w_current->gc, FALSE, 
-		     o_current->picture->screen_upper_x,
-		     o_current->picture->screen_upper_y,
-		     abs(o_current->picture->screen_upper_x -
-			 o_current->picture->screen_lower_x),
-		     abs(o_current->picture->screen_upper_y -
-			 o_current->picture->screen_lower_y));
+		     s_upper_x, s_upper_y,
+		     abs(s_upper_x - s_lower_x),
+		     abs(s_upper_y - s_lower_y));
   gdk_draw_rectangle(w_current->backingstore, w_current->gc, FALSE, 
-		     o_current->picture->screen_upper_x,
-		     o_current->picture->screen_upper_y,
-		     abs(o_current->picture->screen_upper_x -
-			 o_current->picture->screen_lower_x),
-		     abs(o_current->picture->screen_upper_y -
-			 o_current->picture->screen_lower_y));
+		     s_upper_x, s_upper_y,
+		     abs(s_upper_x - s_lower_x),
+		     abs(s_upper_y - s_lower_y));
 }
 
 /*! \brief Erase grip marks from box.
@@ -540,47 +534,41 @@ void o_picture_draw_grips(TOPLEVEL *w_current, OBJECT *o_current)
  */
 void o_picture_erase_grips(TOPLEVEL *w_current, OBJECT *o_current) 
 {
+  int s_upper_x, s_upper_y, s_lower_x, s_lower_y;
+
 #if DEBUG
   printf("o_picture_erase_grips called\n");
 #endif
   if (w_current->draw_grips == FALSE)
 	  return;
 
+  WORLDtoSCREEN( w_current, o_current->picture->upper_x, o_current->picture->upper_y,
+                 &s_upper_x, &s_upper_y );
+  WORLDtoSCREEN( w_current, o_current->picture->lower_x, o_current->picture->lower_y,
+                 &s_lower_x, &s_lower_y );
+  
   /* grip on upper left corner (whichone = PICTURE_UPPER_LEFT) */
-  o_grips_erase(w_current,
-		o_current->picture->screen_upper_x,
-		o_current->picture->screen_upper_y);
+  o_grips_erase(w_current, s_upper_x, s_upper_y);
   
   /* grip on upper right corner (whichone = PICTURE_UPPER_RIGHT) */
-  o_grips_erase(w_current,
-		o_current->picture->screen_lower_x,
-		o_current->picture->screen_upper_y);
+  o_grips_erase(w_current, s_lower_x, s_upper_y);
   
   /* grip on lower left corner (whichone = PICTURE_LOWER_LEFT) */
-  o_grips_erase(w_current,
-		o_current->picture->screen_upper_x,
-		o_current->picture->screen_lower_y);
+  o_grips_erase(w_current, s_upper_x, s_lower_y);
   
   /* grip on lower right corner (whichone = PICTURE_LOWER_RIGHT) */
-  o_grips_erase(w_current,
-		o_current->picture->screen_lower_x,
-		o_current->picture->screen_lower_y);
+  o_grips_erase(w_current, s_lower_x, s_lower_y);
   
   /* Box surrounding the picture */
   gdk_draw_rectangle(w_current->window, w_current->gc, FALSE, 
-		     o_current->picture->screen_upper_x,
-		     o_current->picture->screen_upper_y,
-		     abs(o_current->picture->screen_upper_x -
-			 o_current->picture->screen_lower_x),
-		     abs(o_current->picture->screen_upper_y -
-			 o_current->picture->screen_lower_y));
+		     s_upper_x, s_upper_y,
+		     abs(s_upper_x - s_lower_x),
+		     abs(s_upper_y - s_lower_y));
   gdk_draw_rectangle(w_current->backingstore, w_current->gc, FALSE, 
-		     o_current->picture->screen_upper_x,
-		     o_current->picture->screen_upper_y,
-		     abs(o_current->picture->screen_upper_x -
-			 o_current->picture->screen_lower_x),
-		     abs(o_current->picture->screen_upper_y -
-			 o_current->picture->screen_lower_y));
+		     s_upper_x, s_upper_y,
+		     abs(s_upper_x - s_lower_x),
+		     abs(s_upper_y - s_lower_y));
+  
 }
 
 /*! \brief Erase a picture described by OBJECT.

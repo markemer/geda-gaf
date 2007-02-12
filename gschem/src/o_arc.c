@@ -1305,14 +1305,13 @@ void o_arc_draw_grips(TOPLEVEL *w_current, OBJECT *o_current)
    *   <DT>*</DT><DD>one at the end of the arc - at (<B>x2</B>,<B>y2</B>).
    */
 
-  x           = o_current->arc->screen_x;
-  y           = o_current->arc->screen_y;
-  radius      = o_current->arc->screen_width / 2;
+  WORLDtoSCREEN( w_current, o_current->arc->x, o_current->arc->y, &x, &y );
+  radius      = SCREENabs( w_current, o_current->arc->width / 2 );
   start_angle = o_current->arc->start_angle;
   end_angle   = o_current->arc->end_angle;
 
   x1 = x + radius * cos(((double) start_angle) * M_PI / 180);
-  y1 = y - radius * sin(((double) start_angle  ) * M_PI / 180);
+  y1 = y - radius * sin(((double) start_angle) * M_PI / 180);
   x2 = x + radius * cos(((double) (start_angle + end_angle)) * M_PI / 180);
   y2 = y - radius * sin(((double) (start_angle + end_angle)) * M_PI / 180);
 
@@ -1350,9 +1349,8 @@ void o_arc_erase_grips(TOPLEVEL *w_current, OBJECT *o_current)
    * and (<B>x2</B>,<B>y2</B>).
    */
 
-  x           = o_current->arc->screen_x;
-  y           = o_current->arc->screen_y;
-  radius      = o_current->arc->screen_width / 2;
+  WORLDtoSCREEN( w_current, o_current->arc->x, o_current->arc->y, &x, &y );
+  radius      = SCREENabs( w_current, o_current->arc->width / 2 );
   start_angle = o_current->arc->start_angle;
   end_angle   = o_current->arc->end_angle;
 

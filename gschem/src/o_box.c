@@ -1092,28 +1092,27 @@ void o_box_rubberbox_xor(TOPLEVEL *w_current)
  */
 void o_box_draw_grips(TOPLEVEL *w_current, OBJECT *o_current) 
 {
+  int s_upper_x, s_upper_y, s_lower_x, s_lower_y;
+
   if (w_current->draw_grips == FALSE)
 	  return;
+  
+  WORLDtoSCREEN( w_current, o_current->box->upper_x, o_current->box->upper_y, 
+                 &s_upper_x, &s_upper_y );
+  WORLDtoSCREEN( w_current, o_current->box->lower_x, o_current->box->lower_y, 
+                 &s_lower_x, &s_lower_y );
 
   /* grip on upper left corner (whichone = BOX_UPPER_LEFT) */
-  o_grips_draw(w_current,
-			   o_current->box->screen_upper_x,
-			   o_current->box->screen_upper_y);
+  o_grips_draw(w_current, s_upper_x, s_upper_y);
 
   /* grip on upper right corner (whichone = BOX_UPPER_RIGHT) */
-  o_grips_draw(w_current,
-			   o_current->box->screen_lower_x,
-			   o_current->box->screen_upper_y);
+  o_grips_draw(w_current, s_lower_x, s_upper_y);
   
   /* grip on lower left corner (whichone = BOX_LOWER_LEFT) */
-  o_grips_draw(w_current,
-			   o_current->box->screen_upper_x,
-			   o_current->box->screen_lower_y);
+  o_grips_draw(w_current, s_upper_x, s_lower_y);
 
   /* grip on lower right corner (whichone = BOX_LOWER_RIGHT) */
-  o_grips_draw(w_current,
-			   o_current->box->screen_lower_x,
-			   o_current->box->screen_lower_y);
+  o_grips_draw(w_current, s_lower_x, s_lower_y);
 
 }
 
@@ -1127,27 +1126,27 @@ void o_box_draw_grips(TOPLEVEL *w_current, OBJECT *o_current)
  */
 void o_box_erase_grips(TOPLEVEL *w_current, OBJECT *o_current) 
 {
+  int s_upper_x, s_upper_y, s_lower_x, s_lower_y;
+
   if (w_current->draw_grips == FALSE)
 	  return;
+  
+  WORLDtoSCREEN( w_current, o_current->box->upper_x, o_current->box->upper_y, 
+                 &s_upper_x, &s_upper_y );
+  WORLDtoSCREEN( w_current, o_current->box->lower_x, o_current->box->lower_y, 
+                 &s_lower_x, &s_lower_y );
 
   /* grip on upper left corner (whichone = BOX_UPPER_LEFT) */
-  o_grips_erase(w_current,
-				o_current->box->screen_upper_x,
-				o_current->box->screen_upper_y);
+  o_grips_erase(w_current, s_upper_x, s_upper_y);
 
   /* grip on upper right corner (whichone = BOX_UPPER_RIGHT) */
-  o_grips_erase(w_current,
-				o_current->box->screen_lower_x,
-				o_current->box->screen_upper_y);
+  o_grips_erase(w_current, s_lower_x, s_upper_y);
   
   /* grip on lower left corner (whichone = BOX_LOWER_LEFT) */
-  o_grips_erase(w_current,
-				o_current->box->screen_upper_x,
-				o_current->box->screen_lower_y);
+  o_grips_erase(w_current, s_upper_x, s_lower_y);
 
   /* grip on lower right corner (whichone = BOX_LOWER_RIGHT) */
-  o_grips_erase(w_current,
-				o_current->box->screen_lower_x,
-				o_current->box->screen_lower_y);
-  
+  o_grips_erase(w_current, s_lower_x, s_lower_y);
+
 }
+
