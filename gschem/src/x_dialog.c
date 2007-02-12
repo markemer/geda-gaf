@@ -1996,6 +1996,9 @@ void coord_display_update(TOPLEVEL *w_current, int x, int y)
   g_free(string);
 
   SCREENtoWORLD(w_current, x, y, &world_x, &world_y);
+  /* TODO: Do we want to snap the coordinate display? */
+  world_x = snap_grid(w_current, world_x);
+  world_y = snap_grid(w_current, world_y);
 
   string = g_strdup_printf("(%d, %d)", world_x, world_y);
   gtk_label_set_text(GTK_LABEL(w_current->coord_world), string );

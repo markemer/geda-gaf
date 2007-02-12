@@ -898,6 +898,9 @@ DEFINE_I_CALLBACK(edit_rotate_90_hotkey)
     /* Allow o_rotate_90_world to redraw the objects */
     w_current->DONT_REDRAW = 0;
     SCREENtoWORLD( w_current, mouse_x, mouse_y, &w_x, &w_y );
+    w_x = snap_grid(w_current, w_x);
+    w_y = snap_grid(w_current, w_y);
+
     o_rotate_90_world(w_current, object_list, w_x, w_y);
   }
 
@@ -943,6 +946,9 @@ DEFINE_I_CALLBACK(edit_mirror_hotkey)
                            i_callback_edit_mirror_hotkey, _("Mirror"));
 
     SCREENtoWORLD( w_current, mouse_x, mouse_y, &w_x, &w_y );
+    w_x = snap_grid(w_current, w_x);
+    w_y = snap_grid(w_current, w_y);
+
     o_mirror_world(w_current, 
                    object_list, 
                    w_x, w_y);

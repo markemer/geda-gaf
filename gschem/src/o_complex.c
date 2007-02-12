@@ -253,11 +253,8 @@ void o_complex_end(TOPLEVEL *w_current, int screen_x, int screen_y)
   diff_y = w_current->last_y - w_current->start_y;
 
   SCREENtoWORLD(w_current, screen_x, screen_y, &x, &y);
-
-#if 0
   x = snap_grid(w_current, x);
   y = snap_grid(w_current, y);
-#endif
 
 #if DEBUG
   printf("place_basename: %s\n",internal_basename);

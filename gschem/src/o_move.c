@@ -191,6 +191,10 @@ void o_move_end(TOPLEVEL * w_current)
                 &lx, &ly);
   SCREENtoWORLD(w_current, w_current->start_x, w_current->start_y,
                 &sx, &sy);
+  lx = snap_grid(w_current, lx);
+  ly = snap_grid(w_current, ly);
+  sx = snap_grid(w_current, sx);
+  sy = snap_grid(w_current, sy);
 
   diff_x = lx - sx;
   diff_y = ly - sy;
