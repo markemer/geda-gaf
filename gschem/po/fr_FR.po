@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the gEDA/gaf package.
 # Iznogood <iznogood@iznogood-factory.org>, 2005.
 # Patrick Bernaud <b-patrick@wanadoo.fr>, 2006.
-# 
-# 
+#
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: fr_FR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-11 08:44+0100\n"
-"PO-Revision-Date: 2006-10-21 01:19+0200\n"
+"POT-Creation-Date: 2007-02-16 21:48-0500\n"
+"PO-Revision-Date: 2007-02-16 14:08+0100\n"
 "Last-Translator: Patrick Bernaud <b-patrick@wanadoo.fr>\n"
 "Language-Team: French\n"
 "MIME-Version: 1.0\n"
@@ -241,7 +241,7 @@ msgstr "Affichage"
 msgid "Redraw"
 msgstr "Redessiner"
 
-#: src/rcstrings.c:61 src/i_callbacks.c:1516 src/i_callbacks.c:1585
+#: src/rcstrings.c:61 src/i_callbacks.c:1534 src/i_callbacks.c:1603
 msgid "Pan"
 msgstr "Panoramique"
 
@@ -305,11 +305,11 @@ msgstr "Ajouter"
 msgid "Component..."
 msgstr "Composant..."
 
-#: src/rcstrings.c:79 src/i_callbacks.c:2375 src/i_callbacks.c:2398
+#: src/rcstrings.c:79 src/i_callbacks.c:2393 src/i_callbacks.c:2416
 msgid "Net"
 msgstr "Piste"
 
-#: src/rcstrings.c:80 src/i_callbacks.c:2443 src/i_callbacks.c:2467
+#: src/rcstrings.c:80 src/i_callbacks.c:2461 src/i_callbacks.c:2485
 #: src/x_window.c:576
 msgid "Bus"
 msgstr "Bus"
@@ -322,23 +322,23 @@ msgstr "Attribut..."
 msgid "Text..."
 msgstr "Texte..."
 
-#: src/rcstrings.c:83 src/i_callbacks.c:2549 src/i_callbacks.c:2569
+#: src/rcstrings.c:83 src/i_callbacks.c:2567 src/i_callbacks.c:2587
 msgid "Line"
 msgstr "Ligne"
 
-#: src/rcstrings.c:84 src/i_callbacks.c:2592 src/i_callbacks.c:2612
+#: src/rcstrings.c:84 src/i_callbacks.c:2610 src/i_callbacks.c:2630
 msgid "Box"
 msgstr "Boîte"
 
-#: src/rcstrings.c:85 src/i_callbacks.c:2669 src/i_callbacks.c:2690
+#: src/rcstrings.c:85 src/i_callbacks.c:2687 src/i_callbacks.c:2708
 msgid "Circle"
 msgstr "Cercle"
 
-#: src/rcstrings.c:86 src/i_callbacks.c:2713 src/i_callbacks.c:2733
+#: src/rcstrings.c:86 src/i_callbacks.c:2731 src/i_callbacks.c:2751
 msgid "Arc"
 msgstr "Arc"
 
-#: src/rcstrings.c:87 src/i_callbacks.c:2756 src/i_callbacks.c:2776
+#: src/rcstrings.c:87 src/i_callbacks.c:2774 src/i_callbacks.c:2794
 msgid "Pin"
 msgstr "Broche"
 
@@ -370,11 +370,11 @@ msgstr "Documentation"
 msgid "Attributes"
 msgstr "Attributs"
 
-#: src/rcstrings.c:97 src/i_callbacks.c:3089
+#: src/rcstrings.c:97 src/i_callbacks.c:3107
 msgid "Attach"
 msgstr "Attacher"
 
-#: src/rcstrings.c:98 src/i_callbacks.c:3138
+#: src/rcstrings.c:98 src/i_callbacks.c:3156
 msgid "Detach"
 msgstr "Détacher"
 
@@ -519,9 +519,9 @@ msgid "Invalid size [%d] passed to text-size\n"
 msgstr "Taille [%d] passée à text-size invalide\n"
 
 #: src/g_rc.c:682
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid size [%f] passed to postscript-font-scale\n"
-msgstr "Taille [%d] passée à text-size invalide\n"
+msgstr "Taille [%f] passée à postscript-font-scale invalide\n"
 
 #: src/g_rc.c:725
 #, c-format
@@ -752,7 +752,7 @@ msgstr ""
 #: src/i_basic.c:747
 #, c-format
 msgid "Grid(%s, %s)"
-msgstr ""
+msgstr "Grille(%s,%s)"
 
 #: src/i_callbacks.c:131
 #, c-format
@@ -773,7 +773,7 @@ msgstr "Impossible de lancer %s\n"
 msgid "Documentation commands not supported under MinGW.\n"
 msgstr "Commandes de documentation non supportées sous MinGW.\n"
 
-#: src/i_callbacks.c:190 src/i_callbacks.c:1730
+#: src/i_callbacks.c:190 src/i_callbacks.c:1748
 #, c-format
 msgid "New page created [%s]\n"
 msgstr "Nouvelle page [%s] créée\n"
@@ -857,172 +857,172 @@ msgstr "Embarquer"
 msgid "Unembed"
 msgstr "Débarquer"
 
-#: src/i_callbacks.c:1110
+#: src/i_callbacks.c:1112
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: src/i_callbacks.c:1152
+#: src/i_callbacks.c:1170
 msgid "ShowHidden"
 msgstr "AfficheCaché"
 
-#: src/i_callbacks.c:1175
+#: src/i_callbacks.c:1193
 msgid "MakeVisible"
 msgstr "RendVisible"
 
-#: src/i_callbacks.c:1291
+#: src/i_callbacks.c:1309
 msgid "Edit Line Type"
 msgstr "Éditer le type de ligne"
 
-#: src/i_callbacks.c:1332 src/x_dialog.c:1231
+#: src/i_callbacks.c:1350 src/x_dialog.c:1231
 msgid "Edit Fill Type"
 msgstr "Éditer le type de remplissage"
 
-#: src/i_callbacks.c:1619
+#: src/i_callbacks.c:1637
 msgid "Update Cues"
 msgstr "Met à jour les extrémités"
 
-#: src/i_callbacks.c:1775
+#: src/i_callbacks.c:1793
 msgid "Really revert page?"
 msgstr "Abandonner les modifications ?"
 
-#: src/i_callbacks.c:1867
+#: src/i_callbacks.c:1885
 msgid "Copy 1"
 msgstr "Copier 1"
 
-#: src/i_callbacks.c:1886
+#: src/i_callbacks.c:1904
 msgid "Copy 2"
 msgstr "Copier 2"
 
-#: src/i_callbacks.c:1905
+#: src/i_callbacks.c:1923
 msgid "Copy 3"
 msgstr "Copier 3"
 
-#: src/i_callbacks.c:1924
+#: src/i_callbacks.c:1942
 msgid "Copy 4"
 msgstr "Copier 4"
 
-#: src/i_callbacks.c:1943
+#: src/i_callbacks.c:1961
 msgid "Copy 5"
 msgstr "Copier 5"
 
-#: src/i_callbacks.c:1962
+#: src/i_callbacks.c:1980
 msgid "Cut 1"
 msgstr "Couper 1"
 
-#: src/i_callbacks.c:1981
+#: src/i_callbacks.c:1999
 msgid "Cut 2"
 msgstr "Couper 2"
 
-#: src/i_callbacks.c:2000
+#: src/i_callbacks.c:2018
 msgid "Cut 3"
 msgstr "Couper 3"
 
-#: src/i_callbacks.c:2019
+#: src/i_callbacks.c:2037
 msgid "Cut 4"
 msgstr "Couper 4"
 
-#: src/i_callbacks.c:2038
+#: src/i_callbacks.c:2056
 msgid "Cut 5"
 msgstr "Couper 5"
 
-#: src/i_callbacks.c:2054
+#: src/i_callbacks.c:2072
 msgid "Paste 1"
 msgstr "Coller 1"
 
-#: src/i_callbacks.c:2063 src/i_callbacks.c:2087 src/i_callbacks.c:2111
-#: src/i_callbacks.c:2135 src/i_callbacks.c:2159
+#: src/i_callbacks.c:2081 src/i_callbacks.c:2105 src/i_callbacks.c:2129
+#: src/i_callbacks.c:2153 src/i_callbacks.c:2177
 msgid "Empty buffer"
 msgstr "Tampon vide"
 
-#: src/i_callbacks.c:2078
+#: src/i_callbacks.c:2096
 msgid "Paste 2"
 msgstr "Coller 2"
 
-#: src/i_callbacks.c:2102
+#: src/i_callbacks.c:2120
 msgid "Paste 3"
 msgstr "Coller 3"
 
-#: src/i_callbacks.c:2126
+#: src/i_callbacks.c:2144
 msgid "Paste 4"
 msgstr "Coller 4"
 
-#: src/i_callbacks.c:2150
+#: src/i_callbacks.c:2168
 msgid "Paste 5"
 msgstr "Coller 5"
 
-#: src/i_callbacks.c:2296 src/x_window.c:556
+#: src/i_callbacks.c:2314 src/x_window.c:556
 msgid "Component"
 msgstr "Composant"
 
-#: src/i_callbacks.c:2333 src/i_callbacks.c:2353
+#: src/i_callbacks.c:2351 src/i_callbacks.c:2371
 msgid "Attribute"
 msgstr "Attribut"
 
-#: src/i_callbacks.c:2842
+#: src/i_callbacks.c:2860
 #, c-format
 msgid "Searching for source [%s]\n"
 msgstr "Recherche de source [%s]\n"
 
-#: src/i_callbacks.c:2875 src/i_callbacks.c:2878
+#: src/i_callbacks.c:2893 src/i_callbacks.c:2896
 #, c-format
 msgid "Cannot find source [%s]\n"
 msgstr "Impossible de trouver source [%s]\n"
 
-#: src/i_callbacks.c:2975
+#: src/i_callbacks.c:2993
 #, c-format
 msgid "Searching for symbol [%s]\n"
 msgstr "Recherche du symbole [%s]\n"
 
-#: src/i_callbacks.c:3178
+#: src/i_callbacks.c:3196
 msgid "ShowN"
 msgstr "MontrerN"
 
-#: src/i_callbacks.c:3209
+#: src/i_callbacks.c:3227
 msgid "ShowV"
 msgstr "MontrerV"
 
-#: src/i_callbacks.c:3240
+#: src/i_callbacks.c:3258
 msgid "ShowB"
 msgstr "MontrerNV"
 
-#: src/i_callbacks.c:3272
+#: src/i_callbacks.c:3290
 msgid "VisToggle"
 msgstr ""
 
-#: src/i_callbacks.c:3294
+#: src/i_callbacks.c:3312
 #, c-format
 msgid "Sorry but this is a non-functioning menu option\n"
 msgstr "Désolé mais c'est une option de menu non fonctionnelle\n"
 
-#: src/i_callbacks.c:3344
+#: src/i_callbacks.c:3362
 msgid "Action feedback mode set to OUTLINE\n"
 msgstr "Mode de retour utilisateur positionné à OUTLINE\n"
 
-#: src/i_callbacks.c:3347
+#: src/i_callbacks.c:3365
 msgid "Action feedback mode set to BOUNDINGBOX\n"
 msgstr "Mode de retour utilisateur positionné à BOUNDINGBOX\n"
 
-#: src/i_callbacks.c:3364
+#: src/i_callbacks.c:3382
 msgid "Grid OFF\n"
 msgstr "Grille OFF\n"
 
-#: src/i_callbacks.c:3367
+#: src/i_callbacks.c:3385
 msgid "Grid ON\n"
 msgstr "Grille ON\n"
 
-#: src/i_callbacks.c:3384
+#: src/i_callbacks.c:3402
 msgid "Snap OFF (CAUTION!)\n"
 msgstr "Snap OFF (ATTENTION)\n"
 
-#: src/i_callbacks.c:3387
+#: src/i_callbacks.c:3405
 msgid "Snap ON\n"
 msgstr "Snap ON\n"
 
-#: src/i_callbacks.c:3407
+#: src/i_callbacks.c:3425
 msgid "Rubber band OFF \n"
 msgstr ""
 
-#: src/i_callbacks.c:3410
+#: src/i_callbacks.c:3428
 msgid "Rubber band ON\n"
 msgstr ""
 
@@ -1329,14 +1329,12 @@ msgid "Single Attribute Editor"
 msgstr "Éditeur d'attribut"
 
 #: src/x_attribedit.c:346
-#, fuzzy
 msgid "<b>Edit Attribute</b>"
-msgstr "Éditer l'attribut"
+msgstr "<b>Éditer un attribut</b>"
 
 #: src/x_attribedit.c:348
-#, fuzzy
 msgid "<b>Add Attribute</b>"
-msgstr "Ajouter un attribut"
+msgstr "<b>Ajouter un attribut</b>"
 
 #: src/x_attribedit.c:364 src/x_multiattrib.c:1511
 msgid "Name:"
@@ -1363,9 +1361,8 @@ msgid "Show Name & Value"
 msgstr "Montrer le nom et la valeur"
 
 #: src/x_attribedit.c:426
-#, fuzzy
 msgid "<b>Attach Options</b>"
-msgstr "Options"
+msgstr "<b>Options d'attache</b>"
 
 #: src/x_attribedit.c:441
 msgid "All"
@@ -1381,54 +1378,57 @@ msgstr "Pistes"
 
 #: src/x_attribedit.c:465
 msgid "Replace existing attributes"
-msgstr ""
+msgstr "Remplacer les attributs existants"
 
 #: src/x_autonumber.c:411
 msgid ""
 "slotted object without slot attribute may cause problems when autonumbering "
 "slots\n"
 msgstr ""
+"Les objets à slots sans attribut de slot sont susceptibles de créer des "
+"problèmes durant l'annotation automatique\n"
 
 #: src/x_autonumber.c:426
 #, c-format
 msgid ""
 "duplicate slot may cause problems: [symbolname=%s, number=%d, slot=%d]\n"
 msgstr ""
+"Les slots dupliqués sont susceptibles de créer des problèmes : [symbolname=%"
+"s, number=%d, slot=%d]\n"
 
 #: src/x_autonumber.c:696
 msgid "No searchstring given in autonumber text.\n"
-msgstr ""
+msgstr "Pas de motif de recherche fourni pour l'annotation automatique.\n"
 
 #: src/x_autonumber.c:747
 msgid "No '*' or '?' given at the end of the autonumber text.\n"
 msgstr ""
+"Pas de caractère '*' ou '?' à la fin du motif de recherche pour annotation "
+"automatique.\n"
 
 #: src/x_autonumber.c:880
-#, fuzzy
 msgid "Diagonal"
 msgstr "en diagonal"
 
 #: src/x_autonumber.c:881
 msgid "Top to bottom"
-msgstr ""
+msgstr "de haut en bas"
 
 #: src/x_autonumber.c:881
 msgid "Bottom to top"
-msgstr ""
+msgstr "de bas en haut"
 
 #: src/x_autonumber.c:882
-#, fuzzy
 msgid "Left to right"
 msgstr "de gauche à droite"
 
 #: src/x_autonumber.c:882
 msgid "Right to left"
-msgstr ""
+msgstr "de droite à gauche"
 
 #: src/x_autonumber.c:883
-#, fuzzy
 msgid "File order"
-msgstr "ordre des éléments dans le fichier"
+msgstr "dans ordre des éléments du fichier"
 
 #: src/x_autonumber.c:1219
 msgid "Autonumber text"
@@ -1436,63 +1436,55 @@ msgstr "Annotation automatique"
 
 #: src/x_autonumber.c:1237
 msgid "<b>Scope</b>"
-msgstr ""
+msgstr "<b>Portée</b>"
 
 #: src/x_autonumber.c:1259
-#, fuzzy
 msgid "Search for:"
-msgstr "Base de recherche :"
+msgstr "Motif de recherche :"
 
 #: src/x_autonumber.c:1273
-#, fuzzy
 msgid "Autonumber text in:"
-msgstr "Annotation automatique"
+msgstr "Annoter automatiquement :"
 
 #: src/x_autonumber.c:1280
 msgid "Skip numbers found in:"
-msgstr ""
+msgstr "Passer les nombres trouvés dans :"
 
 #: src/x_autonumber.c:1292 src/x_autonumber.c:1301
-#, fuzzy
 msgid "Selected objects"
-msgstr "objets sélectionnés"
+msgstr "les objets sélectionnés"
 
 #: src/x_autonumber.c:1293 src/x_autonumber.c:1302
-#, fuzzy
 msgid "Current page"
-msgstr "page en cours"
+msgstr "la page en cours"
 
 #: src/x_autonumber.c:1294 src/x_autonumber.c:1303
-#, fuzzy
 msgid "Whole hierarchy"
-msgstr "Hiérarchie"
+msgstr "la hiérarchie complète"
 
 #: src/x_autonumber.c:1305
 msgid "Overwrite existing numbers"
-msgstr ""
+msgstr "Remplacer les annotations existantes"
 
 #: src/x_autonumber.c:1310
-#, fuzzy
 msgid "<b>Options</b>"
-msgstr "Options"
+msgstr "<b>Options</b>"
 
 #: src/x_autonumber.c:1332
-#, fuzzy
 msgid "Starting number:"
 msgstr "Indice de départ :"
 
 #: src/x_autonumber.c:1339
-#, fuzzy
 msgid "Sort order:"
 msgstr "Ordre :"
 
 #: src/x_autonumber.c:1360
 msgid "Remove numbers"
-msgstr ""
+msgstr "Supprimer les annotations"
 
 #: src/x_autonumber.c:1364
 msgid "Automatic slotting"
-msgstr ""
+msgstr "Slotting automatique"
 
 #: src/x_color.c:59 src/x_color.c:96
 #, c-format
@@ -1594,31 +1586,26 @@ msgid "Upper Right"
 msgstr "En haut à droite"
 
 #: src/x_dialog.c:493
-#, fuzzy
 msgid "Edit Text Properties"
-msgstr "Taille du texte :"
+msgstr "Editer les propriétés du texte"
 
 #: src/x_dialog.c:520
-#, fuzzy
 msgid "<b>Text Content</b>"
-msgstr "Options"
+msgstr "<b>Texte</b>"
 
 #: src/x_dialog.c:552
-#, fuzzy
 msgid "<b>Text Properties</b>"
-msgstr "Options"
+msgstr "<b>Propriétés du texte</b>"
 
 #: src/x_dialog.c:567
-#, fuzzy
 msgid "Color:"
-msgstr "Couleur"
+msgstr "Couleur :"
 
 #: src/x_dialog.c:577
 msgid "Size:"
-msgstr ""
+msgstr "Taille :"
 
 #: src/x_dialog.c:586
-#, fuzzy
 msgid "Alignment:"
 msgstr "Alignement du texte :"
 
@@ -1656,22 +1643,18 @@ msgid "Edit Line Width & Type"
 msgstr "Épaisseur et type de ligne"
 
 #: src/x_dialog.c:883
-#, fuzzy
 msgid "Width:"
-msgstr "Largeur"
+msgstr "Largeur :"
 
 #: src/x_dialog.c:887 src/x_print.c:341
-#, fuzzy
 msgid "Type:"
-msgstr "Étendue"
+msgstr "Type :"
 
 #: src/x_dialog.c:891
-#, fuzzy
 msgid "Dash Length:"
 msgstr "Longueur du tiret :"
 
 #: src/x_dialog.c:895
-#, fuzzy
 msgid "Dash Space:"
 msgstr "Espace entre tirets :"
 
@@ -1692,46 +1675,38 @@ msgid "Hatch"
 msgstr "Rayures"
 
 #: src/x_dialog.c:1262
-#, fuzzy
 msgid "Fill Type:"
-msgstr "Type :"
+msgstr "Type de remplissage :"
 
 #: src/x_dialog.c:1266
-#, fuzzy
 msgid "Line Width:"
 msgstr "Épaisseur :"
 
 #: src/x_dialog.c:1270
-#, fuzzy
 msgid "Angle 1:"
-msgstr "Angle1"
+msgstr "Angle1 :"
 
 #: src/x_dialog.c:1274
-#, fuzzy
 msgid "Pitch 1:"
-msgstr "Écart1"
+msgstr "Écart1 :"
 
 #: src/x_dialog.c:1278
-#, fuzzy
 msgid "Angle 2:"
-msgstr "Angle2"
+msgstr "Angle2 :"
 
 #: src/x_dialog.c:1282
-#, fuzzy
 msgid "Pitch 2:"
-msgstr "Écart2"
+msgstr "Écart2 :"
 
 #: src/x_dialog.c:1444
 msgid "Arc Params"
 msgstr "Paramètres d'arc"
 
 #: src/x_dialog.c:1477
-#, fuzzy
 msgid "Start Angle:"
-msgstr "Angle de début :"
+msgstr "Angle de départ :"
 
 #: src/x_dialog.c:1487
-#, fuzzy
 msgid "Degrees of Sweep:"
 msgstr "Balayage :"
 
@@ -1748,17 +1723,14 @@ msgid "Text Size"
 msgstr "Taille de texte :"
 
 #: src/x_dialog.c:1669
-#, fuzzy
 msgid "Enter new text size:"
 msgstr "Entrez la nouvelle taille de texte :"
 
 #: src/x_dialog.c:1743
-#, fuzzy
 msgid "Snap Size"
 msgstr "Grille de snap"
 
 #: src/x_dialog.c:1766
-#, fuzzy
 msgid "Enter new snap grid spacing:"
 msgstr "Entrez le nouvel espacement de la grille de snap :"
 
@@ -1767,19 +1739,17 @@ msgid "Edit slot number"
 msgstr "Numéro de slot"
 
 #: src/x_dialog.c:1863
-#, fuzzy
 msgid "Edit slot number:"
-msgstr "Numéro de slot"
+msgstr "Numéro de slot :"
 
 #: src/x_dialog.c:1944
-#, fuzzy
 msgid "<b>gEDA: GPL Electronic Design Automation</b>"
-msgstr "gEDA : GPL Electronic Design Automation"
+msgstr "<b>gEDA : GPL Electronic Design Automation</b>"
 
 #: src/x_dialog.c:1948
-#, fuzzy, c-format
+#, c-format
 msgid "<b>gschem version %s%s</b>"
-msgstr "gschem version %s%s"
+msgstr "<b>gschem version %s%s</b>"
 
 #: src/x_dialog.c:1954
 msgid ""
@@ -1816,12 +1786,21 @@ msgstr "Sélecteur de couleur"
 
 #: src/x_dialog.c:2354
 msgid "Object color:"
-msgstr ""
+msgstr "Couleur de l'objet :"
 
 #: src/x_dialog.c:2470
-#, fuzzy
 msgid "Hotkeys"
-msgstr "Raccourcis..."
+msgstr "Raccourcis"
+
+#: src/x_dialog.c:2517
+#, fuzzy
+msgid "Function"
+msgstr "Action"
+
+#: src/x_dialog.c:2524
+#, fuzzy
+msgid "Keystroke(s)"
+msgstr "Action : raccourci(s)"
 
 #: src/x_dialog.c:2848
 msgid "Generic String"
@@ -1832,7 +1811,6 @@ msgid "Enter new string."
 msgstr "Entrez la nouvelle chaîne."
 
 #: src/x_dialog.c:2958
-#, fuzzy
 msgid "Find Text"
 msgstr "Recherche de texte"
 
@@ -1845,7 +1823,6 @@ msgid "descend into hierarchy"
 msgstr "descendre dans la hiérarchie"
 
 #: src/x_dialog.c:3056
-#, fuzzy
 msgid "Hide Text"
 msgstr "Cacher le texte"
 
@@ -1854,7 +1831,6 @@ msgid "Hide text starting with:"
 msgstr "Cacher le texte commençant par :"
 
 #: src/x_dialog.c:3148
-#, fuzzy
 msgid "Show Text"
 msgstr "Montrer le texte"
 
@@ -1940,23 +1916,20 @@ msgstr ""
 "gschem.\n"
 
 #: src/x_image.c:402
-#, fuzzy
 msgid "Select Image Filename..."
-msgstr "Indiquez un nom de fichier !\n"
+msgstr "Enregistrer l'image sous..."
 
 #: src/x_image.c:445
 msgid "Write Image..."
 msgstr "Exporter l'image..."
 
 #: src/x_image.c:468
-#, fuzzy
 msgid "Width x Height:"
-msgstr "Largeur x Hauteur"
+msgstr "Largeur x Hauteur :"
 
 #: src/x_image.c:479
-#, fuzzy
 msgid "Filename:"
-msgstr "Nom de fichier"
+msgstr "Nom de fichier :"
 
 #: src/x_log.c:231
 msgid "Status"
@@ -2104,7 +2077,6 @@ msgid "Right click on the filename for more options..."
 msgstr "Utilisez le clic droit sur le nom de fichier pour plus d'options..."
 
 #: src/x_print.c:90
-#, fuzzy
 msgid "Select PostScript Filename..."
 msgstr "Enregistrer en PostScript sous..."
 
@@ -2133,28 +2105,24 @@ msgid "Settings"
 msgstr "Configuration"
 
 #: src/x_print.c:330
-#, fuzzy
 msgid "Output paper size:"
-msgstr "Taille de papier"
+msgstr "Taille de papier :"
 
 #: src/x_print.c:352
-#, fuzzy
 msgid "Orientation:"
-msgstr "Orientation"
+msgstr "Orientation :"
 
 #: src/x_print.c:364
 msgid "Destination"
 msgstr "Destination"
 
 #: src/x_print.c:377
-#, fuzzy
 msgid "File:"
-msgstr "Fichier"
+msgstr "Fichier :"
 
 #: src/x_print.c:407
-#, fuzzy
 msgid "Command:"
-msgstr "Commande"
+msgstr "Commande :"
 
 #: src/x_print.c:766
 msgid "No print destination specified\n"
@@ -2171,6 +2139,8 @@ msgid ""
 "Error printing to file '%s'\n"
 "Check the log window for more information"
 msgstr ""
+"Erreur pendant l'impression du fichier '%s'\n"
+"Reportez-vous à la fenêtre des messages pour plus de détails"
 
 #: src/x_print.c:789
 #, c-format
@@ -2376,9 +2346,6 @@ msgstr "Ferme [%s]\n"
 
 #~ msgid "Ran out of space in the hotkey buffer...\n"
 #~ msgstr "Manque de place dans le tampon de raccourcis...\n"
-
-#~ msgid "Function : keystroke(s)"
-#~ msgstr "Action : raccourci(s)"
 
 #~ msgid "Height"
 #~ msgstr "Hauteur"

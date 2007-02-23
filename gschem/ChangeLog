@@ -1,3 +1,75 @@
+2007-02-23 Peter Clifton <pcjc2@cam.ac.uk>
+
+	Sync with trunk
+
+	2007-02-23 Carlos Nieves Onega <cnieves@iespana.es>
+
+		* include/prototype.h, lib/system-gschemrc.in, src/g_keys.c,
+			src/g_register.c, src/i_callbacks.c:
+			Added two new hotkeys to increase and decrease the snap grid size.
+			Feature Request #1443637. Thanks to KaiMartin for the suggestion.
+		
+		* src/x_image.c: Free the GError after using it, and don't unlink
+			the image file in case of errors. It's not always safe. 
+			For example: if the operation was not allowed due to permissions, 
+			the _previous existing_ file will be removed.
+
+	2007-02-22 Carlos Nieves Onega <cnieves@iespana.es>
+
+		* lib/system-gschemrc.in : Changed the title of the save image 
+			dialog from "Write PNG..." to "Write image...", since gschem can
+			now support more types than PNG.
+
+		* include/prototype.h, src/g_funcs.c, src/i_callbacks.c, 
+			src/x_image.c:
+			Changed the export image dialog by a new one using a GTK
+			file chooser dialog with image size and image type drop-down 
+			lists.
+			If compiled without libgd support (therefore using libgdk-pixbuf),
+			gschem will support several image types (like PNG, JPEG and ICO).
+
+	2007-02-16 Ales Hvezda   <ahvezda@geda.seul.org>
+
+		* po/nl_NL.po: Updated Dutch translation from Bert Timmerman. Thanks.
+
+		* src/i_callbacks.c: Fixed update component to work again.
+		It broken during the transition from Ales' custom linked list
+		implementation for the selection lists to using GList for
+		selection lists.  It seems that iterating over a list that is
+		being change doesn't work in the same way with GLists.	Fix for
+		this was to make a shallow copy of the selection list and use
+		that copy when iterating.
+
+		* src/i_callbacks.c: Change the behavior of update component
+		a little.  Update component will deselect all non OBJ_COMPLEX
+		objects after it has finished running.	This will give you
+		an indication as to which components were update or changed.
+		The behavior before was completely silent with no feedback that
+		anything happened.
+
+		* lib/system-gschemrc.in: Since gtk+ 2.x is supposedly correctly
+		raising dialog boxes (and most of the dialog boxes within gschem
+		have been converted to GtkDialog), raise-dialog-boxes-on-expose's
+		default is now disabled.  Thanks to Werner for figuring the dialog
+		situation.
+
+	2007-02-16  Patrick Bernaud  <b-patrick@wanadoo.fr>
+
+		* po/fr_FR.po: Updated the French translation.
+
+	2007-02-15 Carlos Nieves Onega <cnieves@iespana.es>
+
+		* test/ext_chars.sch: Added test for the new small mu greek char.
+
+	2007-02-14 Carlos Nieves Onega <cnieves@iespana.es>
+
+		* test/ext_chars.sch: Added test for the new characters of 
+			the hungarian charset.
+
+	2007-02-12  Werner Hoch <werner.ho@gmx.de>
+
+		* src/x_autonumber.c: added gettext makro _() for sort options
+
 2007-02-12 Peter Clifton <pcjc2@cam.ac.uk>
 
 	* src/x_dialog.c: Removed all calls to o_object_recalc() 

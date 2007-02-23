@@ -1,5 +1,5 @@
 
-SUBDIRS = sym
+SUBDIRS = sym models
 
 exampledir = @GEDADOCDIR@/examples/TwoStageAmp/
 

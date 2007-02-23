@@ -1,4 +1,12 @@
-2007-02-12 Peter Clifton <pcjc2@cam.ac.uk>
+2007-02-23 Peter Clifton <pcjc2@cam.ac.uk>
+
+	Sync with trunk
+
+	2007-02-14 Carlos Nieves Onega <cnieves@iespana.es>
+
+		* autogen.sh: Removed debug messages added on 2007-02-10.
+
+	2007-02-12 Peter Clifton <pcjc2@cam.ac.uk>
 
 * include/prototype.h, src/o_arc_basic.c, src/o_basic.c,
 	  src/o_box_basic.c, src/o_circle_basic.c, src/o_line_basic.c,

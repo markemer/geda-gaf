@@ -446,49 +446,10 @@ DEFINE_I_CALLBACK(file_print)
 DEFINE_I_CALLBACK(file_write_png)
 {
   TOPLEVEL *w_current = (TOPLEVEL *) data;
-  char *base=NULL;
-  char *img_filename=NULL;
 
   exit_if_null(w_current);
 
-#if 0
-#ifndef HAS_LIBGD
-  /*! \todo integrate these to messages */
-  fprintf(stderr,
-          _("libgd not installed or disabled, "
-          "so this feature is disabled\n"));
-  s_log_message(
-		_("libgd not installed or disabled, "
-		"so this feature is disabled\n"));
-  return;
-#endif
-#endif
-  /* get the base file name */
-  if (strcmp(fnameext_get(w_current->page_current->page_filename),
-             ".sch") == 0) {
-    /* the filename ends with .sch */
-    base = fnameext_remove(w_current->page_current->page_filename);
-  } else {
-    /* the filename does not end with .sch */
-    base = g_strdup (w_current->page_current->page_filename);
-  }
-  if(base == NULL) {
-    /*! \todo do something */
-  }
-
-  /* add ".png" tp the base filename */
-  img_filename = fnameext_add(base, ".png");
-  g_free(base);
-
-  if (output_filename) {
-    x_image_setup(w_current, output_filename);
-  } else {
-    x_image_setup(w_current, img_filename);
-  }
-
-  if (img_filename) {
-    g_free(img_filename);
-  }
+  x_image_setup(w_current);
 }
 
 /*! \todo Finish function documentation!!!
@@ -1114,24 +1075,42 @@ DEFINE_I_CALLBACK(edit_update)
 {
   TOPLEVEL *w_current = (TOPLEVEL *) data;
   OBJECT *o_current;
+  GList* selection_copy;
+  GList* s_current;
 
   exit_if_null(w_current);
 
   i_update_middle_button(w_current, i_callback_edit_update, _("Update"));
   /* anything selected ? */
   if (o_select_selected(w_current)) {
-    /* yes, update each selected component */
-    GList *s_current =
-      w_current->page_current->selection_list;
 
+    /* yes, update each selected component, but operate from a copy of the */
+    /* selection list, since o_update_component will modify the selection */
+
+    /* After the following code executes, only OBJ_COMPLEX object will be */
+    /* left selected. */
+
+    /* g_list_copy does a shallow copy which is exactly what we need here */
+    selection_copy = g_list_copy(w_current->page_current->selection_list);
+    s_current = selection_copy;
     while (s_current != NULL) {
       o_current = (OBJECT *) s_current->data;
       g_assert (o_current != NULL);
       if (o_current->type == OBJ_COMPLEX) {
         o_update_component (w_current, o_current);
       }
+      else
+      {
+        /* object was not a OBJ_COMPLEX, so unselect it. */
+        o_selection_remove (&(w_current->page_current->selection_list),
+                            o_current);
+      }
       s_current = s_current->next;
     }
+    g_list_free(selection_copy);
+   
+    /* Make sure the display is up to date */
+    o_redraw_all(w_current);
   } else {
     /* nothing selected, go back to select state */
     o_redraw_cleanstates(w_current);	
@@ -3333,6 +3312,44 @@ DEFINE_I_CALLBACK(options_snap_size)
 
   exit_if_null(w_current);
   snap_size_dialog(w_current);
+}
+
+/*! \brief Multiply by two the snap grid size.
+ *  \par Function Description
+ *  Callback function for the scale-up snap grid size hotkey.
+ *  Multiply by two the snap grid size.
+ */
+DEFINE_I_CALLBACK(options_scale_up_snap_size)
+{
+  TOPLEVEL *w_current = (TOPLEVEL *) data;
+
+  exit_if_null(w_current);
+
+  w_current->snap_size *= 2;
+  w_current->page_current->CHANGED=1;  /* maybe remove those two lines */
+  o_undo_savestate(w_current, UNDO_ALL);
+
+  o_redraw_all(w_current);
+}
+
+/*! \brief Divide by two the snap grid size.
+ *  \par Function Description
+ *  Callback function for the scale-down snap grid size hotkey.
+ *  Divide by two the snap grid size (if it's and even number).
+ */
+DEFINE_I_CALLBACK(options_scale_down_snap_size)
+{
+  TOPLEVEL *w_current = (TOPLEVEL *) data;
+
+  exit_if_null(w_current);
+
+  if (w_current->snap_size % 2 == 0)
+    w_current->snap_size /= 2;
+  w_current->page_current->CHANGED=1;  /* maybe remove those two lines */
+  o_undo_savestate(w_current, UNDO_ALL);
+
+  o_redraw_all(w_current);
+
 }
 
 /*! \todo Finish function documentation!!!

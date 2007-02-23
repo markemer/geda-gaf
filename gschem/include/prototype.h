@@ -170,6 +170,8 @@ SCM g_keys_options_afeedback(void);
 SCM g_keys_options_grid(void);
 SCM g_keys_options_snap(void);
 SCM g_keys_options_snap_size(void);
+SCM g_keys_options_scale_up_snap_size(void);
+SCM g_keys_options_scale_down_snap_size(void);
 SCM g_keys_options_rubberband(void);
 SCM g_keys_options_show_log_window(void);
 SCM g_keys_options_show_coord_window(void);
@@ -435,6 +437,8 @@ void i_callback_attributes_visibility_toggle(gpointer data, guint callback_actio
 void i_callback_script_console(gpointer data, guint callback_action, GtkWidget *widget);
 void i_callback_options_text_size(gpointer data, guint callback_action, GtkWidget *widget);
 void i_callback_options_snap_size(gpointer data, guint callback_action, GtkWidget *widget);
+void i_callback_options_scale_up_snap_size(gpointer data, guint callback_action, GtkWidget *widget);
+void i_callback_options_scale_down_snap_size(gpointer data, guint callback_action, GtkWidget *widget);
 void i_callback_options_afeedback(gpointer data, guint callback_action, GtkWidget *widget);
 void i_callback_options_grid(gpointer data, guint callback_action, GtkWidget *widget);
 void i_callback_options_snap(gpointer data, guint callback_action, GtkWidget *widget);
@@ -823,18 +827,9 @@ int x_fileselect_load_backup(TOPLEVEL *toplevel, GString *message);
 void x_grid_draw(TOPLEVEL *w_current);
 void x_draw_tiles(TOPLEVEL *w_current);
 /* x_image.c */
-gint image_320(GtkWidget *w, TOPLEVEL *w_current);
-gint image_640(GtkWidget *w, TOPLEVEL *w_current);
-gint image_800(GtkWidget *w, TOPLEVEL *w_current);
-gint image_1024(GtkWidget *w, TOPLEVEL *w_current);
-gint image_1280(GtkWidget *w, TOPLEVEL *w_current);
-gint image_1600(GtkWidget *w, TOPLEVEL *w_current);
-gint image_3200(GtkWidget *w, TOPLEVEL *w_current);
-void x_image_lowlevel(TOPLEVEL *w_current, const char* filename);
-gint x_image_write(GtkWidget *w, TOPLEVEL *w_current);
-gint x_image_cancel(GtkWidget *w, TOPLEVEL *w_current);
-int x_image_keypress(GtkWidget *widget, GdkEventKey *event, TOPLEVEL *w_current);
-void x_image_setup(TOPLEVEL *w_current, char *filename);
+void x_image_lowlevel(TOPLEVEL *w_current, const char* filename,
+		      int desired_width, int desired_height, char *filetype);
+void x_image_setup(TOPLEVEL *w_current);
 GdkPixbuf *x_image_get_pixbuf (TOPLEVEL *w_current);
 /* x_log.c */
 void x_log_open ();
