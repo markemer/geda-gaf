@@ -1,3 +1,9 @@
+2007-02-24 Peter Clifton <pcjc2@cam.ac.uk>
+
+	* src/o_box.c: Remove a copy-paste error which added an extra arguemnt
+	  when calling (*fill_func). Result was drawing errors, and an infinite
+	  loop when mesh filling.
+
 2007-02-23 Peter Clifton <pcjc2@cam.ac.uk>
 
 	Sync with trunk

@@ -274,13 +274,11 @@ void o_box_draw(TOPLEVEL *w_current, OBJECT *o_current)
   }
 
   (*fill_func)(w_current->window, w_current->gc, color,
-               FALSE,
                s_upper_x, s_upper_y,
                abs(s_lower_x - s_upper_x),
                abs(s_lower_y - s_upper_y),
                fill_width, angle1, pitch1, angle2, pitch2);
   (*fill_func)(w_current->backingstore, w_current->gc, color,
-               FALSE,
                s_upper_x, s_upper_y,
                abs(s_lower_x - s_upper_x),
                abs(s_lower_y - s_upper_y),
