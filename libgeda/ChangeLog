@@ -1,113 +1,105 @@
 2007-02-24 Peter Clifton <pcjc2@cam.ac.uk>
 
-	Sync with trunk
-
-	2007-02-24 Werner Hoch <werner.ho@gmx.de>
-		
-		* include/struct.h, src/s_page.c, src/s_toplevel.c: Removed unused
-		fields in PAGE and TOPLEVEL as well as functions for old (GtkCList
-		based) page manager. (Patch written by Patrick Bernaud)
-
-2007-02-23 Peter Clifton <pcjc2@cam.ac.uk>
-
-	Sync with trunk
-
-	2007-02-14 Carlos Nieves Onega <cnieves@iespana.es>
-
-		* autogen.sh: Removed debug messages added on 2007-02-10.
+	Merge changes to date from noscreen branch.
 
 	2007-02-12 Peter Clifton <pcjc2@cam.ac.uk>
 
-* include/prototype.h, src/o_arc_basic.c, src/o_basic.c,
-	  src/o_box_basic.c, src/o_circle_basic.c, src/o_line_basic.c,
-	  src/o_picture.c: Removed o_object_recalc() and all calls
-	  to it now the data it calculates is no longer used.
+		* include/prototype.h, src/o_arc_basic.c, src/o_basic.c,
+		  src/o_box_basic.c, src/o_circle_basic.c, src/o_line_basic.c,
+		  src/o_picture.c: Removed o_object_recalc() and all calls
+		  to it now the data it calculates is no longer used.
 
-	* src/m_basic.c: Remove implicit grid snapping in SCREENtoWOLRD()
+		* src/m_basic.c: Remove implicit grid snapping in SCREENtoWOLRD()
 
-2007-02-11 Peter Clifton <pcjc2@cam.ac.uk>
+	2006-12-30 Peter Clifton <pcjc2@cam.ac.uk>
 
-	Sync with trunc
+		* include/prototype.h, src/o_basic.c: Changed variable names and 
+		  comments to function inside_region() to allow its use with world
+		  coordinates without apparently swapping top and bottom (which have
+		  different sense in screen and world coords. Now uses {x/y}{min/max}.
 
-	2007-02-11 Werner Hoch <werner.ho@gmx.de>
-	
-		* src/s_toplevel.c: added missing toplevel inits (tshowwindow, ...)
-	
-	2007-02-10 Ales Hvezda   <ahvezda@geda.seul.org>
-	
-		* include/funcs.h: Removed quit_func since it is completely unused.
-	
-		* include/prototype.h, src/f_basic.c, src/o_arc_basic.c: Fixed
-		a whole bunch of compiler warnings and work on [ 1620806 ]
-		various probably bugs and comments about them
-	
-		* configure.ac: Bumped package version to 20070216.  Also changed
-		shared library's version number to 28:0:0
-	
-	2007-02-10 Carlos Nieves Onega <cnieves@iespana.es>
-	
-		* src/f_print.c: Make f_print_header return an error return value
-		  if something goes wrong, and propagate it to the caller functions.
-		  Unlink the file created by f_print_file if there is an error in
-		  f_print_header.
-		
-		* autogen.sh: Added automake version number check.
-	
-	2007-02-10  Mike Jarabek  <mjarabek@sentex.ca>
-	
-		* include/struct.h, src/o_text_basic.c, src/s_toplevel.c: Added
-		code to scale the output postscript font under user control.  This
-		is controlled via the postscript-font-scale rc keyword.
-	
-	2007-02-10  Mike Jarabek  <mjarabek@sentex.ca>
-	
-		* src/f_print.c: Applied Wojciech Kazubski's patch for offset
-		printing orgins. Fixes bug #160757
-	
-	2007-01-16 Ales Hvezda   <ahvezda@geda.seul.org>
-	
-		* src/o_arc_basic.c: Applied patch by Peter Clifton to fix
-		the output of arcs when using libgd.
-	
-		* src/Makefile.am: Applied patch by Peter Clifton to add --silent to
-		libtool.
-	
-	2007-01-08 Ales Hvezda   <ahvezda@geda.seul.org>
-	
-		* include/prototype.h, src/Makefile.am, src/o_embed.c: Moved
-		o_embed(...) and o_unembed(...) into o_embed.c so that gschlas
-		can also call these useful functions (to support scriptable 
-		embedding and unembedding of components).
-	
-		* src/.cvsignore: Oops, remove obsolete *.c rule that was causing
-		cvs to ignore new (but not added) C files.
+	2006-12-27 Peter Clifton <pcjc2@cam.ac.uk>
 
-2006-12-30 Peter Clifton <pcjc2@cam.ac.uk>
+		* include/prototype.h, src/o_arc_basic.c, src/o_box_basic.c, 
+		  src/o_bus_basic.c, src/o_circle_basic.c, src/o_complex_basic.c, 
+		  src/o_line_basic.c, src/o_net_basic.c, src/o_picture.c, 
+		  src/o_pin_basic.c: Removed o_..._translate() functions which
+		  are unused.
 
-	* include/prototype.h, src/o_basic.c: Changed variable names and 
-	  comments to function inside_region() to allow its use with world
-	  coordinates without apparently swapping top and bottom (which have
-	  different sense in screen and world coords. Now uses {x/y}{min/max}.
+		* include/prototype.h, src/o_arc_basic.c, src/o_box_basic.c,
+		  src/o_bus_basic.c, src/o_circle_basic.c, src/o_line_basic.c,
+		  src/o_net_basic.c, src/o_picture.c, src/o_pin_basic.c,
+		  src/o_text_basic.c: Removed o_..._rotate() functions unused
+		  since changing to world coordinates
 
-2006-12-27 Peter Clifton <pcjc2@cam.ac.uk>
+		* include/prototype.h, src/o_arc_basic.c, src/o_box_basic.c,
+		  src/o_bus_basic.c, src/o_circle_basic.c, src/o_line_basic.c,
+		  src/o_net_basic.c, src/o_picture.c, src/o_pin_basic.c,
+		  src/o_text_basic.c: Removed o_..._mirror() functions unused
+		  since changing to world coordinates
 
-	* include/prototype.h, src/o_arc_basic.c, src/o_box_basic.c, 
-	  src/o_bus_basic.c, src/o_circle_basic.c, src/o_complex_basic.c, 
-	  src/o_line_basic.c, src/o_net_basic.c, src/o_picture.c, 
-	  src/o_pin_basic.c: Removed o_..._translate() functions which
-	  are unused.
+2007-02-24 Werner Hoch <werner.ho@gmx.de>
+	
+	* include/struct.h, src/s_page.c, src/s_toplevel.c: Removed unused
+	fields in PAGE and TOPLEVEL as well as functions for old (GtkCList
+	based) page manager. (Patch written by Patrick Bernaud)
 
-	* include/prototype.h, src/o_arc_basic.c, src/o_box_basic.c,
-	  src/o_bus_basic.c, src/o_circle_basic.c, src/o_line_basic.c,
-	  src/o_net_basic.c, src/o_picture.c, src/o_pin_basic.c,
-	  src/o_text_basic.c: Removed o_..._rotate() functions unused
-	  since changing to world coordinates
+2007-02-14 Carlos Nieves Onega <cnieves@iespana.es>
 
-	* include/prototype.h, src/o_arc_basic.c, src/o_box_basic.c,
-	  src/o_bus_basic.c, src/o_circle_basic.c, src/o_line_basic.c,
-	  src/o_net_basic.c, src/o_picture.c, src/o_pin_basic.c,
-	  src/o_text_basic.c: Removed o_..._mirror() functions unused
-	  since changing to world coordinates
+	* autogen.sh: Removed debug messages added on 2007-02-10.
+
+2007-02-11 Werner Hoch <werner.ho@gmx.de>
+
+	* src/s_toplevel.c: added missing toplevel inits (tshowwindow, ...)
+
+2007-02-10 Ales Hvezda   <ahvezda@geda.seul.org>
+
+	* include/funcs.h: Removed quit_func since it is completely unused.
+
+	* include/prototype.h, src/f_basic.c, src/o_arc_basic.c: Fixed
+	a whole bunch of compiler warnings and work on [ 1620806 ]
+	various probably bugs and comments about them
+
+	* configure.ac: Bumped package version to 20070216.  Also changed
+	shared library's version number to 28:0:0
+
+2007-02-10 Carlos Nieves Onega <cnieves@iespana.es>
+
+	* src/f_print.c: Make f_print_header return an error return value
+	  if something goes wrong, and propagate it to the caller functions.
+	  Unlink the file created by f_print_file if there is an error in
+	  f_print_header.
+	
+	* autogen.sh: Added automake version number check.
+
+2007-02-10  Mike Jarabek  <mjarabek@sentex.ca>
+
+	* include/struct.h, src/o_text_basic.c, src/s_toplevel.c: Added
+	code to scale the output postscript font under user control.  This
+	is controlled via the postscript-font-scale rc keyword.
+
+2007-02-10  Mike Jarabek  <mjarabek@sentex.ca>
+
+	* src/f_print.c: Applied Wojciech Kazubski's patch for offset
+	printing orgins. Fixes bug #160757
+
+2007-01-16 Ales Hvezda   <ahvezda@geda.seul.org>
+
+	* src/o_arc_basic.c: Applied patch by Peter Clifton to fix
+	the output of arcs when using libgd.
+
+	* src/Makefile.am: Applied patch by Peter Clifton to add --silent to
+	libtool.
+
+2007-01-08 Ales Hvezda   <ahvezda@geda.seul.org>
+
+	* include/prototype.h, src/Makefile.am, src/o_embed.c: Moved
+	o_embed(...) and o_unembed(...) into o_embed.c so that gschlas
+	can also call these useful functions (to support scriptable 
+	embedding and unembedding of components).
+
+	* src/.cvsignore: Oops, remove obsolete *.c rule that was causing
+	cvs to ignore new (but not added) C files.
 
 2006-12-26 Carlos Nieves Onega <cnieves@iespana.es>
 
