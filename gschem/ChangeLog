@@ -1,5 +1,38 @@
 2007-02-24 Peter Clifton <pcjc2@cam.ac.uk>
 
+	Sync with trunk
+
+	2007-02-24 Werner Hoch <werner.ho@gmx.de>
+
+		* x_dialog.c: removed unused functions generic_text_input*
+
+		* x_basic.c: removed unused dialog functions x_create_dialog_box*
+		
+	2007-02-24 Werner Hoch <werner.ho@gmx.de>
+
+		* scheme/gschem.scm (dump-keymap): New procedure for
+					g_keys_dump_keymap() replacing old fill-mapped-keys.
+
+		* src/g_register.c, src/g_funcs.c (g_funcs_key_*): 
+		Removed functions. Replaced with g_keys_dump_keymap()
+
+		* src/g_keys.c (g_keys_dump_keymap): New function to obtain
+		current keymap from scheme.
+
+		* src/x_event.c, src/gschem.c, src/g_keys.c: 
+		Removed empty function set_window_current_key() 
+
+		* src/gschem.c, src/x_dialog.c: Adaptation for new
+		g_keys_dump_keymap(). (Patches written by Patrick Bernaud)
+
+	2007-02-24 Werner Hoch <werner.ho@gmx.de>
+
+		* src/x_window.c (x_window_search_page_clist(): Removed unused
+			function (no more needed in page manager).
+			(Patch written by Patrick Bernaud)
+
+2007-02-24 Peter Clifton <pcjc2@cam.ac.uk>
+
 	* src/o_box.c: Remove a copy-paste error which added an extra arguemnt
 	  when calling (*fill_func). Result was drawing errors, and an infinite
 	  loop when mesh filling.

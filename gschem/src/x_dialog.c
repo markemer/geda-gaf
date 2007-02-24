@@ -85,6 +85,11 @@ void destroy_window(GtkWidget *widget, GtkWidget **window)
   *window = NULL;
 }
 
+/* TODO: This string is used by the dialogs: show_text, find_text and hide_text
+ * I think it should be removed. (Werner Hoch)
+ */ 
+char generic_textstring[256] = "refdes=R";
+
 /***************** Start of Text Input dialog box *********************/
 
 /*! \brief worker function for the text entry dialog
@@ -2372,63 +2377,6 @@ void color_edit_dialog (TOPLEVEL *w_current)
 
 /***************** Start of help/keymapping dialog box **************/
 
-static GList *hotkeys = NULL;
-
-typedef struct _HOTKEY ST_HOTKEY;
-
-struct _HOTKEY {
-  gchar *name;
-  gchar *value;
-};
-
-
-/*! \brief Clear the hotkey list of the hotkeys dialog
- *  \par Function Description
- *  This function free's all elements allocated by the hotkey dialog
- */
-void x_dialog_hotkeys_free_all(void)
-{
-  GList *item;
-  ST_HOTKEY *hotkey;
-
-  for (item = hotkeys; item != NULL; item = g_list_next(item)) {
-    hotkey = item->data;
-    g_free(hotkey->name);
-    g_free(hotkey->value);
-    g_free(hotkey);
-  }
-  g_list_free(hotkeys);
-  hotkeys = NULL;
-}
-
-/*! \brief Insert a hotkey string into the dialog hotkey list
- *  \par Function Description
- *  This function splits the given hotkey string and adds it to the hotkey
- *  list.
- *  \todo Change the function and its callers to f(char *name, char *value).
- */
-void x_dialog_hotkeys_fill(char *string) 
-{
-  ST_HOTKEY *hotkey;
-  gchar **token;
-  
-  hotkey = g_new(ST_HOTKEY, 1);
-  token = g_strsplit(string, ":", 2);
-
-  if (token[0] != NULL) {
-    hotkey->name = g_strdup(token[0]);
-    if (token[1] != NULL) {
-      g_strstrip(token[1]);
-      hotkey->value = g_strdup(token[1]);
-      hotkeys = g_list_append(hotkeys, hotkey);
-    }
-    else {
-      g_free(hotkey->name);
-    }
-  }
-  g_strfreev(token);
-}
-
 /*! \brief Response function for the hotkey dialog
  *  \par Function Description
  *  This function destroys the hotkey dialog and does some cleanup.
@@ -2459,11 +2407,13 @@ void x_dialog_hotkeys (TOPLEVEL *w_current)
   GtkWidget *vbox, *scrolled_win;
   GtkListStore *store;
   GtkWidget *treeview;
-  GtkTreeIter iter;
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
-  ST_HOTKEY *hotkey;
-  GList *item;
+  GArray *keymap;
+  gint i;
+  struct keyseq_action_t {
+    gchar *keyseq, *action;
+  };
 
   if (!w_current->hkwindow) {
     w_current->hkwindow = gtk_dialog_new_with_buttons(_("Hotkeys"),
@@ -2498,14 +2448,30 @@ void x_dialog_hotkeys (TOPLEVEL *w_current)
 
     /* the model */
     store = gtk_list_store_new (2,G_TYPE_STRING, G_TYPE_STRING);
-    for (item=hotkeys; item != NULL; item =g_list_next(item)) {
-      hotkey = item->data;
-      gtk_list_store_append(store, &iter);
-      gtk_list_store_set(store, &iter,
-			 0, hotkey->name,
-			 1, hotkey->value,
-			 -1);
+
+    /* retrieve current keymap */
+    keymap = g_keys_dump_keymap ();
+    /* add each keymap entry to the list store of the dialog */
+    for (i = 0; i < keymap->len; i++) {
+      GtkTreeIter iter;
+      struct keyseq_action_t *keymap_entry;
+      
+      keymap_entry = &g_array_index (keymap, struct keyseq_action_t, i);
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter,
+                          0, keymap_entry->action,
+                          1, keymap_entry->keyseq,
+                          -1);
     }
+
+    /* finally free the array for keymap */
+    for (i = 0; i < keymap->len; i++) {
+      struct keyseq_action_t *keymap_entry;
+      keymap_entry = &g_array_index (keymap, struct keyseq_action_t, i);
+      g_free (keymap_entry->keyseq);
+      g_free (keymap_entry->action);
+    }
+    g_array_free (keymap, TRUE);
 
     /* the tree view */
     treeview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
@@ -2791,94 +2757,6 @@ char *generic_filesel_dialog (const char *msg, const char *templ, gint flags)
 }
 
 /***************** End of generic file select dialog box *****************/
-
-/*********** Start of generic text input dialog box *******/
-char generic_textstring[256] = "refdes=R";
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
- */
-void generic_text_input_ok(GtkWidget * w, TOPLEVEL * w_current)
-{
-  char *string = NULL;
-
-  string = (char *) gtk_entry_get_text(GTK_ENTRY(w_current->tsentry));
-  strncpy(generic_textstring, string, 256);
-
-  gtk_grab_remove(w_current->tswindow);
-  gtk_widget_destroy(w_current->tswindow);
-  w_current->tswindow = NULL;
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
- */
-void generic_text_input_dialog(TOPLEVEL * w_current)
-{
-  int len;
-  GtkWidget *label = NULL;
-  GtkWidget *buttonok = NULL;
-  GtkWidget *vbox, *action_area;
-
-  if (!w_current->tswindow) {
-    w_current->tswindow = x_create_dialog_box(&vbox, &action_area);
-
-    gtk_window_position(GTK_WINDOW(w_current->tswindow),
-			GTK_WIN_POS_MOUSE);
-
-    gtk_signal_connect(GTK_OBJECT(w_current->tswindow),
-		       "destroy",
-		       GTK_SIGNAL_FUNC(destroy_window),
-		       &w_current->tswindow);
-
-
-#if 0				/* removed because it was causing the dialog box to not close */
-    gtk_signal_connect(GTK_OBJECT(w_current->tswindow),
-		       "delete_event",
-		       GTK_SIGNAL_FUNC(destroy_window),
-		       &w_current->tswindow);
-#endif
-
-    gtk_window_set_title(GTK_WINDOW(w_current->tswindow),
-			 _("Generic String"));
-    gtk_container_border_width(GTK_CONTAINER(w_current->tswindow), 10);
-
-    label = gtk_label_new(_("Enter new string."));
-    gtk_misc_set_padding(GTK_MISC(label), 20, 20);
-    gtk_box_pack_start(GTK_BOX(vbox), label, TRUE, TRUE, 0);
-    gtk_widget_show(label);
-
-    w_current->tsentry = gtk_entry_new_with_max_length(20);
-    gtk_editable_select_region(GTK_EDITABLE(w_current->tsentry), 0, -1);
-    gtk_box_pack_start(GTK_BOX(vbox), w_current->tsentry, FALSE, FALSE, 5);
-    gtk_signal_connect(GTK_OBJECT(w_current->tsentry), "activate",
-		       GTK_SIGNAL_FUNC(generic_text_input_ok), w_current);
-    gtk_widget_show(w_current->tsentry);
-    gtk_widget_grab_focus(w_current->tsentry);
-
-    buttonok = gtk_button_new_from_stock (GTK_STOCK_OK);
-    GTK_WIDGET_SET_FLAGS(buttonok, GTK_CAN_DEFAULT);
-    gtk_box_pack_start(GTK_BOX(action_area), buttonok, TRUE, TRUE, 0);
-    gtk_signal_connect(GTK_OBJECT(buttonok), "clicked",
-		       GTK_SIGNAL_FUNC(generic_text_input_ok), w_current);
-    gtk_widget_show(buttonok);
-    gtk_widget_grab_default(buttonok);
-  }
-
-  if (!GTK_WIDGET_VISIBLE(w_current->tswindow)) {
-    len = strlen(generic_textstring);
-    gtk_entry_set_text(GTK_ENTRY(w_current->tsentry), generic_textstring);
-    gtk_entry_select_region(GTK_ENTRY(w_current->tsentry), 0, len);
-    gtk_widget_show(w_current->tswindow);
-    gtk_grab_add(w_current->tswindow);
-  }
-}
-
-/*********** End of generic text input dialog box *******/
 
 /*********** Start of find text dialog box *******/
 

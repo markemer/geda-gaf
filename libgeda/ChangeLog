@@ -1,3 +1,13 @@
+2007-02-24 Peter Clifton <pcjc2@cam.ac.uk>
+
+	Sync with trunk
+
+	2007-02-24 Werner Hoch <werner.ho@gmx.de>
+		
+		* include/struct.h, src/s_page.c, src/s_toplevel.c: Removed unused
+		fields in PAGE and TOPLEVEL as well as functions for old (GtkCList
+		based) page manager. (Patch written by Patrick Bernaud)
+
 2007-02-23 Peter Clifton <pcjc2@cam.ac.uk>
 
 	Sync with trunk
