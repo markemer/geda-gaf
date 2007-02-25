@@ -1492,12 +1492,10 @@ o_arc_image_write(TOPLEVEL *w_current, OBJECT *o_current,
   if (end_angle < start_angle)
     end_angle += 360;
 
-  width  = o_current->arc->screen_width;
-  height = o_current->arc->screen_height;
+  width = SCREENabs( w_current, o_current->arc->width);
+  height = SCREENabs( w_current, o_current->arc->height);
+  WORLDtoSCREEN( w_current, o_current->arc->x, o_current->arc->y, &x, &y );
 
-  x = o_current->arc->screen_x;
-  y = o_current->arc->screen_y;
-	
 #ifdef HAS_LIBGD
 
   gdImageSetThickness(current_im_ptr, SCREENabs(w_current,

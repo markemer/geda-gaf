@@ -1294,6 +1294,8 @@ void o_circle_print_old(TOPLEVEL *w_current, FILE *fp, OBJECT *o_current,
 void o_circle_image_write(TOPLEVEL *w_current, OBJECT *o_current,
 			  int origin_x, int origin_y, int color_mode)
 {
+  int diameter;
+  int s_x, s_y;
   int color;
 
   if (o_current == NULL) {
@@ -1309,14 +1311,19 @@ void o_circle_image_write(TOPLEVEL *w_current, OBJECT *o_current,
 
 #ifdef HAS_LIBGD
 
+  diameter = SCREENabs(w_current, o_current->circle->radius)*2;
+  WORLDtoSCREEN(w_current,
+                o_current->circle->center_x,
+                o_current->circle->center_y,
+                &s_x, &s_y);
+
   gdImageSetThickness(current_im_ptr, SCREENabs(w_current,
                                                 o_current->line_width));
 
   gdImageArc(current_im_ptr, 
-             o_current->circle->screen_x, 
-             o_current->circle->screen_y,
-             SCREENabs(w_current, o_current->circle->radius)*2,
-             SCREENabs(w_current, o_current->circle->radius)*2,
+             s_x, s_y,
+             diameter,
+             diameter,
              0, 360, 
              color);
 #endif

@@ -464,11 +464,7 @@ void o_net_print(TOPLEVEL *w_current, FILE *fp, OBJECT *o_current,
 void o_net_image_write(TOPLEVEL *w_current, OBJECT *o_current,
 		       int origin_x, int origin_y, int color_mode)
 {
-  int offset, offset2;
-  int cross;
-  int x1, y1;
-  int x2, y2;
-  int endpoint_color;
+  int x[2], y[2];
   int color;
 
   if (o_current == NULL) {
@@ -482,27 +478,15 @@ void o_net_image_write(TOPLEVEL *w_current, OBJECT *o_current,
     color = image_black;
   }
 
-  offset = SCREENabs(w_current, NET_WIDTH);
-
-  /* 
-     offset = 7 * (float) w_current->height/ (float) w_current->width;
-     offset2 = 7 * (float) w_current->height/ (float) w_current->width*2;  
-
-     printf("%f %d %d\n", (float) ( (float) w_current->height/ (float) w_current->width), 
-     offset, offset2);
-  */
-
-  offset2 = offset * 2;
-
-  cross = offset;
-
-  x1 = o_current->line->screen_x[0];
-  y1 = o_current->line->screen_y[0];
-  x2 = o_current->line->screen_x[1];
-  y2 = o_current->line->screen_y[1];
-
-  /* assumes screen coords are already calculated correctly */
 #ifdef HAS_LIBGD
+  WORLDtoSCREEN(w_current,
+                o_current->line->x[0],
+                o_current->line->y[0],
+                &x[0], &y[0]);
+  WORLDtoSCREEN(w_current,
+                o_current->line->x[1],
+                o_current->line->y[1],
+                &x[1], &y[1]);
 
   if (w_current->net_style == THICK) {
     gdImageSetThickness(current_im_ptr, SCREENabs(w_current,
@@ -511,16 +495,8 @@ void o_net_image_write(TOPLEVEL *w_current, OBJECT *o_current,
     gdImageSetThickness(current_im_ptr, 0);
   }
 
-  gdImageLine(current_im_ptr, x1, y1, x2, y2, color);
+  gdImageLine(current_im_ptr, x[0], y[0], x[1], y[1], color);
 #endif
-
-  if (color_mode == TRUE) {
-    endpoint_color =
-      o_image_geda2gd_color(w_current->net_endpoint_color);
-  } else {
-    endpoint_color = image_black;
-  }
-
 }
 
 /*! \todo Finish function documentation!!!

@@ -454,6 +454,7 @@ void o_pin_print(TOPLEVEL *w_current, FILE *fp, OBJECT *o_current,
 void o_pin_image_write(TOPLEVEL *w_current, OBJECT *o_current,
 		       int origin_x, int origin_y, int color_mode)
 {
+  int x[2], y[2];
   int color;
 
   if (o_current == NULL) {
@@ -467,8 +468,15 @@ void o_pin_image_write(TOPLEVEL *w_current, OBJECT *o_current,
     color = image_black;
   }
 
-  /* assumes screen coords are already calculated correctly */
 #ifdef HAS_LIBGD
+  WORLDtoSCREEN(w_current,
+                o_current->line->x[0],
+                o_current->line->y[0],
+                &x[0], &y[0]);
+  WORLDtoSCREEN(w_current,
+                o_current->line->x[1],
+                o_current->line->y[1],
+                &x[1], &y[1]);
 
   if (w_current->pin_style == THICK) {
     gdImageSetThickness(current_im_ptr, SCREENabs(w_current,
@@ -478,10 +486,8 @@ void o_pin_image_write(TOPLEVEL *w_current, OBJECT *o_current,
   }
 
   gdImageLine(current_im_ptr,
-              o_current->line->screen_x[0],
-              o_current->line->screen_y[0],
-              o_current->line->screen_x[1],
-              o_current->line->screen_y[1],
+              x[0], y[0],
+              x[1], y[1],
               color);
 #endif
 }

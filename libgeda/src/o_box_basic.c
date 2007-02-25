@@ -1567,7 +1567,7 @@ void o_box_image_write(TOPLEVEL *w_current, OBJECT *o_current,
 		       int origin_x, int origin_y, int color_mode)
 {
   int color;
-
+  int s_upper_x, s_upper_y, s_lower_x, s_lower_y;
 
   if (o_current == NULL) {
     printf("got null in o_box_image_write\n");
@@ -1581,18 +1581,23 @@ void o_box_image_write(TOPLEVEL *w_current, OBJECT *o_current,
     color = image_black;
   }
 
-  /* assumes screen coords are already calculated correctly */
 #ifdef HAS_LIBGD
+
+  WORLDtoSCREEN(w_current, 
+                o_current->box->upper_x,
+                o_current->box->upper_y,
+                &s_upper_x, &s_upper_y);
+  WORLDtoSCREEN(w_current, 
+                o_current->box->lower_x,
+                o_current->box->lower_y,
+                &s_lower_x, &s_lower_y);
 
   gdImageSetThickness(current_im_ptr, SCREENabs(w_current,
                                                 o_current->line_width));
 
   gdImageRectangle(current_im_ptr, 
-                   o_current->box->screen_upper_x,
-                   o_current->box->screen_upper_y,
-                   o_current->box->screen_lower_x,
-                   o_current->box->screen_lower_y, 
+                   s_upper_x, s_upper_y,
+                   s_lower_x, s_lower_y,
                    color);
 #endif
-
 }
