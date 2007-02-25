@@ -1,5 +1,10 @@
 2007-02-25 Peter Clifton <pcjc2@cam.ac.uk>
 
+	* src/o_arc.c, src/o_basic.c, src/o_box.c, src/o_bus.c,
+	  src/o_circle.c, src/o_complex.c, src/o_line.c, src/o_net.c,
+	  src/o_picture.c, src/o_pin.c, src/o_text.c: Remove calls
+	  to o_..._recalc() or equivelant from drawing routines.
+
 	* src/a_zoom.c: Changed call to world_get_complex_bounds() 
 	  to world_get_object_list_bounds(), and added logic to 
 	  stop the zoom-extents operation if the object list 

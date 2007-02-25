@@ -106,10 +106,6 @@ void o_redraw_all_fast(TOPLEVEL *w_current)
     x_repaint_background(w_current);
   }
 
-  o_recalc_object_list(w_current, w_current->page_current->object_head);
-  /* Uncomment this when using the complex_place_list for moving and copying */
-  /*  o_recalc_object_glist(w_current, w_current->page_current->complex_place_list); */
-
   draw_selected = !(w_current->inside_action &&
 		    ((w_current->event_state == MOVE) ||
 		     (w_current->event_state == ENDMOVE)));

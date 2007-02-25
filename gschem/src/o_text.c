@@ -87,8 +87,6 @@ void o_text_draw_rectangle(TOPLEVEL *w_current, OBJECT *o_current)
       o_current->text->prim_objs == NULL) {
     o_text_recreate(w_current, o_current);
   }
-  
-  o_text_recalc(w_current, o_current);
 
   /* text is too small so go through and draw a rectangle in
      it's place */

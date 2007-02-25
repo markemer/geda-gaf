@@ -40,8 +40,6 @@
  */
 void o_complex_draw(TOPLEVEL *w_current, OBJECT *o_current)
 {
-  int left, right, top, bottom;
-
   g_return_if_fail (o_current != NULL); 
   g_return_if_fail (o_current->complex != NULL);
   g_return_if_fail (o_current->complex->prim_objs != NULL);
@@ -49,14 +47,6 @@ void o_complex_draw(TOPLEVEL *w_current, OBJECT *o_current)
   if (!w_current->DONT_REDRAW) {
     o_redraw(w_current, o_current->complex->prim_objs, TRUE);
   }
-
-  world_get_object_list_bounds(w_current, o_current->complex->prim_objs,
-			 &left, &top, &right, &bottom);
-  o_current->w_left   = left;
-  o_current->w_top    = top;
-  o_current->w_right  = right;
-  o_current->w_bottom = bottom;
-
 }
 
 /*! \todo Finish function documentation!!!
