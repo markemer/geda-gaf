@@ -634,29 +634,10 @@ void world_get_circle_bounds(TOPLEVEL *w_current, CIRCLE *circle, int *left,
 			     int *top, int *right, int *bottom)
 {
 
-  *left   = w_current->init_right;
-  *top    = w_current->init_bottom;
-  *right  = 0;
-  *bottom = 0;
-
-
   *left   = circle->center_x - circle->radius;
   *top    = circle->center_y - circle->radius;
   *right  = circle->center_x + circle->radius;
   *bottom = circle->center_y + circle->radius;
-
-  /*
-   *left = points->x1;
-   *top = points->y1;
-   *right = points->x1+(temp);
-   *bottom = points->y1-(temp); 
-   */
-
-  /* 
-   *left = min(circle->x1, circle->x1+temp);
-   *top = min(circle->y1, circle->y1-temp);
-   *right = max(circle->x1, circle->x1+temp);
-   *bottom = max(circle->y1, circle->y1-temp);*/
 
 #if DEBUG 
   printf("circle: %d %d %d %d\n", *left, *top, *right, *bottom);

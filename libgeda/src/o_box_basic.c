@@ -707,14 +707,11 @@ void get_box_bounds(TOPLEVEL *w_current, BOX *box,
 void world_get_box_bounds(TOPLEVEL *w_current, BOX *box,
 			  int *left, int *top, int *right, int *bottom)
 {
-  /* pb20011002 - why using min and max here and not above ? */
   *left   = min(box->upper_x, box->lower_x);
   *top    = min(box->upper_y, box->lower_y);
   *right  = max(box->upper_x, box->lower_x);
   *bottom = max(box->upper_y, box->lower_y);
   
-  /* PB : same as above here for width of edges */	
-
 #if DEBUG 
   printf("box: %d %d %d %d\n", *left, *top, *right, *bottom);
 #endif

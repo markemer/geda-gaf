@@ -537,13 +537,10 @@ void get_picture_bounds(TOPLEVEL *w_current, PICTURE *picture,
 void world_get_picture_bounds(TOPLEVEL *w_current, PICTURE *picture,
 			      int *left, int *top, int *right, int *bottom)
 {
-	/* pb20011002 - why using min and max here and not above ? */
 	*left   = min(picture->upper_x, picture->lower_x);
 	*top    = min(picture->upper_y, picture->lower_y);
 	*right  = max(picture->upper_x, picture->lower_x);
 	*bottom = max(picture->upper_y, picture->lower_y);
-	
-	/* PB : same as above here for width of edges */	
 
 #if DEBUG 
 	printf("picture: %d %d %d %d\n", *left, *top, *right, *bottom);

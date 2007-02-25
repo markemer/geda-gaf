@@ -79,20 +79,10 @@ void get_pin_bounds(TOPLEVEL *w_current, LINE *line, int *left, int *top,
 void world_get_pin_bounds(TOPLEVEL *w_current, LINE *line, int *left, int *top,
 			  int *right, int *bottom)
 {
-  *left = w_current->init_right;
-  *top = w_current->init_bottom;
-  *right = 0;
-  *bottom = 0;
-
-  if (line->x[0] < *left) *left = line->x[0];
-  if (line->x[0] > *right) *right = line->x[0];
-  if (line->y[0] < *top) *top = line->y[0];
-  if (line->y[0] > *bottom) *bottom = line->y[0];
-
-  if (line->x[1] < *left) *left = line->x[1];
-  if (line->x[1] > *right) *right = line->x[1];
-  if (line->y[1] < *top) *top = line->y[1];
-  if (line->y[1] > *bottom) *bottom = line->y[1];
+  *left = min( line->x[0], line->x[1] );
+  *top = min( line->y[0], line->y[1] );
+  *right = max( line->x[0], line->x[1] );
+  *bottom = max( line->y[0], line->y[1] );
 }
 
 /*! \todo Finish function documentation!!!

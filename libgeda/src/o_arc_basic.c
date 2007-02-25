@@ -672,8 +672,8 @@ void world_get_arc_bounds(TOPLEVEL *w_current, OBJECT *object, int *left,
 
   *left   = (x1 < x2) ? ((x1 < x3) ? x1 : x3) : ((x2 < x3) ? x2 : x3);
   *right  = (x1 > x2) ? ((x1 > x3) ? x1 : x3) : ((x2 > x3) ? x2 : x3);
-  *bottom = (y1 < y2) ? ((y1 < y3) ? y1 : y3) : ((y2 < y3) ? y2 : y3);
-  *top    = (y1 > y2) ? ((y1 > y3) ? y1 : y3) : ((y2 > y3) ? y2 : y3);
+  *bottom = (y1 > y2) ? ((y1 > y3) ? y1 : y3) : ((y2 > y3) ? y2 : y3);
+  *top    = (y1 < y2) ? ((y1 < y3) ? y1 : y3) : ((y2 < y3) ? y2 : y3);
 
   /*! \note
    *  The previous rectangle is extended to the final one
@@ -685,9 +685,9 @@ void world_get_arc_bounds(TOPLEVEL *w_current, OBJECT *object, int *left,
     angle = angle + 90;
     if(angle < start_angle + end_angle) {
       if(angle % 360 == 0)   *right  = x1 + radius;
-      if(angle % 360 == 90)  *top    = y1 + radius;
+      if(angle % 360 == 90)  *bottom = y1 + radius;
       if(angle % 360 == 180) *left   = x1 - radius;
-      if(angle % 360 == 270) *bottom = y1 - radius;
+      if(angle % 360 == 270) *top    = y1 - radius;
     } else {
       break;
     }

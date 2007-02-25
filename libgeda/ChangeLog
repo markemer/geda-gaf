@@ -1,6 +1,14 @@
 2007-02-25 Peter Clifton <pcjc2@cam.ac.uk>
 
 	* src/o_arc_basic.c, src/o_box_basic.c, src/o_bus_basic.c,
+	  src/o_circle_basic.c, src/o_complex_basic.c, src/o_line_basic.c,
+	  src/o_net_basic.c, src/o_picture.c, src/o_pin_basic.c: Tidied
+	  world_get_..._bounds() functions to use simple min() max()
+	  implementations where appropriate. Fixed world_get_arc_bounds()
+	  to have same semantics as the other functions, IE. top and bottom
+	  swapped to give bottom > top numerically.
+
+	* src/o_arc_basic.c, src/o_box_basic.c, src/o_bus_basic.c,
 	  src/o_circle_basic.c, src/o_line_basic.c, src/o_net_basic.c,
 	  src/o_pin_basic.c: Modified PNG export routines to calculate
 	  coordinates directly from object world coords.
