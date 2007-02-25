@@ -169,7 +169,7 @@ OBJECT *o_box_copy(TOPLEVEL *w_current, OBJECT *list_tail, OBJECT *o_current)
    * The dimensions of the new box are set with the ones of the original box.
    * The two boxes have the same line type and the same filling options.
    *
-   * The coordinates and the values in screen unit are computed with
+   * The coordinates and the values in world unit are computed with
    *  #o_box_recalc().
    */
 
@@ -279,7 +279,7 @@ void o_box_modify(TOPLEVEL *w_current, OBJECT *object,
 		object->box->lower_y = tmp;
 	}
 	
-	/* recalculate the screen coords and the boundings */
+	/* recalculate the world coords and the boundings */
 	o_box_recalc(w_current, object);
   
 }
@@ -566,7 +566,7 @@ void o_box_rotate_world(TOPLEVEL *w_current,
   object->box->lower_x += world_centerx;
   object->box->lower_y += world_centery;
   
-  /* recalc boundings and screen coords */
+  /* recalc boundings and world coords */
   o_box_recalc(w_current, object);
 }
 
@@ -614,17 +614,15 @@ void o_box_mirror_world(TOPLEVEL *w_current,
   object->box->lower_x += world_centerx;
   object->box->lower_y += world_centery;
 
-  /* recalc boundings and screen coords */
+  /* recalc boundings and world coords */
   o_box_recalc(w_current, object);
   
 }
 
-/*! \brief Recalculate BOX coordinates in SCREEN units.
+/*! \brief Recalculate BOX coordinates in WORLD units.
  *  \par Function Description
- *  This function recalculates the screen coords of the <B>o_current</B> pointed
- *  box object from its world coords.
- *
- *  The box coordinates and its bounding are recalculated
+ *  This function recalculates the box coordinates and its 
+ *  bounding are recalculated as well.
  *
  *  \param [in] w_current      The TOPLEVEL object.
  *  \param [in,out] o_current  BOX OBJECT to be recalculated.
@@ -632,33 +630,18 @@ void o_box_mirror_world(TOPLEVEL *w_current,
 void o_box_recalc(TOPLEVEL *w_current, OBJECT *o_current)
 {
   int left, top, right, bottom;
-  int screen_x1, screen_y1;
-  int screen_x2, screen_y2;
 
   if (o_current->box == NULL) {
     return;
   }
 
-  /* update the screen coords of the upper left corner of the box */
-  WORLDtoSCREEN(w_current,
-		o_current->box->upper_x, o_current->box->upper_y, 
-		&screen_x1, &screen_y1);  
-  o_current->box->screen_upper_x = screen_x1;
-  o_current->box->screen_upper_y = screen_y1;
-
-  /* update the screen coords of the lower right corner of the box */
-  WORLDtoSCREEN(w_current,
-		o_current->box->lower_x, o_current->box->lower_y, 
-		&screen_x2, &screen_y2);  
-  o_current->box->screen_lower_x = screen_x2;
-  o_current->box->screen_lower_y = screen_y2;
-
-  /* update the bounding box - screen unit */
-  get_box_bounds(w_current, o_current->box, &left, &top, &right, &bottom);
-  o_current->left   = left;
-  o_current->top    = top;
-  o_current->right  = right;
-  o_current->bottom = bottom;
+  /* update the bounding box - world unit */
+  world_get_box_bounds(w_current, o_current->box, &left, &top, &right, &bottom);
+  o_current->w_left   = left;
+  o_current->w_top    = top;
+  o_current->w_right  = right;
+  o_current->w_bottom = bottom;
+  
 }
 
 /*! \brief Get BOX bounding rectangle.

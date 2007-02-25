@@ -62,18 +62,13 @@ void o_text_draw_lowlevel(TOPLEVEL *w_current, OBJECT *o_current)
   
   o_redraw(w_current, o_current->text->prim_objs, TRUE);
 
-  get_object_list_bounds(w_current, o_current->text->prim_objs,
+  world_get_object_list_bounds(w_current, o_current->text->prim_objs,
 			 &left, &top, &right, &bottom);
-  o_current->left   = left;
-  o_current->top    = top;
-  o_current->right  = right;
-  o_current->bottom = bottom;
+  o_current->w_left   = left;
+  o_current->w_top    = top;
+  o_current->w_right  = right;
+  o_current->w_bottom = bottom;
 
-  WORLDtoSCREEN(w_current,
-                o_current->text->x,
-                o_current->text->y,
-                &o_current->text->screen_x,
-                &o_current->text->screen_y);
 }
 
 /*! \todo Finish function documentation!!!

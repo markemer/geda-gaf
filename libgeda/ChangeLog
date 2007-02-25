@@ -1,5 +1,16 @@
 2007-02-25 Peter Clifton <pcjc2@cam.ac.uk>
 
+	* include/prototype.h, src/o_arc_basic.c, src/o_box_basic.c,
+	  src/o_bus_basic.c, src/o_circle_basic.c, src/o_complex_basic.c,
+	  src/o_line_basic.c, src/o_net_basic.c, src/o_picture.c,
+	  src/o_pin_basic.c, src/o_text_basic.c: Switched over to
+	  caching world rather than screen coordinates
+
+	* include/struch.h, src/s_basic.c: Removed screen coordinates from
+	  object datastructures, and renamed variables storing cached
+	  bounds with prefix w_ to differentiate their world coord usage.
+	  Changed s_basic.c to initialise all these variables to zero.
+
 	* src/o_text_basic.c: Added call to o_text_recalc() to
 	  o_text_recreate(), since we should automatically keep
 	  all cached coordiantes up to date.

@@ -116,7 +116,7 @@ OBJECT *o_circle_add(TOPLEVEL *w_current, OBJECT *object_list,
   new_node->draw_func = circle_draw_func;  
   new_node->sel_func = select_func;  
   
-  /* compute the bounding box and screen coords */
+  /* compute the bounding box coords */
   o_circle_recalc(w_current, new_node);
   
   /* add the object to the list */
@@ -165,7 +165,7 @@ OBJECT *o_circle_copy(TOPLEVEL *w_current, OBJECT *list_tail,
    * circle. The two circle have the same line type and the same filling
    * options.
    *
-   * The coordinates and the values in screen unit are computed with
+   * The bounding box coordinates are computed with
    * #o_circle_recalc().
    */
   /* modify */
@@ -211,8 +211,8 @@ OBJECT *o_circle_copy(TOPLEVEL *w_current, OBJECT *list_tail,
  *  If <B>whichone</B> is equal to <B>CIRCLE_RADIUS</B>, the radius is given by
  *  <B>x</B> - in world units. <B>y</B> is ignored.
  *
- *  The screen coords and the bounding box of the circle object are updated
- *  after the modification of its parameters.
+ *  The bounding box of the circle object is updated after the modification of its 
+ *  parameters.
  *
  *  \param [in]     w_current  The TOPLEVEL object.
  *  \param [in,out] object     Circle OBJECT to modify.
@@ -248,7 +248,7 @@ void o_circle_modify(TOPLEVEL *w_current, OBJECT *object,
       break;
   }
 
-  /* recalculate the screen coords and the boundings */
+  /* recalculate the boundings */
   o_circle_recalc(w_current, object);
   
 }
@@ -549,36 +549,19 @@ void o_circle_mirror_world(TOPLEVEL *w_current,
  */
 void o_circle_recalc(TOPLEVEL *w_current, OBJECT *o_current)
 {
-  int screen_x1, screen_y1;
   int left, right, top, bottom;
 
   if (o_current->circle == NULL) {
     return;
   }
-
-#if DEBUG
-  printf("drawing circle\n");
-#endif
-
   
-  /* update the screen coords of the center of the circle */
-  WORLDtoSCREEN(w_current,
-		o_current->circle->center_x, o_current->circle->center_y, 
-		&screen_x1, &screen_y1);  
-  o_current->circle->screen_x = screen_x1;
-  o_current->circle->screen_y = screen_y1;
-
-  /* update the value of the radius in screen unit */
-  o_current->circle->screen_radius = SCREENabs(w_current, 
-					       o_current->circle->radius);
-
-  /* update the bounding box - screen unit */
-  get_circle_bounds(w_current, o_current->circle,
+  /* update the bounding box - world unit */
+  world_get_circle_bounds(w_current, o_current->circle,
 		    &left, &top, &right, &bottom);
-  o_current->left   = left;
-  o_current->top    = top;
-  o_current->right  = right;
-  o_current->bottom = bottom;
+  o_current->w_left   = left;
+  o_current->w_top    = top;
+  o_current->w_right  = right;
+  o_current->w_bottom = bottom;
 
 }
 

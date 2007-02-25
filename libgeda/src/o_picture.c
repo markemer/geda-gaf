@@ -454,12 +454,10 @@ OBJECT *o_picture_add(TOPLEVEL *w_current, OBJECT *object_list,
   return(object_list);
 }
 
-/*! \brief Recalculate picture coordinates in SCREEN units.
+/*! \brief Recalculate picture bounding box.
  *  \par Function Description
- *  This function recalculates the screen coords of the <B>o_current</B>
- *  parameter picture object from its world coords.
- *
- *  The picture coordinates and its bounding are recalculated
+ *  This function recalculates the bounding box of the <B>o_current</B>
+ *  parameter picture object.
  *
  *  \param [in] w_current      The TOPLEVEL object.
  *  \param [in,out] o_current  Picture OBJECT to be recalculated.
@@ -467,34 +465,18 @@ OBJECT *o_picture_add(TOPLEVEL *w_current, OBJECT *object_list,
 void o_picture_recalc(TOPLEVEL *w_current, OBJECT *o_current)
 {
   int left, top, right, bottom;
-  int screen_x1, screen_y1;
-  int screen_x2, screen_y2;
 
   if (o_current->picture == NULL) {
     return;
   }
 
-  /* update the screen coords of the upper left corner of the picture */
-  WORLDtoSCREEN(w_current,
-		o_current->picture->upper_x, o_current->picture->upper_y, 
-		&screen_x1, &screen_y1);  
-  o_current->picture->screen_upper_x = screen_x1;
-  o_current->picture->screen_upper_y = screen_y1;
-  
-  /* update the screen coords of the lower right corner of the picture */
-  WORLDtoSCREEN(w_current,
-		o_current->picture->lower_x, o_current->picture->lower_y, 
-		&screen_x2, &screen_y2);  
-  o_current->picture->screen_lower_x = screen_x2;
-  o_current->picture->screen_lower_y = screen_y2;
-  
-  /* update the bounding picture - screen unit */
-  get_picture_bounds(w_current, o_current->picture,
+  /* update the bounding picture - world units */
+  world_get_picture_bounds(w_current, o_current->picture,
 		     &left, &top, &right, &bottom);
-  o_current->left   = left;
-  o_current->top    = top;
-  o_current->right  = right;
-  o_current->bottom = bottom;
+  o_current->w_left   = left;
+  o_current->w_top    = top;
+  o_current->w_right  = right;
+  o_current->w_bottom = bottom;
   
 }
 

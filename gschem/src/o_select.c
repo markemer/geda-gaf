@@ -414,14 +414,14 @@ void o_select_box_search(TOPLEVEL *w_current)
     if (o_current->type != OBJ_HEAD && 
         (o_current->visibility == VISIBLE ||
         (o_current->visibility == INVISIBLE && w_current->show_hidden_text))) {
-      if ( (o_current->left >= w_current->start_x && 
-            o_current->top >= w_current->start_y) &&
-           (o_current->left >= w_current->start_x && 
-            o_current->bottom <= w_current->last_y) &&
-           (o_current->right <= w_current->last_x && 
-            o_current->top >= w_current->start_y ) &&
-           (o_current->right <= w_current->last_x && 
-            o_current->bottom <= w_current->last_y) ) {
+      if ( (o_current->w_left >= w_start_x && 
+            o_current->w_top <= w_start_y) &&
+           (o_current->w_left >= w_start_x && 
+            o_current->w_bottom >= w_last_y) &&
+           (o_current->w_right <= w_last_x && 
+            o_current->w_top <= w_start_y ) &&
+           (o_current->w_right <= w_last_x && 
+            o_current->w_bottom >= w_last_y) ) {
 
         o_select_object(w_current, o_current, 	
                         MULTIPLE, count);

@@ -1,5 +1,9 @@
 2007-02-25 Peter Clifton <pcjc2@cam.ac.uk>
 
+	* src/o_basic.c, src/o_complex.c, src/o_find.c,
+	  src/o_move.c, src/o_select.c, src/o_text.c:
+	  Switched over to caching world rather than screen coordinates
+
 	* src/g_hook.c: Removed conditional update of screen coords
 	  in g_set_attrib_text_properties, since o_text_recreate() 
 	  should be recalculating as necessary.

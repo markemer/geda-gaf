@@ -269,17 +269,14 @@ void o_circle_print_hatch(TOPLEVEL *w_current, FILE *fp, int x, int y, int radiu
 void o_circle_image_write(TOPLEVEL *w_current, OBJECT *o_current, int origin_x, int origin_y, int color_mode);
 
 /* o_complex_basic.c */
-void get_single_object_bounds(TOPLEVEL *w_current, OBJECT *complex, 
+int world_get_single_object_bounds(TOPLEVEL *w_current, OBJECT *o_current, 
 			      int *rleft, int *rtop, 
 			      int *rright, int *rbottom);
-void get_object_list_bounds(TOPLEVEL *w_current, OBJECT *complex, 
+int world_get_object_list_bounds(TOPLEVEL *w_current, OBJECT *complex, 
 			    int *left, int *top, int *right, int *bottom);
-void get_object_glist_bounds(TOPLEVEL *w_current, GList *o_list, 
+int world_get_object_glist_bounds(TOPLEVEL *w_current, GList *o_list, 
 			     int *left, int *top, 
 			     int *right, int *bottom);
-void world_get_single_object_bounds(TOPLEVEL *w_current, OBJECT *o_current, 
-				    int *left, int *top, 
-				    int *right, int *bottom);
 void world_get_complex_bounds(TOPLEVEL *w_current, OBJECT *complex, int *left, int *top, int *right, int *bottom);
 OBJECT *add_head(void);
 int o_complex_is_eligible_attribute(TOPLEVEL *w_current, OBJECT *object, int promote_invisible);
@@ -421,7 +418,7 @@ void o_selection_unselect_list(TOPLEVEL *w_current, GList **head);
 
 /* o_text_basic.c */
 void get_text_bounds(TOPLEVEL *w_current, OBJECT *o_current, int *left, int *top, int *right, int *bottom);
-void world_get_text_bounds(TOPLEVEL *w_current, OBJECT *o_current, int *left, int *top, int *right, int *bottom);
+int world_get_text_bounds(TOPLEVEL *w_current, OBJECT *o_current, int *left, int *top, int *right, int *bottom);
 OBJECT *o_text_add_head(void);
 void o_text_init(void);
 void o_text_print_set(void);

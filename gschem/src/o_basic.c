@@ -284,6 +284,7 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, GList *o_glist,
   /* static is highly temp */	
   /* you have to make these static... for the once mode */
   static int rleft, rtop, rbottom, rright;
+  static int w_rleft, w_rtop, w_rbottom, w_rright;
 
   if (!o_list && !o_glist) {
     return;
@@ -313,18 +314,24 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, GList *o_glist,
     gdk_gc_set_foreground(w_current->bounding_xor_gc, color);
 
     if (o_list) {
-      get_object_list_bounds(w_current, o_list,
-			     &rleft  ,
-			     &rtop   ,
-			     &rright ,
-			     &rbottom);
+      world_get_object_list_bounds(w_current, o_list,
+                             &w_rleft  ,
+                             &w_rtop   ,
+                             &w_rright ,
+                             &w_rbottom);
     } else if (o_glist) {
-      get_object_glist_bounds(w_current, o_glist,
-			      &rleft  ,
-			      &rtop   ,
-			      &rright ,
-			      &rbottom);
+      world_get_object_glist_bounds(w_current, o_glist,
+                                    &w_rleft  ,
+                                    &w_rtop   ,
+                                    &w_rright ,
+                                    &w_rbottom);
     }
+
+    WORLDtoSCREEN( w_current, w_rleft, w_rtop, 
+                   &rleft, &rtop );
+    WORLDtoSCREEN( w_current, w_rright, w_rbottom, 
+                 &rright, &rbottom );
+
     gdk_draw_rectangle(w_current->window,
                        w_current->bounding_xor_gc, FALSE,
                        rleft + diff_x,
@@ -341,17 +348,17 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, GList *o_glist,
 #endif
 
         if (o_list) {
-          get_object_list_bounds(w_current, o_list,
-				 &rleft  ,
-				 &rtop   ,
-				 &rright ,
-				 &rbottom);
+          world_get_object_list_bounds(w_current, o_list,
+				 &w_rleft  ,
+				 &w_rtop   ,
+				 &w_rright ,
+				 &w_rbottom);
         } else if (o_glist) {
-	  get_object_glist_bounds(w_current, o_glist,
-				  &rleft  ,
-				  &rtop   ,
-				  &rright ,
-				  &rbottom);
+	  world_get_object_glist_bounds(w_current, o_glist,
+				  &w_rleft  ,
+				  &w_rtop   ,
+				  &w_rright ,
+				  &w_rbottom);
 	}
 
         diff_x = w_current->last_x - w_current->start_x;
@@ -359,6 +366,10 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, GList *o_glist,
         gdk_gc_set_foreground(w_current->gc,
                               x_get_color(
                                           w_current->background_color) );
+        WORLDtoSCREEN( w_current, w_rleft, w_rtop, 
+                       &rleft, &rtop );
+        WORLDtoSCREEN( w_current, w_rright, w_rbottom, 
+                       &rright, &rbottom );
         gdk_draw_rectangle(w_current->window,
                            w_current->gc, FALSE,
                            rleft   + diff_x,
@@ -410,21 +421,25 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, GList *o_glist,
       
     } else {
       if (o_list) {
-        get_object_list_bounds(w_current, o_list,
-			       &rleft  ,
-			       &rtop   ,
-			       &rright ,
-			       &rbottom);
+        world_get_object_list_bounds(w_current, o_list,
+			       &w_rleft  ,
+			       &w_rtop   ,
+			       &w_rright ,
+			       &w_rbottom);
       } else if (o_glist) {
-	get_object_glist_bounds(w_current, o_glist,
-				&rleft  ,
-				&rtop   ,
-				&rright ,
-				&rbottom);
+	world_get_object_glist_bounds(w_current, o_glist,
+				&w_rleft  ,
+				&w_rtop   ,
+				&w_rright ,
+				&w_rbottom);
       }
 
       gdk_gc_set_foreground(w_current->bounding_xor_gc,
                             color);
+      WORLDtoSCREEN( w_current, w_rleft, w_rtop, 
+                     &rleft, &rtop );
+      WORLDtoSCREEN( w_current, w_rright, w_rbottom, 
+                     &rright, &rbottom );
       gdk_draw_rectangle(w_current->window,
                          w_current->bounding_xor_gc, FALSE,
                          rleft + diff_x,
@@ -457,21 +472,25 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, GList *o_glist,
 
     } else {
       if (o_list) {
-        get_object_list_bounds(w_current, o_list,
-			       &rleft  ,
-			       &rtop   ,
-			       &rright ,
-			       &rbottom);
+        world_get_object_list_bounds(w_current, o_list,
+			       &w_rleft  ,
+			       &w_rtop   ,
+			       &w_rright ,
+			       &w_rbottom);
       } else if (o_glist) {
-	get_object_glist_bounds(w_current, o_glist,
-				&rleft  ,
-				&rtop   ,
-				&rright ,
-				&rbottom);
+	world_get_object_glist_bounds(w_current, o_glist,
+				&w_rleft  ,
+				&w_rtop   ,
+				&w_rright ,
+				&w_rbottom);
       }
       
       gdk_gc_set_foreground(w_current->bounding_xor_gc,
                             color);
+      WORLDtoSCREEN( w_current, w_rleft, w_rtop, 
+                     &rleft, &rtop );
+      WORLDtoSCREEN( w_current, w_rright, w_rbottom, 
+                     &rright, &rbottom );
       gdk_draw_rectangle(w_current->window,
                          w_current->bounding_xor_gc,
                          FALSE,
@@ -519,17 +538,17 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, GList *o_glist,
           /*! \todo why are we doing this here...?
            * probably a reason */
           if (o_list) {
-            get_object_list_bounds(w_current, o_list,
-				   &rleft  ,
-				   &rtop   ,
-				   &rright ,
-				   &rbottom);
+            world_get_object_list_bounds(w_current, o_list,
+				   &w_rleft  ,
+				   &w_rtop   ,
+				   &w_rright ,
+				   &w_rbottom);
           } else if (o_glist) {
-	    get_object_glist_bounds(w_current, o_glist,
-				    &rleft  ,
-				    &rtop   ,
-				    &rright ,
-				    &rbottom);
+	    world_get_object_glist_bounds(w_current, o_glist,
+				    &w_rleft  ,
+				    &w_rtop   ,
+				    &w_rright ,
+				    &w_rbottom);
 	  }
 
         }
@@ -553,17 +572,17 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, GList *o_glist,
 
     if (firsttime == TRUE) {
       if (o_list) {
-        get_object_list_bounds(w_current, o_list,
-			       &rleft  ,
-			       &rtop   ,
-			       &rright ,
-			       &rbottom);
+        world_get_object_list_bounds(w_current, o_list,
+			       &w_rleft  ,
+			       &w_rtop   ,
+			       &w_rright ,
+			       &w_rbottom);
       } else if (o_glist) {
-	get_object_glist_bounds(w_current, o_glist,
-				&rleft  ,
-				&rtop   ,
-				&rright ,
-				&rbottom);
+	world_get_object_glist_bounds(w_current, o_glist,
+				&w_rleft  ,
+				&w_rtop   ,
+				&w_rright ,
+				&w_rbottom);
       }
       
       /*printf("once\n");*/
@@ -572,6 +591,10 @@ void o_drawbounding(TOPLEVEL *w_current, OBJECT *o_list, GList *o_glist,
     diff_x = w_current->last_x - w_current->start_x;
     diff_y = w_current->last_y - w_current->start_y;
     gdk_gc_set_foreground(w_current->bounding_xor_gc, color);
+    WORLDtoSCREEN( w_current, w_rleft, w_rtop, 
+                   &rleft, &rtop );
+    WORLDtoSCREEN( w_current, w_rright, w_rbottom, 
+                   &rright, &rbottom );
     gdk_draw_rectangle(w_current->window,
                        w_current->bounding_xor_gc, FALSE,
                        rleft   + diff_x,
@@ -605,6 +628,7 @@ void o_erasebounding(TOPLEVEL *w_current, OBJECT *o_list, GList *s_list)
 {
   int diff_x, diff_y;
   int rleft, rtop, rright, rbottom;
+  int w_rleft, w_rtop, w_rright, w_rbottom;
 
   if ( (o_list == NULL) && (s_list == NULL)) {
     /* this is an error condition */
@@ -618,17 +642,17 @@ void o_erasebounding(TOPLEVEL *w_current, OBJECT *o_list, GList *s_list)
   }
 
   if (o_list) {
-    get_object_list_bounds(w_current, o_list,
-			   &rleft  ,
-			   &rtop   ,
-			   &rright ,
-			   &rbottom);
+    world_get_object_list_bounds(w_current, o_list,
+			   &w_rleft  ,
+			   &w_rtop   ,
+			   &w_rright ,
+			   &w_rbottom);
   } else if (s_list) {
-    get_object_glist_bounds(w_current, s_list,
-			    &rleft  ,
-			    &rtop   ,
-			    &rright ,
-			    &rbottom);
+    world_get_object_glist_bounds(w_current, s_list,
+			    &w_rleft  ,
+			    &w_rtop   ,
+			    &w_rright ,
+			    &w_rbottom);
   }
 
   diff_x = w_current->last_x - w_current->start_x;
@@ -636,6 +660,10 @@ void o_erasebounding(TOPLEVEL *w_current, OBJECT *o_list, GList *s_list)
 
   gdk_gc_set_foreground(w_current->gc,
                         x_get_color(w_current->background_color) );
+  WORLDtoSCREEN( w_current, w_rleft, w_rtop, 
+                 &rleft, &rtop );
+  WORLDtoSCREEN( w_current, w_rright, w_rbottom, 
+                 &rright, &rbottom );
   gdk_draw_rectangle(w_current->window, w_current->gc, FALSE,
                      rleft   + diff_x,
                      rtop    + diff_y,

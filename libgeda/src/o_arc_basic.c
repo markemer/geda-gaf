@@ -208,9 +208,6 @@ OBJECT *o_arc_copy(TOPLEVEL *w_current, OBJECT *list_tail,
  *  If <B>whichone</B> is equal to #ARC_END_ANGLE, the <B>x</B> parameter is the ending angle of the arc.
  *  <B>x</B> is in degrees. <B>y</B> is ignored.
  *
- *  The screen coordinates of the arc and its bounding box are computed again
- *  after the change in world coordinates.
- *
  *  \param [in]     w_current  The TOPLEVEL object.
  *  \param [in,out] object     
  *  \param [in]     x
@@ -529,42 +526,25 @@ void o_arc_mirror_world(TOPLEVEL *w_current,
  *  pointed structure.
  *  It also recalculates the <B>OBJECT</B> specific fields and the bounding box of the arc.
  *  
- *  The bounding box - in screen units - is recalculated with the <B>get_arc_bounds()</B> function.
+ *  The bounding box - in world units - is recalculated with the <B>world_get_arc_bounds()</B> function.
  *
  *  \param [in] w_current  The TOPLEVEL object.
  *  \param [in] o_current
  */
 void o_arc_recalc(TOPLEVEL *w_current, OBJECT *o_current)
 {
-  int screen_x1, screen_y1, screen_x2, screen_y2;	
   int left, right, top, bottom;
 	
   if (o_current->arc == NULL) {
     return;
   }
 
-  /* update the screen_x and screen_y fields of the arc */
-  WORLDtoSCREEN(w_current, o_current->arc->x, o_current->arc->y, 
-                &screen_x1, &screen_y1);  
-
-  o_current->arc->screen_x = screen_x1; /* x coord */
-  o_current->arc->screen_y = screen_y1; /* y coord */
-
-  /* update the screen_width and screen_height fields of the arc */
-  WORLDtoSCREEN(w_current,
-                o_current->arc->x + o_current->arc->width,
-                o_current->arc->y - o_current->arc->height, 
-                &screen_x2, &screen_y2);  
-
-  o_current->arc->screen_width  = screen_x2 - screen_x1; /* width */
-  o_current->arc->screen_height = screen_y2 - screen_y1; /* height */
-
   /* recalculates the bounding box */
-  get_arc_bounds(w_current, o_current, &left, &top, &right, &bottom);
-  o_current->left   = left;
-  o_current->top    = top;
-  o_current->right  = right;
-  o_current->bottom = bottom;
+  world_get_arc_bounds(w_current, o_current, &left, &top, &right, &bottom);
+  o_current->w_left   = left;
+  o_current->w_top    = top;
+  o_current->w_right  = right;
+  o_current->w_bottom = bottom;
 
 }
 

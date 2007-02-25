@@ -123,7 +123,6 @@ void world_get_net_bounds(TOPLEVEL *w_current, LINE *line, int *left,
 OBJECT *o_net_add(TOPLEVEL *w_current, OBJECT *object_list, char type,
 		  int color, int x1, int y1, int x2, int y2)
 {
-  int screen_x, screen_y;
   int left, right, top, bottom;
   OBJECT *new_node;
 
@@ -139,27 +138,13 @@ OBJECT *o_net_add(TOPLEVEL *w_current, OBJECT *object_list, char type,
   new_node->line->x[1] = x2;
   new_node->line->y[1] = y2;
 
-  WORLDtoSCREEN(w_current,
-                new_node->line->x[0], new_node->line->y[0],
-                &screen_x, &screen_y);
-
-  new_node->line->screen_x[0] = screen_x;
-  new_node->line->screen_y[0] = screen_y;
-
-  WORLDtoSCREEN(w_current,
-                new_node->line->x[1], new_node->line->y[1],
-                &screen_x, &screen_y);
-
-  new_node->line->screen_x[1] = screen_x;
-  new_node->line->screen_y[1] = screen_y;
-
-  get_net_bounds(w_current, new_node->line, &left, &top, &right,
+  world_get_net_bounds(w_current, new_node->line, &left, &top, &right,
                  &bottom);
 
-  new_node->left = left;
-  new_node->top = top;
-  new_node->right = right;
-  new_node->bottom = bottom;
+  new_node->w_left = left;
+  new_node->w_top = top;
+  new_node->w_right = right;
+  new_node->w_bottom = bottom;
 
   new_node->draw_func = net_draw_func;
   new_node->sel_func = select_func;
@@ -185,8 +170,6 @@ OBJECT *o_net_add(TOPLEVEL *w_current, OBJECT *object_list, char type,
  */
 void o_net_recalc(TOPLEVEL *w_current, OBJECT *o_current)
 {
-  int screen_x1, screen_y1;
-  int screen_x2, screen_y2;
   int left, right, top, bottom;
 
   if (o_current == NULL) {
@@ -197,25 +180,13 @@ void o_net_recalc(TOPLEVEL *w_current, OBJECT *o_current)
     return;
   }
 
-  WORLDtoSCREEN(w_current, o_current->line->x[0],
-                o_current->line->y[0], &screen_x1, &screen_y1);
-
-  o_current->line->screen_x[0] = screen_x1;
-  o_current->line->screen_y[0] = screen_y1;
-
-  WORLDtoSCREEN(w_current, o_current->line->x[1],
-                o_current->line->y[1], &screen_x2, &screen_y2);
-
-  o_current->line->screen_x[1] = screen_x2;
-  o_current->line->screen_y[1] = screen_y2;
-
-  get_net_bounds(w_current, o_current->line, &left, &top, &right,
+  world_get_net_bounds(w_current, o_current->line, &left, &top, &right,
                  &bottom);
 
-  o_current->left = left;
-  o_current->top = top;
-  o_current->right = right;
-  o_current->bottom = bottom;
+  o_current->w_left = left;
+  o_current->w_top = top;
+  o_current->w_right = right;
+  o_current->w_bottom = bottom;
 
 
 }
@@ -304,40 +275,25 @@ char *o_net_save(OBJECT *object)
 void o_net_translate_world(TOPLEVEL *w_current, int x1, int y1,
 			   OBJECT *object)
 {
-  int screen_x1, screen_y1;
-  int screen_x2, screen_y2;
   int left, right, top, bottom;
 
   if (object == NULL)
   printf("ntw NO!\n");
 
 
-  /* Do world coords */
+  /* Update world coords */
   object->line->x[0] = object->line->x[0] + x1;
   object->line->y[0] = object->line->y[0] + y1;
   object->line->x[1] = object->line->x[1] + x1;
   object->line->y[1] = object->line->y[1] + y1;
 
-  /* update screen coords */
-  WORLDtoSCREEN(w_current, object->line->x[0],
-                object->line->y[0], &screen_x1, &screen_y1);
+  /* Update bounding box */
+  world_get_net_bounds(w_current, object->line, &left, &top, &right, &bottom);
 
-  object->line->screen_x[0] = screen_x1;
-  object->line->screen_y[0] = screen_y1;
-
-  WORLDtoSCREEN(w_current, object->line->x[1],
-                object->line->y[1], &screen_x2, &screen_y2);
-
-  object->line->screen_x[1] = screen_x2;
-  object->line->screen_y[1] = screen_y2;
-
-  /* update bounding box */
-  get_net_bounds(w_current, object->line, &left, &top, &right, &bottom);
-
-  object->left = left;
-  object->top = top;
-  object->right = right;
-  object->bottom = bottom;
+  object->w_left = left;
+  object->w_top = top;
+  object->w_right = right;
+  object->w_bottom = bottom;
 
   s_tile_update_object(w_current, object);
 }
@@ -368,11 +324,6 @@ OBJECT *o_net_copy(TOPLEVEL *w_current, OBJECT *list_tail,
   new_obj = o_net_add(w_current, list_tail, OBJ_NET, color,
                       o_current->line->x[0], o_current->line->y[0],
                       o_current->line->x[1], o_current->line->y[1]);
-
-  new_obj->line->screen_x[0] = o_current->line->screen_x[0];
-  new_obj->line->screen_y[0] = o_current->line->screen_y[0];
-  new_obj->line->screen_x[1] = o_current->line->screen_x[1];
-  new_obj->line->screen_y[1] = o_current->line->screen_y[1];
 
   new_obj->line->x[0] = o_current->line->x[0];
   new_obj->line->y[0] = o_current->line->y[0];
@@ -843,25 +794,17 @@ void o_net_consolidate(TOPLEVEL *w_current)
 void o_net_modify(TOPLEVEL *w_current, OBJECT *object,
 		  int x, int y, int whichone)
 {
-  int screen_x, screen_y;
   int left, right, top, bottom;
 
   object->line->x[whichone] = x;
   object->line->y[whichone] = y;
 
-  WORLDtoSCREEN(w_current,
-                object->line->x[whichone],
-                object->line->y[whichone], &screen_x, &screen_y);
+  world_get_net_bounds(w_current, object->line, &left, &top, &right, &bottom);
 
-  object->line->screen_x[whichone] = screen_x;
-  object->line->screen_y[whichone] = screen_y;
-
-  get_net_bounds(w_current, object->line, &left, &top, &right, &bottom);
-
-  object->left = left;
-  object->top = top;
-  object->right = right;
-  object->bottom = bottom;
+  object->w_left = left;
+  object->w_top = top;
+  object->w_right = right;
+  object->w_bottom = bottom;
 
   s_tile_update_object(w_current, object);
 }

@@ -78,11 +78,11 @@ void get_text_bounds(TOPLEVEL *w_current, OBJECT *o_current,
  *  \par Function Description
  *
  */
-void world_get_text_bounds(TOPLEVEL *w_current, OBJECT *o_current, int *left,
+int world_get_text_bounds(TOPLEVEL *w_current, OBJECT *o_current, int *left,
 			   int *top, int *right, int *bottom)
 {
-  world_get_complex_bounds(w_current, o_current->text->prim_objs,
-                           left, top, right, bottom);
+  return world_get_object_list_bounds(w_current, o_current->text->prim_objs,
+                                      left, top, right, bottom);
 }
 
 /*! \todo Finish function documentation!!!
@@ -907,7 +907,6 @@ OBJECT *o_text_add(TOPLEVEL *w_current, OBJECT *object_list,
   text->alignment = alignment;
   text->x = x;
   text->y = y;
-  WORLDtoSCREEN(w_current, x, y, &text->screen_x, &text->screen_y);
   text->angle = angle;
 
   new_node->text = text;
@@ -990,13 +989,13 @@ OBJECT *o_text_add(TOPLEVEL *w_current, OBJECT *object_list,
 
   w_current->page_current->object_parent = temp_parent;
 
-  get_text_bounds(w_current, object_list, &left, &top, &right, &bottom);
+  world_get_text_bounds(w_current, object_list, &left, &top, &right, &bottom);
 
   /* set the new object's bounding box */
-  object_list->left = left;
-  object_list->top = top;
-  object_list->right = right;
-  object_list->bottom = bottom;
+  object_list->w_left = left;
+  object_list->w_top = top;
+  object_list->w_right = right;
+  object_list->w_bottom = bottom;
 
   if (name) g_free(name);
   if (value) g_free(value);
@@ -1017,17 +1016,13 @@ void o_text_recalc(TOPLEVEL *w_current, OBJECT *o_current)
     return;
   }
 
-  get_object_list_bounds(w_current, o_current->text->prim_objs, 
+  world_get_object_list_bounds(w_current, o_current->text->prim_objs, 
 			 &left, &top, &right, &bottom);
-  o_current->left = left;
-  o_current->top = top;
-  o_current->right = right;
-  o_current->bottom = bottom;
+  o_current->w_left = left;
+  o_current->w_top = top;
+  o_current->w_right = right;
+  o_current->w_bottom = bottom;
 
-  WORLDtoSCREEN(w_current, o_current->text->x,
-                o_current->text->y,
-                &o_current->text->screen_x,
-                &o_current->text->screen_y);
 }
 
 /*! \todo Finish function documentation!!!
@@ -1374,30 +1369,21 @@ void o_text_recreate(TOPLEVEL *w_current, OBJECT *o_current)
 void o_text_translate_world(TOPLEVEL *w_current,
 			    int x1, int y1, OBJECT *o_current)
 {
-  int screen_x, screen_y;
   int left, right, top, bottom;
 	
 	
   o_current->text->x = o_current->text->x + x1;
   o_current->text->y = o_current->text->y + y1;
-			
-  /* update screen coords */
-  WORLDtoSCREEN(w_current, o_current->text->x, o_current->text->y, 
-                &screen_x, &screen_y);
 
-  o_current->text->screen_x = screen_x;
-  o_current->text->screen_y = screen_y;
-						
   o_complex_world_translate(w_current, x1, y1, o_current->text->prim_objs);
+		
+  /* Update bounding box */
+  world_get_text_bounds(w_current, o_current, &left, &top, &right, &bottom);
 
-  /* update bounding box */
-  /* do it */
-  get_text_bounds(w_current, o_current, &left, &top, &right, &bottom);
-
-  o_current->left = left;
-  o_current->top = top;
-  o_current->right = right;
-  o_current->bottom = bottom;
+  o_current->w_left = left;
+  o_current->w_top = top;
+  o_current->w_right = right;
+  o_current->w_bottom = bottom;
 }
 
 /*! \todo Finish function documentation!!!
