@@ -480,29 +480,6 @@ void o_picture_recalc(TOPLEVEL *w_current, OBJECT *o_current)
   
 }
 
-/*! \brief Get picture bounding rectangle.
- *  \par Function Description 
- *  This function sets the <B>left</B>, <B>top</B>, <B>right</B> and
- *  <B>bottom</B> parameters to the boundings of the picture object described
- *  in <B>*picture</B> in SCREEN units.
- *
- *  \param [in]  w_current  The TOPLEVEL object.
- *  \param [in]  picture    Picture OBJECT to read coordinates from.
- *  \param [out] left       Left picture coordinate in SCREEN units.
- *  \param [out] top        Top picture coordinate in SCREEN units.
- *  \param [out] right      Right pircture coordinate in SCREEN units.
- *  \param [out] bottom     Bottom picture coordinate in SCREEN units.
- */
-void get_picture_bounds(TOPLEVEL *w_current, PICTURE *picture,
-			int *left, int *top, int *right, int *bottom)
-{
-  *left   = picture->screen_upper_x;
-  *top    = picture->screen_upper_y;
-  *right  = picture->screen_lower_x;
-  *bottom = picture->screen_lower_y;
-
-}
-
 /*! \brief Get picture bounding rectangle in WORLD coordinates.
  *  \par Function Description
  *  This function sets the <B>left</B>, <B>top</B>, <B>right</B> and

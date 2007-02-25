@@ -644,36 +644,6 @@ void o_box_recalc(TOPLEVEL *w_current, OBJECT *o_current)
   
 }
 
-/*! \brief Get BOX bounding rectangle.
- *  \par Function Description
- *  This function sets the <B>left</B>, <B>top</B>, <B>right</B> and <B>bottom</B>
- *  parameters to the bounding rectangle of the box object described in
- *  <B>*box</B> in SCREEN units.
- *
- *  \param [in]  w_current  The TOPLEVEL object.
- *  \param [in]  box        BOX OBJECT to read coordinates from.
- *  \param [out] left       Left box coordinate in SCREEN units.
- *  \param [out] top        Top box coordinate in SCREEN units.
- *  \param [out] right      Right box coordinate in SCREEN units.
- *  \param [out] bottom     Bottom box coordinate in SCREEN units.
- */
-void get_box_bounds(TOPLEVEL *w_current, BOX *box,
-		    int *left, int *top, int *right, int *bottom)
-{
-  *left   = box->screen_upper_x;
-  *top    = box->screen_upper_y;
-  *right  = box->screen_lower_x;
-  *bottom = box->screen_lower_y;
-
-  /* PB : bounding box has to take into account the width of the line */
-  /* PB : but line width is unknown here */
-	
-  *left   = *left   - 4;
-  *top    = *top    - 4;
-  *right  = *right  + 4;
-  *bottom = *bottom + 4;
-}
-
 /*! \brief Get BOX bounding rectangle in WORLD coordinates.
  *  \par Function Description
  *  This function sets the <B>left</B>, <B>top</B>, <B>right</B> and <B>bottom</B>

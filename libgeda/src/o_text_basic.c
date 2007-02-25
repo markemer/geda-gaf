@@ -66,18 +66,6 @@ int tab_in_chars = 8;
  *  \par Function Description
  *
  */
-void get_text_bounds(TOPLEVEL *w_current, OBJECT *o_current,
-		     int *left, int *top, int *right, int *bottom)
-{
-  get_object_list_bounds(w_current, o_current->text->prim_objs, left, top,
-			 right, bottom);
-}
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
- */
 int world_get_text_bounds(TOPLEVEL *w_current, OBJECT *o_current, int *left,
 			   int *top, int *right, int *bottom)
 {

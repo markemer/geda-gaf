@@ -565,41 +565,6 @@ void o_circle_recalc(TOPLEVEL *w_current, OBJECT *o_current)
 
 }
 
-/*! \brief Get circle bounding rectangle.
- *  \par Function Description
- *  This function sets the <B>left</B>, <B>top</B>, <B>right</B>
- *  and <B>bottom</B> pointed variables to the boundings of the circle object
- *  described in <B>*circle</B> in screen unit.
- *
- *  The function finds the smallest rectangle that cover this circle.
- *
- *  \param [in]  w_current  The TOPLEVEL object.
- *  \param [in]  circle     Circle OBJECT to read coordinates from.
- *  \param [out] left       Left circle coordinate in SCREEN units.
- *  \param [out] top        Top circle coordinate in SCREEN units.
- *  \param [out] right      Right circle coordinate in SCREEN units.
- *  \param [out] bottom     Bottom circle coordinate in SCREEN units.
- */
-void get_circle_bounds(TOPLEVEL *w_current, CIRCLE *circle,
-		       int *left, int *top,
-		       int *right, int *bottom)
-{
-  *left   = circle->screen_x - circle->screen_radius;
-  *top    = circle->screen_y - circle->screen_radius;
-  *right  = circle->screen_x + circle->screen_radius;
-  *bottom = circle->screen_y + circle->screen_radius;
-  
-  /* PB : need to take into account the width of the line */
-  
-  /* out temp  
-   *left = *left - 4;
-   *top = *top - 4;
-   
-   *right = *right + 4;
-   *bottom = *bottom + 4;
-   */
-}
-
 /*! \brief Get circle bounding rectangle in WORLD coordinates.
  *  \par Function Description
  *  This function sets the <B>left</B>, <B>top</B>, <B>right</B> and <B>bottom</B>

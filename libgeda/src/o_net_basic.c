@@ -52,51 +52,6 @@
  *  \param [out] right
  *  \param [out] bottom
  */
-void get_net_bounds(TOPLEVEL *w_current, LINE *line, int *left, int *top,
-		    int *right, int *bottom)
-{
-  *left = w_current->width;
-  *top = w_current->height;
-  *right = 0;
-  *bottom = 0;
-
-  if (line->screen_x[0] < *left)
-  *left = line->screen_x[0];
-  if (line->screen_x[0] > *right)
-  *right = line->screen_x[0];
-  if (line->screen_y[0] < *top)
-  *top = line->screen_y[0];
-  if (line->screen_y[0] > *bottom)
-  *bottom = line->screen_y[0];
-
-  if (line->screen_x[1] < *left)
-  *left = line->screen_x[1];
-  if (line->screen_x[1] > *right)
-  *right = line->screen_x[1];
-  if (line->screen_y[1] < *top)
-  *top = line->screen_y[1];
-  if (line->screen_y[1] > *bottom)
-  *bottom = line->screen_y[1];
-
-  *left = *left - 4;
-  *top = *top - 4;
-
-  *right = *right + 4;
-  *bottom = *bottom + 4;
-}
-
-
-/*! \todo Finish function documentation!!!
- *  \brief
- *  \par Function Description
- *
- *  \param [in]  w_current  The TOPLEVEL object.
- *  \param [in]  line
- *  \param [out] left
- *  \param [out] top
- *  \param [out] right
- *  \param [out] bottom
- */
 void world_get_net_bounds(TOPLEVEL *w_current, LINE *line, int *left,
 			  int *top, int *right, int *bottom)
 {

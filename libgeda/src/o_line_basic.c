@@ -533,46 +533,6 @@ void o_line_recalc(TOPLEVEL *w_current, OBJECT *o_current)
   
 }
 
-/*! \brief Get line bounding rectangle.
- *  \par Function Description 
- *  This function sets the <B>left</B>, <B>top</B>, <B>right</B> and
- *  <B>bottom</B> parameters to the boundings of the line object described
- *  by <B>*line</B> in screen units.
- *
- *  \param [in]  w_current  The TOPLEVEL object.
- *  \param [in]  line       line OBJECT to read coordinates from.
- *  \param [out] left       Left line coordinate in SCREEN units.
- *  \param [out] top        Top line coordinate in SCREEN units.
- *  \param [out] right      Right line coordinate in SCREEN units.
- *  \param [out] bottom     Bottom line coordinate in SCREEN units.
- */
-void get_line_bounds(TOPLEVEL *w_current, LINE *line, int *left, int *top,
-		     int *right, int *bottom)
-{
-  *left   = w_current->width;
-  *top    = w_current->height;
-  *right  = 0;
-  *bottom = 0;
-	
-  if (line->screen_x[0] < *left)   *left   = line->screen_x[0];
-  if (line->screen_x[0] > *right)  *right  = line->screen_x[0];
-  if (line->screen_y[0] < *top)    *top    = line->screen_y[0];
-  if (line->screen_y[0] > *bottom) *bottom = line->screen_y[0];
-
-  if (line->screen_x[1] < *left)   *left   = line->screen_x[1];
-  if (line->screen_x[1] > *right)  *right  = line->screen_x[1];
-  if (line->screen_y[1] < *top)    *top    = line->screen_y[1];
-  if (line->screen_y[1] > *bottom) *bottom = line->screen_y[1];
-
-  /* PB : bounding box has to take into account the width of the line */
-  /* PB : but line width is unknown here */
-	
-  *left   = *left   - 4;
-  *top    = *top    - 4;
-  *right  = *right  + 4;
-  *bottom = *bottom + 4;
-}
-
 /*! \brief Get line bounding rectangle in WORLD coordinates.
  *  \par Function Description
  *  This function sets the <B>left</B>, <B>top</B>, <B>right</B> and
