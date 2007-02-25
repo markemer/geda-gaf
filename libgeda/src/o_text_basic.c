@@ -1358,6 +1358,8 @@ void o_text_recreate(TOPLEVEL *w_current, OBJECT *o_current)
     o_current->text->displayed_height = 0;
   }
 
+  o_text_recalc( w_current, o_current );
+
   w_current->page_current->object_parent = temp_parent;
   if (name) g_free(name);
   if (value) g_free(value);

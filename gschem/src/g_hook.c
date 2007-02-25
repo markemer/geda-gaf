@@ -272,7 +272,6 @@ SCM g_set_attrib_text_properties(SCM attrib_smob, SCM scm_colorname,
   int alignment = -2;
   int rotation = 0;
   int x = -1, y = -1;
-  gboolean changed = FALSE;
 
   SCM_ASSERT (SCM_STRINGP(scm_colorname), scm_colorname,
 	      SCM_ARG2, "set-attribute-text-properties!");
@@ -349,26 +348,18 @@ SCM g_set_attrib_text_properties(SCM attrib_smob, SCM scm_colorname,
       o_text_erase(w_current, object);
       if (x != -1) {
 	object->text->x = x;
-	changed = TRUE;
       }
       if (y != -1) {
 	object->text->y = y;
-	changed = TRUE;
-      }
-      if (changed) {
-	WORLDtoSCREEN(w_current, x, y, &object->text->screen_x, &object->text->screen_y);
       }
       if (size != -1) {
 	object->text->size = size;
-	changed = TRUE;
       }
       if (alignment != -1) {
 	object->text->alignment = alignment;
-	changed = TRUE;
       }
       if (rotation != -1) {
 	object->text->angle = rotation;
-	changed = TRUE;
       }
       o_text_recreate(w_current, object);
       if (!w_current->DONT_REDRAW) {
