@@ -1,5 +1,11 @@
 2007-02-25 Peter Clifton <pcjc2@cam.ac.uk>
 
+	* src/a_zoom.c: Changed call to world_get_complex_bounds() 
+	  to world_get_object_list_bounds(), and added logic to 
+	  stop the zoom-extents operation if the object list 
+	  evaluated has no bounds (e.g. object list just has hidden
+	  attributes).
+
 	* src/o_basic.c, src/o_complex.c, src/o_find.c,
 	  src/o_move.c, src/o_select.c, src/o_text.c:
 	  Switched over to caching world rather than screen coordinates
