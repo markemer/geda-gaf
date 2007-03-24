@@ -477,34 +477,40 @@ void o_pin_update_whichend(TOPLEVEL *w_current,
   int min0, min1;
   int min0_whichend, min1_whichend;
   int rleft, rtop, rright, rbottom;
+  int found;
 
   if (object_list && num_pins) {
     if (num_pins == 1 || w_current->force_boundingbox) {
       world_get_complex_bounds(w_current, object_list,
                              &left, &top, &right, &bottom);
     } else {
-      left = rleft = w_current->init_right;
-      top = rtop = w_current->init_bottom;;
-      right = rright = 0;
-      bottom = rbottom = 0;
+      found = 0;
 
       /* only look at the pins to calculate bounds of the symbol */
       o_current = object_list;
       while (o_current != NULL) {
         if (o_current->type == OBJ_PIN) {
-          world_get_pin_bounds(w_current, o_current->line,
-                               &rleft, &rtop, &rright, &rbottom);
-        }
+          rleft = o_current->w_left;
+          rtop = o_current->w_top;
+          rright = o_current->w_right;
+          rbottom = o_current->w_bottom;
 
-        if (rleft < left) left = rleft;
-        if (rtop < top) top = rtop;
-        if (rright > right) right = rright;
-        if (rbottom > bottom) bottom = rbottom;
-      
+          if ( found ) {
+            left = min( left, rleft );
+            top = min( top, rtop );
+            right = max( right, rright );
+            bottom = max( bottom, rbottom );
+          } else {
+            left = rleft;
+            top = rtop;
+            right = rright;
+            bottom = rbottom;
+            found = 1;
+          }
+        }
         o_current=o_current->next;
       }
 
-      
     }
   } else {
     return;
@@ -512,6 +518,7 @@ void o_pin_update_whichend(TOPLEVEL *w_current,
 
   o_current = object_list;
   while (o_current != NULL) {
+    /* Determine which end of the pin is on or nearest the boundary */
     if (o_current->type == OBJ_PIN && o_current->whichend == -1) {
       if (o_current->line->y[0] == o_current->line->y[1]) {
         /* horizontal */

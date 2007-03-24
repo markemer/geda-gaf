@@ -1,5 +1,8 @@
 2007-03-24 Peter Clifton <pcjc2@cam.ac.uk>
 
+	* src/o_pin_basic.c: Re-write the bounds checking in o_pin_update_whichend()
+	  to be more robust
+
 	* src/o_complex_basic.c: Modify world_get_single_object_bounds() to
 	  use cached bounds where possible. Text objects are special-cased
 	  to determine if they are visible.
