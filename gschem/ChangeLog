@@ -1,3 +1,8 @@
+2007-03-24 Peter Clifton <pcjc2@cam.ac.uk>
+
+	* src/o_misc.c: Add call to o_complex_recalc() in o_update_component()
+	  to ensure bounds are correct after an embeded component is updated.
+
 2007-02-25 Peter Clifton <pcjc2@cam.ac.uk>
 
 	* src/o_arc.c, src/o_basic.c, src/o_box.c, src/o_bus.c,
