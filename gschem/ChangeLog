@@ -1,5 +1,9 @@
 2007-03-24 Peter Clifton <pcjc2@cam.ac.uk>
 
+	* src/o_text.c: Modified text o_text_draw_rectangle() to use the
+	  world bounds of the text, fixing the outline offset when the 
+	  text is aligned other than bottom, left.
+
 	* src/o_grips.c: Removed call to o_line_recalc() after o_net_modify()
 	  in o_grips_end() since the recalc is done inside o_net_modify().
 
