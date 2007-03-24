@@ -1,5 +1,8 @@
 2007-03-24 Peter Clifton <pcjc2@cam.ac.uk>
 
+	* src/o_grips.c: Removed call to o_line_recalc() after o_net_modify()
+	  in o_grips_end() since the recalc is done inside o_net_modify().
+
 	* src/o_misc.c: Add call to o_complex_recalc() in o_update_component()
 	  to ensure bounds are correct after an embeded component is updated.
 
