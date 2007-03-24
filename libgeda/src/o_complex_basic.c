@@ -56,69 +56,44 @@
  *  \retval 1 Bound was found
  */
 int world_get_single_object_bounds(TOPLEVEL *w_current, OBJECT *o_current,
-			      int *rleft, int *rtop, int *rright, int *rbottom)
+                                   int *rleft, int *rtop, int *rright, int *rbottom)
 {
   if (o_current != NULL) {
     switch(o_current->type) {
       case(OBJ_LINE):
-        world_get_line_bounds(w_current, o_current->line, rleft, rtop, rright, rbottom);
-        break;
-
       case(OBJ_NET):
-        /* same as a line (diff name)*/
-        world_get_net_bounds(w_current, o_current->line, rleft, rtop, rright, rbottom);
-        break;
-
       case(OBJ_BUS):
-        /* same as a line (diff name)*/
-        world_get_bus_bounds(w_current, o_current->line, rleft, rtop, rright, rbottom);
-        break;
-	
       case(OBJ_BOX):
-        world_get_box_bounds(w_current, o_current->box, rleft, rtop, rright, rbottom);
-        break;
-
       case(OBJ_PICTURE):
-        world_get_picture_bounds(w_current, o_current->picture, rleft, rtop, rright, rbottom);
-        break;
-
       case(OBJ_CIRCLE):
-        world_get_circle_bounds(w_current, o_current->circle, rleft, rtop, rright, rbottom);
-        break;
-
+      case(OBJ_PIN):
+      case(OBJ_ARC):
       case(OBJ_COMPLEX):
       case(OBJ_PLACEHOLDER):
-        /* recursive objects ?*/
-        if (!world_get_object_list_bounds(w_current, o_current->complex->prim_objs, rleft, rtop, rright, rbottom))
-          return 0;
-        break;
+        *rleft = o_current->w_left;
+        *rtop = o_current->w_top;
+        *rright = o_current->w_right;
+        *rbottom = o_current->w_bottom;
+        return 1;
 
       case(OBJ_TEXT):
         /* only do bounding boxes for visible or doing show_hidden_text*/
         /* you might lose some attrs though */
-        if (o_current->visibility == VISIBLE ||
-            (o_current->visibility == INVISIBLE && w_current->show_hidden_text)) {
-          if ( !world_get_text_bounds(w_current, o_current, rleft, rtop, rright, rbottom) )
-            return 0;
-        } else {
-          return 0;
+        if ( o_current->visibility == VISIBLE ||
+             w_current->show_hidden_text ) {
+          *rleft = o_current->w_left;
+          *rtop = o_current->w_top;
+          *rright = o_current->w_right;
+          *rbottom = o_current->w_bottom;
+          return 1;
         }
         break;
 
-      case(OBJ_PIN):
-        world_get_pin_bounds(w_current, o_current->line, rleft, rtop, rright, rbottom);
-        break;
-
-      case(OBJ_ARC):
-        world_get_arc_bounds(w_current, o_current, rleft, rtop, rright, rbottom);
-        break;
-
       default:
-        return 0;
         break;
     }
   }
-  return 1;
+  return 0;
 }
 
 /*! \brief Return the bounds of the given list of objects.
