@@ -184,39 +184,32 @@ int world_get_object_glist_bounds(TOPLEVEL *w_current, GList *head,
   return found;
 }
 
-/*! \brief Return the bounds of the given complex (or list of OBJECTs).
- *  \par Given a complex (list of objects), calcule the bounds coordinates.
- *  \param [in] w_current The toplevel structure.
- *  \param [in] complex   The list of objects to look the bounds for.
- *  \param [out] left   pointer to the left coordinate of the object.
- *  \param [out] top    pointer to the top coordinate of the object.
- *  \param [out] right  pointer to the right coordinate of the object.
- *  \param [out] bottom pointer to the bottom coordinate of the object.
+/*! \brief Queries the bounds of a complex object.
+ *  \par Function Description
+ *  This function returns the bounding box of the complex object
+ *  <B>object</B>.
+ *
+ *  \param [in]  w_current The toplevel environment.
+ *  \param [in]  complex   The complex object.
+ *  \param [out] left      The leftmost edge of the bounding box (in
+ *                         world units).
+ *  \param [out] top       The upper edge of the bounding box (in
+ *                         world units).
+ *  \param [out] right     The rightmost edge of the bounding box (in
+ *                         world units).
+ *  \param [out] bottom    The bottom edge of the bounding box (in
+ *                         screen units).
  */
 void world_get_complex_bounds(TOPLEVEL *w_current, OBJECT *complex, 
 			      int *left, int *top, int *right, int *bottom)
 {
-  OBJECT *o_current=NULL;
-  int rleft, rtop, rright, rbottom;
-	
-  *left = rleft = w_current->init_right;
-  *top = rtop = w_current->init_bottom;;
-  *right = rright = 0;
-  *bottom = rbottom = 0;
-	
-  o_current = complex;
-	
-  while ( o_current != NULL ) {
-    world_get_single_object_bounds (w_current, o_current, 
-				    &rleft, &rtop, &rright, &rbottom);
+  g_return_if_fail (complex != NULL &&
+                    (complex->type == OBJ_COMPLEX ||
+                     complex->type == OBJ_PLACEHOLDER) &&
+                    complex->complex != NULL);
 
-    if (rleft < *left) *left = rleft;
-    if (rtop < *top) *top = rtop;
-    if (rright > *right) *right = rright;
-    if (rbottom > *bottom) *bottom = rbottom;
-	
-    o_current=o_current->next;
-  }
+  world_get_object_list_bounds (w_current, complex->complex->prim_objs->next,
+                                left, top, right, bottom);
 
 }
 
