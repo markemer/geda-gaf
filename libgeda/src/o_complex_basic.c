@@ -645,6 +645,11 @@ OBJECT *o_complex_add(TOPLEVEL *w_current, OBJECT *object_list,
     }
   }
 
+  if (use_object_list)
+    o_complex_recalc(w_current, object_list);
+  else
+    o_complex_recalc(w_current, new_node);
+
   g_free(filename);
   return(object_list);
 }

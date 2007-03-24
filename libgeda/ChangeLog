@@ -1,3 +1,8 @@
+2007-03-24 Peter Clifton <pcjc2@cam.ac.uk>
+
+	* src/o_complex_basic.c: Add call to o_complex_recalc() in o_complex_add()
+	  to cache bounds.
+
 2007-02-25 Peter Clifton <pcjc2@cam.ac.uk>
 
 	* include/prototype.h, src/o_arc_basic.c, src/o_box_basic.c, 
