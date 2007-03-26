@@ -40,9 +40,10 @@ gboolean o_find_object(TOPLEVEL *w_current, int screen_x, int screen_y,
 {
   OBJECT *o_current=NULL;
   gboolean object_found = FALSE;
-  int w_x, w_y;
+  int w_x, w_y, w_slack;
 
   SCREENtoWORLD( w_current, screen_x, screen_y, &w_x, &w_y );
+  w_slack = WORLDabs( w_current, w_current->select_slack_pixels );
 
   if (w_current->page_current->object_lastplace == NULL) {
     o_current = w_current->page_current->object_head;
@@ -52,8 +53,8 @@ gboolean o_find_object(TOPLEVEL *w_current, int screen_x, int screen_y,
 
   /* do first search */
   while (o_current != NULL) {
-    if (inside_region(o_current->w_left, o_current->w_top,
-                      o_current->w_right, o_current->w_bottom,
+    if (inside_region(o_current->w_left - w_slack, o_current->w_top - w_slack,
+                      o_current->w_right + w_slack, o_current->w_bottom + w_slack,
                       w_x, w_y)) {
       if (o_current->sel_func != NULL &&
 	  o_current->type != OBJ_HEAD &&
@@ -84,8 +85,8 @@ gboolean o_find_object(TOPLEVEL *w_current, int screen_x, int screen_y,
   o_current = w_current->page_current->object_head;
   while (o_current != NULL && 
          o_current != w_current->page_current->object_lastplace) {
-    if (inside_region(o_current->w_left, o_current->w_top,
-                      o_current->w_right, o_current->w_bottom,
+    if (inside_region(o_current->w_left - w_slack, o_current->w_top - w_slack,
+                      o_current->w_right + w_slack, o_current->w_bottom + w_slack,
                       w_x, w_y)) {
       
       if (o_current->sel_func != NULL &&
@@ -134,16 +135,17 @@ gboolean o_find_selected_object(TOPLEVEL *w_current,
 {
   OBJECT *o_current=NULL;
   GList *s_current;
-  int w_x, w_y;
+  int w_x, w_y, w_slack;
 
   SCREENtoWORLD( w_current, screen_x, screen_y, &w_x, &w_y );
+  w_slack = WORLDabs( w_current, w_current->select_slack_pixels );
 
   s_current = w_current->page_current->selection_list;
   /* do first search */
   while (s_current != NULL) {
     o_current = (OBJECT *) s_current->data;
-    if (inside_region(o_current->w_left, o_current->w_top,
-                      o_current->w_right, o_current->w_bottom,
+    if (inside_region(o_current->w_left - w_slack, o_current->w_top - w_slack,
+                      o_current->w_right + w_slack, o_current->w_bottom + w_slack,
                       w_x, w_y)) {
 
 #if DEBUG

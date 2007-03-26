@@ -825,6 +825,9 @@ struct st_toplevel {
   /* The command to send postscript to when printing */
   char *print_command;
 
+  /* Number of pixels around an object we can still select it with */
+  int select_slack_pixels;
+
   /* gnetlist specific */
   int net_naming_priority;
   int hierarchy_traversal;
