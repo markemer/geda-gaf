@@ -69,7 +69,7 @@ void o_box_draw(TOPLEVEL *w_current, OBJECT *o_current)
 
 	/* Get read to check for visibility of this line by using it's
 	 * bounding box */
-  world_get_box_bounds(w_current, o_current->box,
+  world_get_box_bounds(w_current, o_current,
                        &wleft, &wtop, &wright, &wbottom);
 	
   if ( (w_current->DONT_REDRAW == 1) ||

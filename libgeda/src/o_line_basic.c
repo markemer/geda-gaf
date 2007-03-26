@@ -416,7 +416,7 @@ void o_line_translate_world(TOPLEVEL *w_current,
   object->line->y[1] = object->line->y[1] + y1;
   
   /* Update bounding box */
-  world_get_line_bounds(w_current, object->line, &left, &top, &right, &bottom);
+  world_get_line_bounds(w_current, object, &left, &top, &right, &bottom);
   
   object->w_left   = left;
   object->w_top    = top;
@@ -524,7 +524,7 @@ void o_line_recalc(TOPLEVEL *w_current, OBJECT *o_current)
   }
   
   /* update the bounding box - screen unit */
-  world_get_line_bounds(w_current, o_current->line, 
+  world_get_line_bounds(w_current, o_current, 
 		  &left, &top, &right, &bottom);
   o_current->w_left   = left;
   o_current->w_top    = top;
@@ -540,19 +540,29 @@ void o_line_recalc(TOPLEVEL *w_current, OBJECT *o_current)
  *  in <B>*line</B> in world units.
  *
  *  \param [in]  w_current  The TOPLEVEL object.
- *  \param [in]  line       Line OBJECT to read coordinates from.
+ *  \param [in]  OBJECT     Line OBJECT to read coordinates from.
  *  \param [out] left       Left line coordinate in WORLD units.
  *  \param [out] top        Top line coordinate in WORLD units.
  *  \param [out] right      Right line coordinate in WORLD units.
  *  \param [out] bottom     Bottom line coordinate in WORLD units.
  */
-void world_get_line_bounds(TOPLEVEL *w_current, LINE *line,
-			   int *left, int *top, int *right, int *bottom)
+void world_get_line_bounds(TOPLEVEL *w_current, OBJECT *object,
+                           int *left, int *top, int *right, int *bottom)
 {
-  *left = min( line->x[0], line->x[1] );
-  *top = min( line->y[0], line->y[1] );
-  *right = max( line->x[0], line->x[1] );
-  *bottom = max( line->y[0], line->y[1] );
+  int halfwidth;
+
+  halfwidth = object->line_width / 2;
+
+  *left = min( object->line->x[0], object->line->x[1] );
+  *top = min( object->line->y[0], object->line->y[1] );
+  *right = max( object->line->x[0], object->line->x[1] );
+  *bottom = max( object->line->y[0], object->line->y[1] );
+
+  /* This isn't strictly correct, but a 1st order approximation */
+  *left   -= halfwidth;
+  *top    -= halfwidth;
+  *right  += halfwidth;
+  *bottom += halfwidth;
 }
 
 /*! \brief Print line to Postscript document.

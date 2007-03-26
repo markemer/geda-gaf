@@ -636,7 +636,7 @@ void o_box_recalc(TOPLEVEL *w_current, OBJECT *o_current)
   }
 
   /* update the bounding box - world unit */
-  world_get_box_bounds(w_current, o_current->box, &left, &top, &right, &bottom);
+  world_get_box_bounds(w_current, o_current, &left, &top, &right, &bottom);
   o_current->w_left   = left;
   o_current->w_top    = top;
   o_current->w_right  = right;
@@ -651,24 +651,29 @@ void o_box_recalc(TOPLEVEL *w_current, OBJECT *o_current)
  *  in world units.
  *
  *  \param [in]  w_current  The TOPLEVEL object.
- *  \param [in]  box        BOX OBJECT to read coordinates from.
+ *  \param [in]  object     BOX OBJECT to read coordinates from.
  *  \param [out] left       Left box coordinate in WORLD units.
  *  \param [out] top        Top box coordinate in WORLD units.
  *  \param [out] right      Right box coordinate in WORLD units.
  *  \param [out] bottom     Bottom box coordinate in WORLD units.
  */
-void world_get_box_bounds(TOPLEVEL *w_current, BOX *box,
-			  int *left, int *top, int *right, int *bottom)
+void world_get_box_bounds(TOPLEVEL *w_current, OBJECT *object,
+                          int *left, int *top, int *right, int *bottom)
 {
-  *left   = min(box->upper_x, box->lower_x);
-  *top    = min(box->upper_y, box->lower_y);
-  *right  = max(box->upper_x, box->lower_x);
-  *bottom = max(box->upper_y, box->lower_y);
-  
-#if DEBUG 
-  printf("box: %d %d %d %d\n", *left, *top, *right, *bottom);
-#endif
-	
+  int halfwidth;
+
+  halfwidth = object->line_width / 2;
+
+  *left   = min(object->box->upper_x, object->box->lower_x);
+  *top    = min(object->box->upper_y, object->box->lower_y);
+  *right  = max(object->box->upper_x, object->box->lower_x);
+  *bottom = max(object->box->upper_y, object->box->lower_y);
+
+  /* This isn't strictly correct, but a 1st order approximation */
+  *left   -= halfwidth;
+  *top    -= halfwidth;
+  *right  += halfwidth;
+  *bottom += halfwidth;
 }
                  
 /*! \brief Print BOX to Postscript document.

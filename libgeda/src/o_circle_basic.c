@@ -556,7 +556,7 @@ void o_circle_recalc(TOPLEVEL *w_current, OBJECT *o_current)
   }
   
   /* update the bounding box - world unit */
-  world_get_circle_bounds(w_current, o_current->circle,
+  world_get_circle_bounds(w_current, o_current,
 		    &left, &top, &right, &bottom);
   o_current->w_left   = left;
   o_current->w_top    = top;
@@ -572,24 +572,29 @@ void o_circle_recalc(TOPLEVEL *w_current, OBJECT *o_current)
  *  in world units.
  *
  *  \param [in]  w_current  The TOPLEVEL object.
- *  \param [in]  circle     Circle OBJECT to read coordinates from.
+ *  \param [in]  object     Circle OBJECT to read coordinates from.
  *  \param [out] left       Left circle coordinate in WORLD units.
  *  \param [out] top        Top circle coordinate in WORLD units.
  *  \param [out] right      Right circle coordinate in WORLD units.
  *  \param [out] bottom     Bottom circle coordinate in WORLD units.
  */
-void world_get_circle_bounds(TOPLEVEL *w_current, CIRCLE *circle, int *left,
-			     int *top, int *right, int *bottom)
+void world_get_circle_bounds(TOPLEVEL *w_current, OBJECT *object, int *left,
+                             int *top, int *right, int *bottom)
 {
+  int halfwidth;
 
-  *left   = circle->center_x - circle->radius;
-  *top    = circle->center_y - circle->radius;
-  *right  = circle->center_x + circle->radius;
-  *bottom = circle->center_y + circle->radius;
+  halfwidth = object->line_width / 2;
 
-#if DEBUG 
-  printf("circle: %d %d %d %d\n", *left, *top, *right, *bottom);
-#endif
+  *left   = object->circle->center_x - object->circle->radius;
+  *top    = object->circle->center_y - object->circle->radius;
+  *right  = object->circle->center_x + object->circle->radius;
+  *bottom = object->circle->center_y + object->circle->radius;
+
+  /* This isn't strictly correct, but a 1st order approximation */
+  *left   -= halfwidth;
+  *top    -= halfwidth;
+  *right  += halfwidth;
+  *bottom += halfwidth;
 
 }
 

@@ -471,7 +471,7 @@ void o_picture_recalc(TOPLEVEL *w_current, OBJECT *o_current)
   }
 
   /* update the bounding picture - world units */
-  world_get_picture_bounds(w_current, o_current->picture,
+  world_get_picture_bounds(w_current, o_current,
 		     &left, &top, &right, &bottom);
   o_current->w_left   = left;
   o_current->w_top    = top;
@@ -487,24 +487,20 @@ void o_picture_recalc(TOPLEVEL *w_current, OBJECT *o_current)
  *  described in <B>*picture</B> in WORLD units.
  *
  *  \param [in]  w_current  The TOPLEVEL object.
- *  \param [in]  picture    Picture OBJECT to read coordinates from.
+ *  \param [in]  object     Picture OBJECT to read coordinates from.
  *  \param [out] left       Left picture coordinate in WORLD units.
  *  \param [out] top        Top picture coordinate in WORLD units.
  *  \param [out] right      Right picture coordinate in WORLD units.
  *  \param [out] bottom     Bottom picture coordinate in WORLD units.
  */
-void world_get_picture_bounds(TOPLEVEL *w_current, PICTURE *picture,
-			      int *left, int *top, int *right, int *bottom)
+void world_get_picture_bounds(TOPLEVEL *w_current, OBJECT *object,
+                              int *left, int *top, int *right, int *bottom)
 {
-	*left   = min(picture->upper_x, picture->lower_x);
-	*top    = min(picture->upper_y, picture->lower_y);
-	*right  = max(picture->upper_x, picture->lower_x);
-	*bottom = max(picture->upper_y, picture->lower_y);
+  *left   = min(object->picture->upper_x, object->picture->lower_x);
+  *top    = min(object->picture->upper_y, object->picture->lower_y);
+  *right  = max(object->picture->upper_x, object->picture->lower_x);
+  *bottom = max(object->picture->upper_y, object->picture->lower_y);
 
-#if DEBUG 
-	printf("picture: %d %d %d %d\n", *left, *top, *right, *bottom);
-#endif
-	
 }
                  
 /*! \brief Modify the description of a picture OBJECT.

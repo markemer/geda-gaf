@@ -573,6 +573,9 @@ void world_get_arc_bounds(TOPLEVEL *w_current, OBJECT *object, int *left,
   int x1, y1, x2, y2, x3, y3;
   int radius, start_angle, end_angle;
   int i, angle;
+  int halfwidth;
+
+  halfwidth = object->line_width / 2;
 
   radius      = object->arc->width / 2;
   start_angle = object->arc->start_angle % 360;
@@ -608,7 +611,12 @@ void world_get_arc_bounds(TOPLEVEL *w_current, OBJECT *object, int *left,
     }
   }
 
-  /* PB : same problem as above */
+  /* This isn't strictly correct, but a 1st order approximation */
+  *left   -= halfwidth;
+  *top    -= halfwidth;
+  *right  += halfwidth;
+  *bottom += halfwidth;
+
 }
 
 

@@ -1,4 +1,15 @@
 2007-03-26 Peter Clifton <pcjc2@cam.ac.uk>
+
+	* include/prototype.h, src/o_arc_basic.c, src/o_basic.c, src/o_box_basic.c,
+	  src/o_bus_basic.c, src/o_circle_basic.c, src/o_line_basic.c,
+	  src/o_net_basic.c, src/o_picture.c, src/o_pin_basic.c: Pass OBJECT instead
+	  of derived type into world_get_..._bounds(). Modifed objects to include
+	  the drawn line width when calculating bounds. Set OBJECT->line_width to
+	  {NET|BUS|PIN}_WIDTH as appropriate in o_{net|bus|pin}_add(). Replaced
+	  copied code in world_get_{net|pin|bus}_bounds() with calls to
+	  world_get_line_bounds(). Added call to o_recalc_single_object() in
+	  o_set_line_options() to keep line width up-to-date with editing.
+
 	* libgeda/include/struct.h, src/s_toplevel.c: Added variables
 	  to support (select-slack-pixels #) rc keyword.
 

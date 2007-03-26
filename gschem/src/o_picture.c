@@ -351,7 +351,7 @@ void o_picture_draw(TOPLEVEL *w_current, OBJECT *o_current)
   /* Get read to check for visibility of this line by using it's
    * bounding picture
    */
-  world_get_picture_bounds(w_current, o_current->picture,
+  world_get_picture_bounds(w_current, o_current,
                            &wleft, &wtop, &wright, &wbottom);
 	
   if (!visible(w_current, wleft, wtop, wright, wbottom)) {

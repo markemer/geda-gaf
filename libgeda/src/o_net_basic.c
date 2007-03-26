@@ -52,13 +52,10 @@
  *  \param [out] right
  *  \param [out] bottom
  */
-void world_get_net_bounds(TOPLEVEL *w_current, LINE *line, int *left,
-			  int *top, int *right, int *bottom)
+void world_get_net_bounds(TOPLEVEL *w_current, OBJECT *object, int *left,
+                          int *top, int *right, int *bottom)
 {
-  *left = min( line->x[0], line->x[1] );
-  *top = min( line->y[0], line->y[1] );
-  *right = max( line->x[0], line->x[1] );
-  *bottom = max( line->y[0], line->y[1] );
+  world_get_line_bounds( w_current, object, left, top, right, bottom );
 }
 
 /*! \todo Finish function documentation!!!
@@ -92,8 +89,9 @@ OBJECT *o_net_add(TOPLEVEL *w_current, OBJECT *object_list, char type,
   new_node->line->y[0] = y1;
   new_node->line->x[1] = x2;
   new_node->line->y[1] = y2;
+  new_node->line_width = NET_WIDTH;
 
-  world_get_net_bounds(w_current, new_node->line, &left, &top, &right,
+  world_get_net_bounds(w_current, new_node, &left, &top, &right,
                  &bottom);
 
   new_node->w_left = left;
@@ -135,7 +133,7 @@ void o_net_recalc(TOPLEVEL *w_current, OBJECT *o_current)
     return;
   }
 
-  world_get_net_bounds(w_current, o_current->line, &left, &top, &right,
+  world_get_net_bounds(w_current, o_current, &left, &top, &right,
                  &bottom);
 
   o_current->w_left = left;
@@ -243,7 +241,7 @@ void o_net_translate_world(TOPLEVEL *w_current, int x1, int y1,
   object->line->y[1] = object->line->y[1] + y1;
 
   /* Update bounding box */
-  world_get_net_bounds(w_current, object->line, &left, &top, &right, &bottom);
+  world_get_net_bounds(w_current, object, &left, &top, &right, &bottom);
 
   object->w_left = left;
   object->w_top = top;
@@ -754,7 +752,7 @@ void o_net_modify(TOPLEVEL *w_current, OBJECT *object,
   object->line->x[whichone] = x;
   object->line->y[whichone] = y;
 
-  world_get_net_bounds(w_current, object->line, &left, &top, &right, &bottom);
+  world_get_net_bounds(w_current, object, &left, &top, &right, &bottom);
 
   object->w_left = left;
   object->w_top = top;
