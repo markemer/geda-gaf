@@ -79,8 +79,6 @@ void o_text_draw_lowlevel(TOPLEVEL *w_current, OBJECT *o_current)
 void o_text_draw_rectangle(TOPLEVEL *w_current, OBJECT *o_current)
 {
   int left=0, right=0, top=0, bottom=0;
-  int screen_x1, screen_y1;
-  int width, height, dx=0, dy=0;
   GdkColor *color;
 
   if (o_current->visibility == INVISIBLE && w_current->show_hidden_text &&
