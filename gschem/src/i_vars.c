@@ -250,7 +250,7 @@ void i_vars_set(TOPLEVEL *w_current)
   w_current->mousepan_gain = default_mousepan_gain;
   w_current->keyboardpan_gain = default_keyboardpan_gain;
 
-  w_current->mousepan_gain = default_select_slack_pixels;
+  w_current->select_slack_pixels = default_select_slack_pixels;
 
   w_current->auto_save_interval = default_auto_save_interval;
 }
