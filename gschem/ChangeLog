@@ -1,5 +1,30 @@
 2007-04-06 Peter Clifton <pcjc2@cam.ac.uk>
 
+	Sync with trunk
+
+	2007-04-06 Carlos Nieves Onega <cnieves@iespana.es>
+
+		* lib/system-gschemrc.in, scheme/auto-place-attribs.scm:
+			Improved the auto placing: if the attribute overlaps with pins
+			(including pinnumbers), or the pin connection direction where 
+			a net is supposed to be drawn, then the attributes are moved 
+			automatically.
+
+	2007-03-31 Peter Clifton <pcjc2@cam.ac.uk>
+
+		* src/x_dialog.c: Fixed confirm save on page-close dialogs to correctly
+			cancel, rather than assert if the dialog is closed with the ESCAPE
+			key, or with the window-manager's destroy button.
+
+	2007-02-25 Peter Clifton <pcjc2@cam.ac.uk>
+
+		* src/o_arc.c, src/o_box.c, src/o_circle.c, src/o_line.c,
+			src/x_multiattrib.c, src/x_pagesel.c, src/x_preview.c,
+			src/x_window.c: Replaced loosely typed function pointers such as
+			void (*draw_func)(); with more strongly typed pointers.
+
+2007-04-06 Peter Clifton <pcjc2@cam.ac.uk>
+
 	* src/o_select.c: Fixed selection box testing which had some <= and =>
 	  tests reversed during screen->world coordinate switching. The swap
 	  was incorrect, as "top" and "bottom" should actually be named "y_min"

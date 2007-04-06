@@ -1,5 +1,32 @@
 2007-04-06 Peter Clifton <pcjc2@cam.ac.uk>
 
+	Sync with trunk
+
+	2007-04-06 Carlos Nieves Onega <cnieves@iespana.es>
+
+		* src/g_smob.c: make g_get_object_type scheme function return 
+			a character instead of a string.
+		
+		* include/o_types.h, include/prototype.h, src/g_register.c, 
+			src/libgeda.c : 
+
+			Register the OBJ_* object type definitions as scheme character 
+			variables.
+
+	2007-04-05 Carlos Nieves Onega <cnieves@iespana.es>
+
+		* include/prototype.h, src/g_smob.c: Added two new scheme functions:
+
+				- g_calcule_new_attrib_bounds: calcule the new bounds of an 
+					attribute with the given parameters, _without_ modifying the 
+					attribute.
+
+				- g_get_attrib_value_by_attrib_name: given an object and an 
+					attribute name, this function returns a list with the values
+					of the attributes with the given name in that object.
+
+2007-04-06 Peter Clifton <pcjc2@cam.ac.uk>
+
 	* src/a_basic.c: Fix bounds for embedded objects as they are loaded from
 	  file. This places a call to o_complex_recalc() in o_read(), which is
 	  not great from an encapsulation point of view, but is the neatest solution
