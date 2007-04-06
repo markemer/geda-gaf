@@ -1,3 +1,10 @@
+2007-04-06 Peter Clifton <pcjc2@cam.ac.uk>
+
+	* src/a_basic.c: Fix bounds for embedded objects as they are loaded from
+	  file. This places a call to o_complex_recalc() in o_read(), which is
+	  not great from an encapsulation point of view, but is the neatest solution
+	  with the current method of loading embedded objects.
+
 2007-03-26 Peter Clifton <pcjc2@cam.ac.uk>
 
 	* include/prototype.h, src/o_arc_basic.c, src/o_basic.c, src/o_box_basic.c,
