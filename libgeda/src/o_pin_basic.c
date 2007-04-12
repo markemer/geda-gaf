@@ -479,8 +479,8 @@ void o_pin_update_whichend(TOPLEVEL *w_current,
 
   if (object_list && num_pins) {
     if (num_pins == 1 || w_current->force_boundingbox) {
-      world_get_complex_bounds(w_current, object_list,
-                             &left, &top, &right, &bottom);
+      world_get_object_list_bounds(w_current, object_list,
+                                   &left, &top, &right, &bottom);
     } else {
       found = 0;
 

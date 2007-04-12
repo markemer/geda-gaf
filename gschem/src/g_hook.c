@@ -490,8 +490,10 @@ static void custom_world_get_complex_bounds (TOPLEVEL *w_current, OBJECT *o_curr
  *  The object types are those used in (OBJECT *)->type converted into strings.
  *  \return a list of the bounds of the <B>object smob</B>. 
  *  The list has the format: ( (left right) (top bottom) )
- *  I got top and bottom values reversed from world_get_complex_bounds,
- *  so don\'t rely on the position in the list. 
+ *  WARNING: top and bottom are mis-named in world-coords,
+ *  top is the smallest "y" value, and bottom is the largest.
+ *  Be careful! This doesn't correspond to what you'd expect,
+ *  nor to the coordinate system who's origin is the bottom, left of the page.
  */
 SCM g_get_object_bounds (SCM object_smob, SCM scm_exclude_attribs, SCM scm_exclude_object_type)
 {

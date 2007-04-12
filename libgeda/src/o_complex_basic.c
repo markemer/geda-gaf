@@ -689,7 +689,7 @@ void o_complex_recalc(TOPLEVEL *w_current, OBJECT *o_current)
   if ((!o_current) || (o_current->type != OBJ_COMPLEX && o_current->type != OBJ_PLACEHOLDER))
     return;
 
-  world_get_object_list_bounds(w_current, o_current->complex->prim_objs, &left, &top, &right, &bottom);
+  world_get_complex_bounds(w_current, o_current, &left, &top, &right, &bottom);
   o_current->w_left = left;
   o_current->w_top = top;
   o_current->w_right = right;

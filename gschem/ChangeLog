@@ -1,3 +1,8 @@
+2007-12-06 Peter Clifton <pcjc2@cam.ac.uk>
+
+	*	src/g_hook.h: Fixed up documentation in to reflect the current code.
+	  Removed doc reference to world_get_complex_bounds(), which is not used.
+
 2007-04-06 Peter Clifton <pcjc2@cam.ac.uk>
 
 	Sync with trunk
