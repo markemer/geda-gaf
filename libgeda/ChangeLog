@@ -1,3 +1,12 @@
+2007-16-06 Peter Clifton <pcjc2@cam.ac.uk>
+
+	* src/o_text_basic.c: Use o_text_recalc() to update bounds, as we don't
+	  want to duplicate code. Fixes a bug where the bounds were reset manually
+	  even with invisible text (causing uninitialised values to be stored in
+	  for the object's bounds). Fixed o_text_recalc() to silently return
+	  (rather than write uninitialised values) if no bound was found for the
+	  text object's prim_objects.
+
 2007-12-06 Peter Clifton <pcjc2@cam.ac.uk>
 
 	* src/f_image.c, src/f_print.c, src/g_smob.c, src/o_complex_basic.c,
