@@ -1,3 +1,26 @@
+2007-04-17 Peter Clifton <pcjc2@cam.ac.uk>
+
+	Sync with trunk
+
+	2007-04-17 Peter Clifton <pcjc2@cam.ac.uk>
+
+		* src/gtkitementry_2_2.c: Fixed code left accidentally when
+		  removing an obsolete #if 0'd out section.
+
+	2007-4-15  Stuart Brorson <sdb (AT) cloud9 (DOT) net>
+		* src/*.c:  Added DOxygen style comment pragma to many (but not
+		all) .c files.  DOxygenating gattrib is an ongoing project.
+		
+	2007-04-15 Ales Hvezda   <ahvezda@geda.seul.org>
+
+		* src/s_string_list.c: Added missing test to prevent a seg fault
+		when loading up a schematic with missing attributes.
+
+	2007-4-15  Stuart Brorson <sdb (AT) cloud9 (DOT) net>
+		* Makefile.am, configure.ac, docs/*: Created new docs
+		directory, and set up framework to create doxygen generated
+		docs.
+
 2007-04-12 Peter Clifton <pcjc2@cam.ac.uk>
 
 	* src/o_attrib.c: Replace incorrect use of world_get_complex_bounds()

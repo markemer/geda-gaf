@@ -847,7 +847,10 @@
 (define char2str 
   (lambda (char)
     (list->string (list char))))
-    
+
+; Attribute autoplacement grid 
+(define autoplace-attributes-grid 50)
+
 (define default-position-of-text-attributes
    ; Specifies the default position of text attributes.
    ; Each list entry is a list specifying the position of a text attribute.
@@ -956,10 +959,16 @@
     "value"     "<"  (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
        0    -50       "Lower Middle"  "Upper Middle"   0      ""   0)
    (list 
+    "device"    "<"  (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
+       0    -50       "Lower Middle"  "Upper Middle"   0      ""   0)
+   (list 
     "refdes"    ">" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
        0     50       "Upper Middle"  "Lower Middle"   0      ""   0)
    (list 
     "value"     ">" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
+       0    -50       "Lower Middle"  "Upper Middle"   0      ""   0)
+   (list 
+    "device"    ">" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
        0    -50       "Lower Middle"  "Upper Middle"   0      ""   0)
    (list 
     "refdes"    "^" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
@@ -968,10 +977,16 @@
     "value"     "^" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
        0   -100       "Middle Left"   "Lower Right"    0      ""   0)
    (list 
+    "device"    "^" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
+       0   -100       "Middle Left"   "Lower Right"    0      ""   0)
+   (list 
     "refdes"    "v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
        0    100       "Middle Left"   "Lower Right"    0      ""   0)
    (list 
     "value"     "v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
+       0   -100       "Middle Left"   "Lower Right"    0      ""   0)
+   (list 
+    "device"    "v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
        0   -100       "Middle Left"   "Lower Right"    0      ""   0)
 	;   Two directions
    (list 
@@ -981,10 +996,16 @@
     "value"    "<>" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
        0    -50       "Lower Middle"  "Upper Middle"   0      ""   0)
    (list 
+    "device"   "<>" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
+       0    -50       "Lower Middle"  "Upper Middle"   0      ""   0)
+   (list 
     "refdes"   "^v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
       50    100       "Middle Right"  "Lower Left"     0      ""   0)
    (list 
     "value"    "^v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
+      50   -100       "Middle Right"  "Lower Left"     0      ""   0)
+   (list 
+    "device"   "^v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
       50   -100       "Middle Right"  "Lower Left"     0      ""   0)
 	;   Three directions
    (list 
@@ -994,10 +1015,16 @@
     "value"   "<^v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
      -50   -100       "Middle Left"   "Lower Right"    0      ""   0)
    (list 
+    "device"  "<^v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
+     -50   -100       "Middle Left"   "Lower Right"    0      ""   0)
+   (list 
     "refdes"  ">^v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
       50    100       "Middle Right"  "Lower Left"     0      ""   0)
    (list 
     "value"   ">^v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
+      50   -100       "Middle Right"  "Lower Left"     0      ""   0)
+   (list 
+    "device"  ">^v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
       50   -100       "Middle Right"  "Lower Left"     0      ""   0)
    (list 
     "refdes"  "<>v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
@@ -1006,10 +1033,16 @@
     "value"   "<>v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
       50    -50       "Lower Middle"  "Upper Left"     0      ""   0)
    (list 
+    "device"  "<>v" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
+      50    -50       "Lower Middle"  "Upper Left"     0      ""   0)
+   (list 
     "refdes"  "<>^" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
      -50     50       "Upper Middle"  "Lower Right"    0      ""   0)
    (list 
     "value"   "<>^" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
+      50     50       "Upper Middle"  "Lower Left"     0      ""   0)
+   (list 
+    "device"  "<>^" (list "OBJ_TYPE" (char2str OBJ_COMPLEX))
       50     50       "Upper Middle"  "Lower Left"     0      ""   0)
 	;   Four directions
    (list 
@@ -1018,6 +1051,26 @@
    (list 
     "value"  "<>^v"(list "OBJ_TYPE" (char2str OBJ_COMPLEX))
       50    -50      "Lower Right"   "Upper Right"    0      "v>" 50)
+   (list 
+    "device" "<>^v"(list "OBJ_TYPE" (char2str OBJ_COMPLEX))
+      50    -50      "Lower Right"   "Upper Right"    0      "v>" 50)
+   
+     ; Net attributes
+     ;   Two directions
+   (list 
+    "netname" "<>" (list "OBJ_TYPE" (char2str OBJ_NET))
+       0     50       "Upper Middle"  "Lower Middle"   0      ""   0)
+   (list 
+    "netname" "^v" (list "OBJ_TYPE" (char2str OBJ_NET))
+     -50      0       "Middle Middle" "Lower Middle"  90      ""   0)
+     ; Bus attributes
+     ;   Two directions
+   (list 
+    "netname" "<>" (list "OBJ_TYPE" (char2str OBJ_BUS))
+       0     50       "Upper Middle"  "Lower Middle"   0      ""   0)
+   (list 
+    "netname" "^v" (list "OBJ_TYPE" (char2str OBJ_BUS))
+     -50      0       "Middle Middle" "Lower Middle"  90      ""   0)
    ))
 
 ; Position of parameters inside default-position-of-text-attributes
@@ -1058,11 +1111,11 @@
 (add-hook! mirror-pin-hook (lambda (pin)
 	(autoplace-pin-attributes pin )) #t)
 
-; Autoplace component text attributes hook. 
+; Autoplace component/net/buses text attributes hook. 
 ; Comment in these if you want the component attributes to be 
 ; automatically placed.
 ; There are different hooks for situations like adding a new pin, rotating
-; or mirroring an existing one, or adding a new attribute.
+; or mirroring an existing one, adding a new attribute or a new component.
 ; The #t at the end means that function is appended to the end of the hook.
 ;(add-hook! add-component-object-hook (lambda (object)
 ;	(autoplace-object-attributes object)) #t)
@@ -1072,6 +1125,8 @@
 ;	(autoplace-object-attributes object)) #t)
 ;(add-hook! add-attribute-hook (lambda (object)
 ;	(autoplace-object-attributes object)) #t)
+;(add-hook! complex-place-list-changed-hook (lambda (object)
+;         (autoplace-object-attributes object)) #t)
 
 ; Automatically place a titleblock (or other components) when creating
 ; a new page.
