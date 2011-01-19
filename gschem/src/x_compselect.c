@@ -750,7 +750,7 @@ create_inuse_tree_model (Compselect *compselect)
                         -1);
   }
 
-  g_list_free (symlist);
+  g_list_free (symhead);
 
   return (GtkTreeModel*)store;
 }
