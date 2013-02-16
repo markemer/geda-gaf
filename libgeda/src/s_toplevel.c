@@ -52,6 +52,7 @@ TOPLEVEL *s_toplevel_new (void)
 
   toplevel->RC_list = NULL;
 
+  toplevel->untitled_name      = NULL;
   toplevel->bitmap_directory   = NULL;
 
   toplevel->init_left = 0;
@@ -73,7 +74,13 @@ TOPLEVEL *s_toplevel_new (void)
   toplevel->override_net_color = -1;
   toplevel->override_bus_color = -1;
   toplevel->override_pin_color = -1;
+  toplevel->pin_style = 0;
+  toplevel->net_style = 0;
+  toplevel->bus_style = 0;
+  toplevel->line_style = 0;
   /* END BLOCK - ALTHOUGH THERE ARE MORE CASES! */
+
+  toplevel->object_clipping = 0;
 
   toplevel->image_color = FALSE;
 
@@ -93,6 +100,8 @@ TOPLEVEL *s_toplevel_new (void)
 
   toplevel->always_promote_attributes = NULL;
 
+  toplevel->net_naming_priority = 0;
+  toplevel->hierarchy_traversal = 0;
   toplevel->hierarchy_uref_mangle = 0;
   toplevel->hierarchy_netname_mangle = 0;
   toplevel->hierarchy_netattrib_mangle = 0;
@@ -102,6 +111,8 @@ TOPLEVEL *s_toplevel_new (void)
   toplevel->hierarchy_netattrib_order = 0;
   toplevel->hierarchy_netname_order = 0;
   toplevel->hierarchy_uref_order = 0;
+  toplevel->unnamed_netname = NULL;
+  toplevel->unnamed_busname = NULL;
 
   toplevel->rendered_text_bounds_func = NULL;
   toplevel->rendered_text_bounds_data = NULL;
@@ -133,6 +144,7 @@ void s_toplevel_delete (TOPLEVEL *toplevel)
     g_source_remove (toplevel->auto_save_timeout);
   }
 
+  g_free (toplevel->untitled_name);
   g_free (toplevel->bitmap_directory);
   g_free (toplevel->bus_ripper_symname);
   

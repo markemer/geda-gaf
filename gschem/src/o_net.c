@@ -678,6 +678,7 @@ o_net_draw_rubber(GSCHEM_TOPLEVEL *w_current, EdaRenderer *renderer)
  */
 void o_net_invalidate_rubber (GSCHEM_TOPLEVEL *w_current)
 {
+  TOPLEVEL *toplevel = w_current->toplevel;
   int size = 0, magnetic_halfsize;
   int bloat;
   int magnetic_x, magnetic_y;
@@ -693,7 +694,10 @@ void o_net_invalidate_rubber (GSCHEM_TOPLEVEL *w_current)
   WORLDtoSCREEN (w_current, w_current->second_wx, w_current->second_wy,
                  &second_x, &second_y);
 
-  size = SCREENabs (w_current, NET_WIDTH);
+  if (toplevel->net_style == THICK) {
+    size = SCREENabs (w_current, NET_WIDTH);
+  }
+  size = max (size, 0);
   bloat = size / 2;
 
   if (w_current->magneticnet_mode) {

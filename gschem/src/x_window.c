@@ -711,16 +711,12 @@ x_window_open_page (GSCHEM_TOPLEVEL *w_current, const gchar *filename)
 
   /* Generate untitled filename if none was specified */
   if (filename == NULL) {
-    gchar *cwd, *tmp, *untitled_name;
-    EdaConfig *cfg;
+    gchar *cwd, *tmp;
     cwd = g_get_current_dir ();
-    cfg = eda_config_get_context_for_path (cwd);
-    untitled_name = eda_config_get_string (cfg, "gschem", "default-filename", NULL);
     tmp = g_strdup_printf ("%s_%d.sch",
-                           untitled_name,
+                           toplevel->untitled_name,
                            ++w_current->num_untitled);
     fn = g_build_filename (cwd, tmp, NULL);
-    g_free (untitled_name);
     g_free(cwd);
     g_free(tmp);
   } else {

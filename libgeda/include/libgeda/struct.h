@@ -431,6 +431,7 @@ struct st_toplevel {
 
   GList *RC_list;                       /* List of RC files which have been read in. */
 
+  char *untitled_name;			/* untitled sch basename */
   char *bitmap_directory; 		/* path of the bitmaps */
 
   int init_left, init_right; 		/* Starting values for above */
@@ -457,7 +458,14 @@ struct st_toplevel {
   int override_net_color;
   int override_bus_color;
   int override_pin_color;
+  int pin_style;
+  int net_style;
+  int bus_style;
+  int line_style;
   /* END BLOCK - ALTHOUGH THERE ARE MORE CASES! */
+
+  /* controls whether objects are clipped */
+  int object_clipping; 
 
   /* either TRUE or FALSE (color or no color) */
   int image_color; 
@@ -487,6 +495,8 @@ struct st_toplevel {
   GList *always_promote_attributes;
 
   /* gnetlist specific */
+  int net_naming_priority;
+  int hierarchy_traversal;
   int hierarchy_uref_mangle;
   int hierarchy_netname_mangle;
   int hierarchy_netattrib_mangle;
@@ -496,6 +506,8 @@ struct st_toplevel {
   int hierarchy_netattrib_order;
   int hierarchy_netname_order;
   int hierarchy_uref_order;
+  char *unnamed_netname;
+  char *unnamed_busname;
 
   /* Callback function for calculating text bounds */
   RenderedBoundsFunc rendered_text_bounds_func;
