@@ -182,7 +182,8 @@ g_rc_parse_file (TOPLEVEL *toplevel, const gchar *rcfile,
    * print a warning. */
   if (!eda_config_is_loaded (cfg)) {
     eda_config_load (cfg, &tmp_err);
-    if (tmp_err != NULL && !g_error_matches (tmp_err, G_FILE_ERROR, G_FILE_ERROR_NOENT))
+    if (tmp_err != NULL &&
+        !g_error_matches (tmp_err, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
       g_warning (_("Failed to load config from '%s': %s\n"),
                  eda_config_get_filename (cfg), tmp_err->message);
     g_clear_error (&tmp_err);
@@ -213,8 +214,8 @@ g_rc_parse_file (TOPLEVEL *toplevel, const gchar *rcfile,
     g_propagate_prefixed_error (err, tmp_err,
                                 _("Failed to load RC file [%s]: "),
                                 name_norm);
+    g_free (name_norm);
   }
-  g_free (name_norm);
   return status;
 }
 
@@ -428,7 +429,7 @@ g_rc_parse_handler (TOPLEVEL *toplevel,
    * current working directory's configuration context here, no matter
    * where the rc file is located on disk. */
   if (rcfile != NULL) {
-    EdaConfig *cwd_cfg = eda_config_get_context_for_path (".");
+    EdaConfig *cwd_cfg = eda_config_get_context_for_file (NULL);
     g_rc_parse_file (toplevel, rcfile, cwd_cfg, &err); HANDLER_DISPATCH;
   }
 
@@ -759,7 +760,7 @@ g_rc_rc_config()
   SCM cfg_s = scm_fluid_ref (scheme_rc_config_fluid);
   if (!scm_is_false (cfg_s)) return cfg_s;
 
-  EdaConfig *cfg = eda_config_get_context_for_path (".");
+  EdaConfig *cfg = eda_config_get_context_for_file (NULL);
   return edascm_from_config (cfg);
 }
 

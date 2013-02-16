@@ -226,11 +226,13 @@ AC_CONFIG_FILES([Makefile
                  gsymcheck/include/Makefile
                  gsymcheck/lib/Makefile
                  gsymcheck/lib/system-gsymcheckrc
+                 gsymcheck/po/Makefile.in
                  gsymcheck/src/Makefile
                  gsymcheck/tests/Makefile
                  gsymcheck/Makefile
 
                  gnetlist/Makefile
+                 gnetlist/po/Makefile.in
                  gnetlist/src/Makefile
                  gnetlist/include/Makefile
                  gnetlist/scheme/Makefile
