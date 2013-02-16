@@ -37,10 +37,6 @@
 #endif
 
 #define DEFAULT_PDF_SIZE 256
-#define CFG_GROUP_PRINTING "gschem.printing"
-#define CFG_KEY_PRINTING_ORIENTATION "layout"
-#define CFG_KEY_PRINTING_PAPER "paper"
-#define CFG_KEY_PRINTING_MONOCHROME "monochrome"
 
 /*! \brief Create a default page setup for a schematic page.
  * \par Function Description
@@ -58,33 +54,30 @@
  * \returns A newly-created page setup.
  */
 static GtkPageSetup *
-x_print_default_page_setup (TOPLEVEL *toplevel, PAGE *page)
+x_print_default_page_setup (TOPLEVEL *toplevel, PAGE *page,
+                            const gchar *paper_size_name,
+                            gint orientation)
 {
   GtkPageSetup *setup = gtk_page_setup_new ();
-  GtkPaperSize *papersize;
+  GtkPaperSize *paper = gtk_paper_size_new (paper_size_name);
   int status, wx_min, wy_min, wx_max, wy_max;
-  EdaConfig *cfg;
-  gchar *paper, *orientation;
 
-  /* Get configuration values */
-  cfg =         eda_config_get_context_for_path (page->page_filename);
-  paper =       eda_config_get_string (cfg, CFG_GROUP_PRINTING,
-                                       CFG_KEY_PRINTING_PAPER, NULL);
-  orientation = eda_config_get_string (cfg, CFG_GROUP_PRINTING,
-                                       CFG_KEY_PRINTING_ORIENTATION, NULL);
-
-  /* If the paper size is valid, set it up with default margins. */
-  papersize = gtk_paper_size_new (paper);
-  if (papersize != NULL) {
-    gtk_page_setup_set_paper_size_and_default_margins (setup, papersize);
+  /* If the paper size was valid, set it up with default margins. */
+  if (paper != NULL) {
+    gtk_page_setup_set_paper_size_and_default_margins (setup, paper);
   }
 
-  if (g_strcmp0 (orientation, "landscape") == 0) {
+  switch (orientation) {
+  case LANDSCAPE:
     gtk_page_setup_set_orientation (setup, GTK_PAGE_ORIENTATION_LANDSCAPE);
-  } else if (g_strcmp0 (orientation, "portrait") == 0) {
+    break;
+
+  case PORTRAIT:
     gtk_page_setup_set_orientation (setup, GTK_PAGE_ORIENTATION_PORTRAIT);
-  } else if (orientation == NULL
-             || g_strcmp0 (orientation, "auto") == 0) {
+    break;
+
+  case AUTOLAYOUT:
+  default:
     /* Automatically choose the orientation that fits best */
     status = world_get_object_glist_bounds (toplevel, s_page_objects (page),
                                             &wx_min, &wy_min, &wx_max, &wy_max);
@@ -96,8 +89,6 @@ x_print_default_page_setup (TOPLEVEL *toplevel, PAGE *page)
     }
   }
 
-  g_free (paper);
-  g_free (orientation);
   return setup;
 }
 
@@ -221,8 +212,6 @@ draw_page__print_operation (GtkPrintOperation *print,
   cairo_t *cr;
   PangoContext *pc;
   double width, height;
-  EdaConfig *cfg;
-  gboolean is_color;
 
   /* Find the page data */
   g_return_if_fail (page_nr != 1);
@@ -236,13 +225,8 @@ draw_page__print_operation (GtkPrintOperation *print,
   width = gtk_print_context_get_width (context);
   height = gtk_print_context_get_height (context);
 
-  /* Find out if colour printing is enabled */
-  cfg = eda_config_get_context_for_path (page->page_filename);
-  is_color = !eda_config_get_boolean (cfg, CFG_GROUP_PRINTING,
-                                      CFG_KEY_PRINTING_MONOCHROME, NULL);
-
   x_print_draw_page (w_current->toplevel, page, cr, pc,
-                     width, height, is_color, FALSE);
+                     width, height, w_current->print_color, FALSE);
 
   /* Clean up */
   g_object_unref (pc);
@@ -263,18 +247,16 @@ gboolean
 x_print_export_pdf_page (GSCHEM_TOPLEVEL *w_current,
                          const gchar *filename)
 {
-  PAGE *page;
   cairo_surface_t *surface;
   cairo_status_t status;
   cairo_t *cr;
   GtkPageSetup *setup;
   double width, height;
-  EdaConfig *cfg;
-  gboolean is_color;
 
-  page = w_current->toplevel->page_current;
-
-  setup = x_print_default_page_setup (w_current->toplevel, page );
+  setup = x_print_default_page_setup (w_current->toplevel,
+                                      w_current->toplevel->page_current,
+                                      w_current->print_paper,
+                                      w_current->print_orientation);
   width = gtk_page_setup_get_paper_width (setup, GTK_UNIT_POINTS);
   height = gtk_page_setup_get_paper_height (setup, GTK_UNIT_POINTS);
 
@@ -286,13 +268,9 @@ x_print_export_pdf_page (GSCHEM_TOPLEVEL *w_current,
   width = gtk_page_setup_get_page_width (setup, GTK_UNIT_POINTS);
   height = gtk_page_setup_get_page_height (setup, GTK_UNIT_POINTS);
 
-  /* Find out if colour printing is enabled */
-  cfg = eda_config_get_context_for_path (page->page_filename);
-  is_color = !eda_config_get_boolean (cfg, CFG_GROUP_PRINTING,
-                                      CFG_KEY_PRINTING_MONOCHROME, NULL);
-
-  x_print_draw_page (w_current->toplevel, page,
-                     cr, NULL, width, height, is_color, FALSE);
+  x_print_draw_page (w_current->toplevel, w_current->toplevel->page_current,
+                     cr, NULL, width, height,
+                     w_current->print_color, FALSE);
 
   cairo_destroy (cr);
   cairo_surface_finish (surface);
@@ -395,7 +373,9 @@ x_print (GSCHEM_TOPLEVEL *w_current)
     gtk_print_operation_set_print_settings (print, settings);
   }
   setup = x_print_default_page_setup (w_current->toplevel,
-                                      w_current->toplevel->page_current);
+                                      w_current->toplevel->page_current,
+                                      w_current->print_paper,
+                                      w_current->print_orientation);
   gtk_print_operation_set_default_page_setup (print, setup);
 
   g_signal_connect (print, "draw_page", G_CALLBACK (draw_page__print_operation),

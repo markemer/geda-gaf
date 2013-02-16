@@ -34,6 +34,7 @@
 #include <dmalloc.h>
 #endif
 
+#define DEFAULT_UNTITLED_NAME    "untitled"
 #define DEFAULT_BITMAP_DIRECTORY   "non-existant"
 #define DEFAULT_HIERARCHY_NETNAME_SEPARATOR "/"
 #define DEFAULT_HIERARCHY_NETATTRIB_SEPARATOR "/"

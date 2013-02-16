@@ -37,10 +37,10 @@ struct _GschemDialogClass {
   GtkDialogClass parent_class;
 
   void (*geometry_save)    (GschemDialog *dialog,
-                            EdaConfig *cfg,
+                            GKeyFile *key_file,
                             gchar *group_name);
   void (*geometry_restore) (GschemDialog *dialog,
-                            EdaConfig *cfg,
+                            GKeyFile *key_file,
                             gchar *group_name);
 };
 
