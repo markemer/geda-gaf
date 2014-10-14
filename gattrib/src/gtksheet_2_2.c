@@ -1009,7 +1009,7 @@ gtk_sheet_init (GtkSheet *sheet)
   sheet->state = GTK_SHEET_NORMAL;
 
   GTK_WIDGET_UNSET_FLAGS (sheet, GTK_NO_WINDOW);
-  GTK_WIDGET_SET_FLAGS (sheet, GTK_CAN_FOCUS);
+  gtk_widget_set_can_focus (GTK_WIDGET (sheet), TRUE);
 
   sheet->maxrow = 0;
   sheet->maxcol = 0;
@@ -2686,7 +2686,7 @@ gtk_sheet_realize (GtkWidget * widget)
 
   sheet = GTK_SHEET (widget);
 
-  GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+  gtk_widget_set_realized (widget, TRUE);
 
   attributes.window_type = GDK_WINDOW_CHILD;
   attributes.x = widget->allocation.x;
@@ -2920,7 +2920,7 @@ gtk_sheet_map (GtkWidget * widget)
 
   if (!GTK_WIDGET_MAPPED (widget))
     {
-      GTK_WIDGET_SET_FLAGS (widget, GTK_MAPPED);
+      gtk_widget_set_mapped (widget, TRUE);
 
       if(!sheet->cursor_drag) sheet->cursor_drag=gdk_cursor_new(GDK_PLUS);
 
@@ -4096,7 +4096,6 @@ gtk_sheet_hide_active_cell(GtkSheet *sheet)
                    sheet->row[row].height+4);   
 
  GTK_WIDGET_UNSET_FLAGS(sheet->sheet_entry, GTK_HAS_FOCUS);
- GTK_WIDGET_SET_FLAGS(GTK_WIDGET(sheet), GTK_HAS_FOCUS);
  gtk_widget_grab_focus(GTK_WIDGET(sheet));
 
  GTK_WIDGET_UNSET_FLAGS(GTK_WIDGET(sheet->sheet_entry), GTK_VISIBLE);
@@ -4169,7 +4168,7 @@ gtk_sheet_show_active_cell(GtkSheet *sheet)
  if(sheet->state != GTK_SHEET_NORMAL) return;
  if(GTK_SHEET_IN_SELECTION(sheet)) return;
 
- GTK_WIDGET_SET_FLAGS(GTK_WIDGET(sheet->sheet_entry), GTK_VISIBLE);
+ gtk_widget_set_visible (GTK_WIDGET (sheet->sheet_entry), TRUE);
 
  sheet_entry = GTK_ENTRY(gtk_sheet_get_entry(sheet));
 
@@ -4205,7 +4204,6 @@ gtk_sheet_show_active_cell(GtkSheet *sheet)
  gtk_sheet_draw_active_cell(sheet);
 
  gtk_widget_grab_focus(GTK_WIDGET(sheet_entry));
- GTK_WIDGET_SET_FLAGS(GTK_WIDGET(sheet_entry), GTK_HAS_FOCUS);
  GTK_WIDGET_UNSET_FLAGS(GTK_WIDGET(sheet), GTK_HAS_FOCUS);
 
  g_free(text);
@@ -4949,7 +4947,6 @@ gtk_sheet_button_press (GtkWidget * widget,
      gtk_grab_add(GTK_WIDGET(sheet));
      sheet->timer = g_timeout_add (TIMEOUT_SCROLL, (GSourceFunc) gtk_sheet_scroll, sheet);
      GTK_WIDGET_UNSET_FLAGS(sheet->sheet_entry, GTK_HAS_FOCUS);
-     GTK_WIDGET_SET_FLAGS(GTK_SHEET(sheet), GTK_HAS_FOCUS);
      gtk_widget_grab_focus(GTK_WIDGET(sheet));
 
      if(sheet->selection_mode != GTK_SELECTION_SINGLE &&
@@ -5015,7 +5012,6 @@ gtk_sheet_button_press (GtkWidget * widget,
        gtk_grab_add(GTK_WIDGET(sheet));
        sheet->timer = g_timeout_add (TIMEOUT_SCROLL, (GSourceFunc) gtk_sheet_scroll, sheet);
        GTK_WIDGET_UNSET_FLAGS(sheet->sheet_entry, GTK_HAS_FOCUS);
-       GTK_WIDGET_SET_FLAGS(GTK_SHEET(sheet), GTK_HAS_FOCUS);
        gtk_widget_grab_focus(GTK_WIDGET(sheet));
        GTK_SHEET_SET_FLAGS(sheet, GTK_SHEET_IN_SELECTION);
      }
@@ -5029,7 +5025,6 @@ gtk_sheet_button_press (GtkWidget * widget,
        gtk_grab_add(GTK_WIDGET(sheet));
        sheet->timer = g_timeout_add (TIMEOUT_SCROLL, (GSourceFunc) gtk_sheet_scroll, sheet);
        GTK_WIDGET_UNSET_FLAGS(sheet->sheet_entry, GTK_HAS_FOCUS);
-       GTK_WIDGET_SET_FLAGS(GTK_SHEET(sheet), GTK_HAS_FOCUS);
        gtk_widget_grab_focus(GTK_WIDGET(sheet));
        GTK_SHEET_SET_FLAGS(sheet, GTK_SHEET_IN_SELECTION);
      }
