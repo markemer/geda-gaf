@@ -478,7 +478,7 @@ OBJECT *o_grips_search_circle_world(GschemToplevel *w_current, OBJECT *o_current
   /* check the grip for radius */
   if (inside_grip(x, y,
                   center_x + radius,
-                  center_y - radius,
+                  center_y,
                   size)) {
     *whichone = CIRCLE_RADIUS;
     return(o_current);

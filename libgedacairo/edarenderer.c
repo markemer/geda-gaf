@@ -1116,10 +1116,10 @@ eda_renderer_default_draw_grips (EdaRenderer *renderer, OBJECT *object)
     eda_renderer_draw_arc_grips (renderer, object);
     break;
   case OBJ_CIRCLE:
-    /* Grip at bottom right of containing square */
+    /* Grip at middle right of containing square */
     eda_renderer_draw_grips_impl (renderer, GRIP_SQUARE, 1,
         geda_circle_object_get_center_x (object) + geda_circle_object_get_radius (object),
-        geda_circle_object_get_center_y (object) - geda_circle_object_get_radius (object));
+        geda_circle_object_get_center_y (object));
     break;
   case OBJ_PATH:
     eda_renderer_draw_path_grips (renderer, object);
